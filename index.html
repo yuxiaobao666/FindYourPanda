@@ -2,24 +2,28 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
-  <title>🐼 熊猫 · 弹窗档案</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes, viewport-fit=cover" />
+  <title>🐼熊猫档案🐼</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐼</text></svg>" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
+    /* ===== 所有样式与之前完全相同 ===== */
     * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
     body { background: #f3efe8; padding: 16px; min-height: 100vh; display: flex; justify-content: center; }
     #app {
       max-width: 1000px; width: 100%; background: white; border-radius: 40px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.08); padding: 20px 20px 28px;
       position: relative;
+      min-height: 80vh;
     }
+    .page-container { position: relative; overflow: hidden; }
+    .page-view { display: none; animation: fadeSlideIn 0.25s ease-out; }
+    .page-view.active { display: block; }
+    @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
     .nav-tabs {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #e3dbcf;
-      padding-bottom: 6px;
+      display: flex; align-items: center; gap: 6px; margin-bottom: 20px;
+      border-bottom: 2px solid #e3dbcf; padding-bottom: 6px;
     }
     .nav-tab {
       padding: 10px 22px; border-radius: 40px 40px 0 0; font-weight: 600; color: #4b5f48;
@@ -27,27 +31,18 @@
       font-size: 0.95rem; display: flex; align-items: center; gap: 8px;
     }
     .nav-tab i { font-size: 1rem; }
-    .nav-tab.active {
-      background: #3a5a3a; color: white; border-color: #2d4a2d;
-    }
+    .nav-tab.active { background: #3a5a3a; color: white; border-color: #2d4a2d; }
     .nav-tab:hover:not(.active) { background: #e3dbcf; }
-    .page { display: none; animation: fade 0.15s; }
-    .page.active { display: block; }
-    @keyframes fade { from { opacity:0.5; } to { opacity:1; } }
+    .storage-status {
+      font-size: 0.75rem; color: #2d6b4c; background: #f0ede8;
+      padding: 6px 14px; border-radius: 40px; display: inline-flex; align-items: center;
+      height: 100%; margin-left: 12px; line-height: 1;
+    }
 
     .browse-toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 12px;
-      margin: 8px 0 16px;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 8px 0 16px;
     }
-    .browse-toolbar .btn-group {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
+    .browse-toolbar .btn-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .btn {
       background: #e8e2d8; border: none; padding: 9px 18px; border-radius: 40px;
       font-weight: 500; font-size: 0.9rem; display: inline-flex; align-items: center;
@@ -65,12 +60,11 @@
     .btn-danger { background: #b33c3c; color: white; }
     .btn-danger:hover { background: #8f2e2e; }
     .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
-    .btn-group .btn.active-mode {
-      background: #3a5a3a; color: white; border-color: #2d4a2d;
-    }
+    .btn-group .btn.active-mode { background: #3a5a3a; color: white; border-color: #2d4a2d; }
+
     .search-box {
       display: flex; background: #f0ede8; border-radius: 60px; padding: 4px 4px 4px 20px;
-      border: 1px solid #d6cec0; width: 100%; max-width: 480px;
+      border: 1px solid #d6cec0; width: 100%; max-width: 480px; position: relative;
     }
     .search-box input {
       border: none; background: transparent; padding: 10px 8px; font-size: 0.95rem;
@@ -79,31 +73,78 @@
     .search-box button {
       background: #3a5a3a; border: none; color: white; padding: 8px 22px;
       border-radius: 60px; font-weight: 500; cursor: pointer;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      white-space: nowrap; display: flex; align-items: center; gap: 6px;
     }
     .search-box button:hover { background: #2a472a; }
+    .search-suggestions {
+      position: absolute; top: 100%; left: 0; right: 0; background: white;
+      border: 1px solid #d6cec0; border-radius: 20px; margin-top: 4px;
+      max-height: 200px; overflow-y: auto; z-index: 100;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12); display: none;
+    }
+    .search-suggestions.show { display: block; }
+    .search-suggestions .suggestion-item {
+      padding: 8px 20px; cursor: pointer; border-bottom: 1px solid #f0ede8;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .search-suggestions .suggestion-item:hover { background: #f0ede8; }
+    .search-suggestions .suggestion-item .s-name { font-weight: 500; }
+    .search-suggestions .suggestion-item .s-sub { font-size: 0.8rem; color: #7a8a77; }
+
+    .stats-row {
+      display: flex; flex-wrap: wrap; gap: 12px 20px; background: #f8f5f0;
+      border-radius: 24px; padding: 12px 20px; margin-bottom: 16px;
+      border: 1px solid #e3dbcf;
+    }
+    .stats-row .stat-item {
+      display: flex; align-items: baseline; gap: 4px; font-size: 0.9rem; color: #3a4a38;
+    }
+    .stats-row .stat-item .num { font-weight: 700; font-size: 1.1rem; color: #1f3a1f; }
+    .stats-row .stat-item .label { color: #6a7a66; }
+
+    .alpha-index {
+      display: flex; flex-wrap: wrap; gap: 2px; padding: 8px 0 12px 0;
+      border-bottom: 1px solid #f0ede8; margin-bottom: 16px; justify-content: center;
+    }
+    .alpha-index .alpha-btn {
+      width: 32px; height: 32px; border-radius: 50%; border: none;
+      background: transparent; color: #5a6a56; font-size: 0.75rem;
+      font-weight: 600; cursor: pointer; transition: 0.1s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .alpha-index .alpha-btn:hover { background: #e3dbcf; color: #2d462b; }
+    .alpha-index .alpha-btn.active { background: #3a5a3a; color: white; }
 
     .org-section {
       margin-bottom: 22px; border-bottom: 1px dashed #d6cec0; padding-bottom: 12px;
     }
     .org-title {
       font-weight: 700; color: #2d462b; font-size: 1.2rem; margin-bottom: 10px;
-      display: flex; align-items: center; gap: 10px;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
     }
     .org-title i { color: #5f825c; }
-    .panda-list { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+    .org-title .count-badge {
+      font-size: 0.8rem; font-weight: 400; color: #6a7a66;
+      background: #f0ede8; padding: 0 12px; border-radius: 40px;
+    }
+    .org-title .passing-date {
+      font-size: 0.85rem; font-weight: 400; color: #8a7a6a;
+      background: #f3efe9; padding: 2px 14px; border-radius: 40px;
+    }
+    .panda-list { display: flex; flex-wrap: wrap; gap: 6px 12px; }
     .panda-link {
       cursor: pointer; color: #1f3a1f; background: #f3efe9; padding: 5px 16px;
       border-radius: 40px; font-weight: 500; border: 1px solid #dbd2c4;
-      transition: 0.1s; font-size: 0.95rem;
+      transition: 0.1s; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 6px;
     }
     .panda-link:hover { background: #d9d0c0; border-color: #9b8b77; }
-    .panda-link.pandastar {
-      background: #f0e6d8; border-color: #c4a88a;
+    .panda-link .gender-tag {
+      font-size: 0.65rem; font-weight: 600; padding: 0 6px; border-radius: 20px;
+      background: #d9d0c0; color: #4a5a48;
     }
+    .panda-link .gender-tag.female { background: #f5d6d6; color: #a05050; }
+    .panda-link .gender-tag.male { background: #d0ddf5; color: #406090; }
+    .panda-link.pandastar { background: #f0e6d8; border-color: #c4a88a; }
     .panda-link.pandastar:hover { background: #e0d0bc; }
 
     .result-grid {
@@ -121,196 +162,208 @@
       display: inline-block; background: #d9d0c0; padding: 0 12px; border-radius: 40px;
       font-size: 0.75rem; margin-left: 8px;
     }
-
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(4px);
-      z-index: 999;
-      justify-content: center;
-      align-items: center;
-      animation: fadeIn 0.2s;
-    }
-    .modal-overlay.active { display: flex; }
-    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-    .modal-box {
-      background: white;
-      border-radius: 40px;
-      max-width: 600px;
-      width: 94%;
-      max-height: 92vh;
-      overflow-y: auto;
-      padding: 28px 30px 24px;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.3);
-      position: relative;
-      animation: slideUp 0.25s ease-out;
-    }
-    @keyframes slideUp { from { transform: translateY(30px); opacity:0; } to { transform: translateY(0); opacity:1; } }
-    .modal-close {
-      position: absolute;
-      top: 16px; right: 22px;
-      font-size: 1.6rem;
-      color: #888;
-      cursor: pointer;
-      background: none;
-      border: none;
-      transition: 0.1s;
-    }
-    .modal-close:hover { color: #333; transform: rotate(90deg); }
-    .modal-panda-name {
-      font-size: 2rem; font-weight: 700; color: #1f3a1f; margin-right: 12px;
-    }
-    .modal-gender-badge {
-      background: #d9d0c0; padding: 4px 18px; border-radius: 40px; font-size: 0.9rem;
-    }
-    .modal-meta {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr));
-      gap: 10px 18px; background: #f3efe9; padding: 16px 18px; border-radius: 24px;
-      margin: 12px 0 16px;
-    }
-    .modal-meta-item { display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap; }
-    .modal-meta-item strong { color: #3c543a; font-weight: 600; min-width: 50px; font-size: 0.9rem; }
-    .modal-meta-item span { color: #1f2a1d; font-weight: 500; }
-    .modal-relations {
-      margin: 10px 0 16px;
-    }
-    .modal-relation-group {
-      background: #f8f5f0; border-radius: 20px; padding: 6px 4px 4px 4px;
-      margin-bottom: 10px; border: 1px solid #dbd2c4;
-    }
-    .modal-relation-group .group-title {
-      padding: 4px 16px; background: #eae3d8; border-radius: 40px; display: inline-block;
-      font-weight: 600; font-size: 0.85rem; color: #364d34; margin-left: 12px; margin-bottom: 4px;
-    }
-    .modal-relation-list { display: flex; flex-wrap: wrap; gap: 6px 10px; padding: 4px 16px 12px; }
-    .modal-relation-chip {
-      background: #f2eee8; border-radius: 40px; padding: 5px 16px; font-weight: 500;
-      border: 1px solid #cfc4b2; cursor: pointer; transition: 0.1s; font-size: 0.9rem;
-    }
-    .modal-relation-chip:hover { background: #d9d0c0; border-color: #9b8b77; }
-    .modal-actions {
-      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px;
-      justify-content: flex-end;
-      border-top: 1px solid #e3dbcf; padding-top: 18px;
-    }
-    .modal-actions .btn { min-width: 80px; justify-content: center; }
-
-    .modal-edit-form .form-row {
-      display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 12px;
-    }
-    .modal-edit-form .form-row label {
-      font-weight: 500; color: #2f402d; min-width: 60px;
-    }
-    .modal-edit-form .form-row input,
-    .modal-edit-form .form-row select {
-      flex: 1; min-width: 120px; padding: 10px 14px; border-radius: 40px;
-      border: 1px solid #cdc0ae; background: white; font-size: 0.95rem;
-    }
-    .modal-edit-form .form-row input:focus,
-    .modal-edit-form .form-row select:focus {
-      outline: 2px solid #5f825c; border-color: transparent;
-    }
-    .modal-edit-form .form-row .input-group {
-      flex: 1; min-width: 120px; display: flex; gap: 6px;
-    }
-    .modal-edit-form .form-row .input-group input {
-      flex: 1; min-width: 60px;
-    }
-    .modal-edit-form .form-row .input-group select {
-      flex: 0 0 auto; min-width: 80px; width: auto;
-    }
-    .modal-edit-actions {
-      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;
-      justify-content: flex-end;
-    }
+    .result-card .gender-badge.female { background: #f5d6d6; color: #a05050; }
+    .result-card .gender-badge.male { background: #d0ddf5; color: #406090; }
 
     .empty-state { color: #6b7a66; padding: 24px 8px; text-align: center; font-style: italic; }
-    .file-input-wrap input[type="file"] { display: none; }
+    .import-label { cursor: pointer; }
+    .import-label input[type="file"] { display: none; }
 
-    .storage-status {
-      font-size: 0.75rem;
-      color: #2d6b4c;
-      background: #f0ede8;
-      padding: 6px 14px;
-      border-radius: 40px;
-      display: inline-flex;
-      align-items: center;
-      height: 100%;
-      margin-left: 12px;
-      line-height: 1;
+    /* 详情页 & 编辑页 */
+    .page-view .page-header {
+      display: flex; align-items: center; padding: 4px 0 16px 0;
+      border-bottom: 1px solid #f0ede8; margin-bottom: 16px; gap: 12px;
+    }
+    .page-view .page-header .back-btn {
+      background: none; border: none; font-size: 1.1rem; color: #5a6a56;
+      cursor: pointer; padding: 4px 8px 4px 0; display: flex; align-items: center; gap: 4px;
+      flex-shrink: 0;
+    }
+    .page-view .page-header .back-btn:hover { color: #2d462b; }
+    .page-view .page-header .page-title {
+      font-size: 1.3rem; font-weight: 700; color: #1f3a1f;
+      flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
-    .age-tag {
-      display: inline-block;
-      background: #d4e0d0;
-      color: #1f3a1f;
-      padding: 0 12px;
-      border-radius: 40px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      margin-left: 8px;
+    .detail-info-list {
+      background: #f8f5f0; border-radius: 16px; padding: 12px 16px; margin: 8px 0 16px 0;
+    }
+    .detail-info-item {
+      display: flex; padding: 4px 0; border-bottom: 1px solid #eeebe5; font-size: 0.95rem;
+    }
+    .detail-info-item:last-child { border-bottom: none; }
+    .detail-info-item .label { color: #5a6a56; min-width: 52px; font-weight: 500; flex-shrink: 0; }
+    .detail-info-item .value { color: #1f2a1d; font-weight: 500; word-break: break-word; }
+    .detail-info-item .value .age-tag {
+      display: inline-block; background: #d4e0d0; color: #1f3a1f;
+      padding: 0 12px; border-radius: 40px; font-size: 0.8rem; font-weight: 500; margin-left: 8px;
+    }
+    .detail-info-item .value .gender-badge {
+      background: #d9d0c0; padding: 0 12px; border-radius: 40px; font-size: 0.8rem;
     }
 
-    .import-label {
-      cursor: pointer;
+    .detail-relations { margin: 4px 0 8px; }
+    .detail-relation-group {
+      background: #f8f5f0; border-radius: 16px; padding: 6px 4px 4px 4px;
+      margin-bottom: 8px; border: 1px solid #e3dbcf;
     }
-    .import-label input[type="file"] {
-      display: none;
+    .detail-relation-group .group-title {
+      padding: 2px 14px; background: #eae3d8; border-radius: 40px;
+      display: inline-block; font-weight: 600; font-size: 0.8rem;
+      color: #364d34; margin-left: 10px; margin-bottom: 2px;
+    }
+    .detail-relation-list {
+      display: flex; flex-wrap: wrap; gap: 6px 10px; padding: 4px 12px 10px 12px;
+    }
+    .detail-relation-chip {
+      background: #f2eee8; border-radius: 40px; padding: 4px 14px;
+      font-weight: 500; border: 1px solid #cfc4b2; cursor: pointer;
+      transition: 0.1s; font-size: 0.9rem;
+    }
+    .detail-relation-chip:hover { background: #d9d0c0; border-color: #9b8b77; }
+
+    .detail-actions {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px;
+      padding-top: 16px; border-top: 1px solid #f0ede8; justify-content: flex-end;
+    }
+    .detail-actions .btn { min-width: 80px; justify-content: center; }
+
+    .edit-form .form-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-bottom: 10px;
+    }
+    .edit-form .form-row label {
+      font-weight: 500; color: #2f402d; min-width: 56px; font-size: 0.9rem;
+    }
+    .edit-form .form-row label .required { color: #b33c3c; }
+    .edit-form .form-row input,
+    .edit-form .form-row select {
+      flex: 1; min-width: 100px; padding: 8px 14px; border-radius: 40px;
+      border: 1px solid #cdc0ae; background: white; font-size: 0.9rem; outline: none;
+    }
+    .edit-form .form-row input:focus,
+    .edit-form .form-row select:focus {
+      outline: 2px solid #5f825c; border-color: transparent;
+    }
+    .custom-suggest { position: relative; flex: 1; min-width: 100px; }
+    .custom-suggest input {
+      width: 100%; padding: 8px 14px; border-radius: 40px;
+      border: 1px solid #cdc0ae; background: white; font-size: 0.9rem; outline: none;
+    }
+    .custom-suggest input:focus { outline: 2px solid #5f825c; border-color: transparent; }
+    .custom-suggest .suggest-dropdown {
+      position: absolute; top: 100%; left: 0; right: 0; background: white;
+      border: 1px solid #cdc0ae; border-radius: 16px; margin-top: 4px;
+      max-height: 150px; overflow-y: auto; z-index: 50;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12); display: none;
+    }
+    .custom-suggest .suggest-dropdown.show { display: block; }
+    .custom-suggest .suggest-dropdown .suggest-item {
+      padding: 8px 16px; cursor: pointer; border-bottom: 1px solid #f0ede8; font-size: 0.9rem;
+    }
+    .custom-suggest .suggest-dropdown .suggest-item:hover { background: #f0ede8; }
+    .custom-suggest .suggest-dropdown .suggest-item:last-child { border-bottom: none; }
+
+    .edit-actions {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px;
+      padding-top: 16px; border-top: 1px solid #f0ede8; justify-content: flex-end;
     }
 
-    @media (max-width: 600px) { #app { padding: 14px; } .modal-box { padding: 20px; } }
+    @media (max-width: 600px) {
+      #app { padding: 14px; border-radius: 24px; }
+      .nav-tab { padding: 8px 14px; font-size: 0.8rem; }
+      .storage-status { font-size: 0.65rem; padding: 4px 10px; margin-left: 6px; }
+      .stats-row { padding: 10px 14px; gap: 8px 14px; }
+      .stats-row .stat-item { font-size: 0.8rem; }
+      .stats-row .stat-item .num { font-size: 1rem; }
+      .alpha-index .alpha-btn { width: 28px; height: 28px; font-size: 0.7rem; }
+      .page-view .page-header .page-title { font-size: 1.1rem; }
+      .detail-info-item { font-size: 0.85rem; }
+      .detail-info-item .label { min-width: 44px; }
+      .detail-actions .btn { min-width: 60px; padding: 8px 14px; font-size: 0.8rem; }
+      .edit-form .form-row label { min-width: 48px; font-size: 0.8rem; }
+      .custom-suggest .suggest-dropdown { max-height: 120px; }
+    }
   </style>
 </head>
 <body>
 <div id="app">
+  <!-- 顶部导航 -->
   <div class="nav-tabs">
-    <div class="nav-tab active" data-page="pageBrowse"><i class="fas fa-list"></i> 熊猫档案</div>
+    <div class="nav-tab active" data-page="pageHome"><i class="fas fa-list"></i> 🐼熊猫档案🐼</div>
     <span class="storage-status" id="storageStatus">💾 0 条数据已保存</span>
   </div>
 
-  <div id="pageBrowse" class="page active">
-    <div class="browse-toolbar" style="margin-bottom:10px;">
-      <div class="search-box">
-        <i class="fas fa-search" style="color:#6d7f6a;"></i>
-        <input type="text" id="searchInput" placeholder="输入熊猫名字 (如 花花)" />
-        <button id="searchBtn"><i class="fas fa-arrow-right"></i> 搜索</button>
+  <!-- 页面容器 -->
+  <div class="page-container">
+
+    <!-- 主页 -->
+    <div id="pageHome" class="page-view active">
+      <div class="stats-row" id="statsRow">
+        <div class="stat-item"><span class="num" id="totalCount">0</span><span class="label">只</span></div>
+        <div class="stat-item">🐻 <span class="num" id="maleCount">0</span><span class="label">雄</span></div>
+        <div class="stat-item">🐼 <span class="num" id="femaleCount">0</span><span class="label">雌</span></div>
+        <div class="stat-item">🏛️ <span class="num" id="orgCount">0</span><span class="label">个机构</span></div>
       </div>
-      <div class="btn-group">
-        <button class="btn btn-primary" id="addNewBtn"><i class="fas fa-plus-circle"></i> 录入</button>
-        <button class="btn btn-success" id="exportBtn"><i class="fas fa-download"></i> 导出</button>
-        <label class="btn btn-success import-label">
-          <i class="fas fa-upload"></i> 导入
-          <input type="file" id="importInput" accept=".json" />
-        </label>
+
+      <div class="browse-toolbar" style="margin-bottom:10px;">
+        <div class="search-box">
+          <i class="fas fa-search" style="color:#6d7f6a;"></i>
+          <input type="text" id="searchInput" placeholder="输入熊猫名字 (如 花花)" autocomplete="off" />
+          <button id="searchBtn"><i class="fas fa-arrow-right"></i> 搜索</button>
+          <div class="search-suggestions" id="searchSuggestions"></div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="addNewBtn"><i class="fas fa-plus-circle"></i> 录入</button>
+          <button class="btn btn-success" id="exportBtn"><i class="fas fa-download"></i> 导出</button>
+          <label class="btn btn-success import-label">
+            <i class="fas fa-upload"></i> 导入
+            <input type="file" id="importInput" accept=".json" />
+          </label>
+        </div>
       </div>
+
+      <div class="browse-toolbar" style="margin:4px 0 8px;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <span style="font-size:0.85rem; color:#4b5f48;">列示方式：</span>
+          <button class="btn btn-sm btn-outline active-mode" id="groupByOrgBtn"><i class="fas fa-building"></i> 机构</button>
+          <button class="btn btn-sm btn-outline" id="groupByLocationBtn"><i class="fas fa-map-pin"></i> 所在地</button>
+          <button class="btn btn-sm btn-outline" id="refreshBrowseBtn"><i class="fas fa-sync-alt"></i> 刷新</button>
+        </div>
+      </div>
+
+      <div class="alpha-index" id="alphaIndex"></div>
+      <div id="browseContainer"></div>
     </div>
 
-    <div class="browse-toolbar" style="margin:4px 0 16px;">
-      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-        <span style="font-size:0.85rem; color:#4b5f48;">列示方式：</span>
-        <button class="btn btn-sm btn-outline active-mode" id="groupByOrgBtn"><i class="fas fa-building"></i> 机构</button>
-        <button class="btn btn-sm btn-outline" id="groupByLocationBtn"><i class="fas fa-map-pin"></i> 所在地</button>
-        <button class="btn btn-sm btn-outline" id="refreshBrowseBtn"><i class="fas fa-sync-alt"></i> 刷新</button>
+    <!-- 详情页 -->
+    <div id="pageDetail" class="page-view">
+      <div class="page-header">
+        <button class="back-btn" id="detailBackBtn"><i class="fas fa-arrow-left"></i> 返回</button>
+        <span class="page-title" id="detailTitle">🐼 熊猫</span>
       </div>
+      <div id="detailBody"></div>
     </div>
 
-    <div id="browseContainer"></div>
-  </div>
-
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal-box" id="modalBox">
-      <button class="modal-close" id="modalCloseBtn">&times;</button>
-      <div id="modalContent"></div>
+    <!-- 编辑页 -->
+    <div id="pageEdit" class="page-view">
+      <div class="page-header">
+        <button class="back-btn" id="editBackBtn"><i class="fas fa-arrow-left"></i> 取消</button>
+        <span class="page-title" id="editTitle">✏️ 编辑熊猫</span>
+      </div>
+      <div id="editBody"></div>
     </div>
+
   </div>
 </div>
 
 <script>
 (function(){
+  // ========== 数据层 ==========
   const STORAGE_KEY = 'pandaAppData';
   let currentGroupMode = 'org';
+  let currentPandaId = null;
+  let editPandaId = null;
+  let detailHistory = [];
 
   function loadData() {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -337,18 +390,20 @@
   function saveData() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(pandas));
-      const statusEl = document.getElementById('storageStatus');
-      statusEl.textContent = `💾 ${pandas.length} 条数据已保存`;
-      statusEl.style.color = '#2d6b4c';
+      document.getElementById('storageStatus').textContent = `💾 ${pandas.length} 条数据已保存`;
     } catch (e) {
-      const statusEl = document.getElementById('storageStatus');
-      statusEl.textContent = '⚠️ 保存失败';
-      statusEl.style.color = '#b33c3c';
+      document.getElementById('storageStatus').textContent = '⚠️ 保存失败';
     }
   }
 
+  // ========== DOM 引用 ==========
+  const pageHome = document.getElementById('pageHome');
+  const pageDetail = document.getElementById('pageDetail');
+  const pageEdit = document.getElementById('pageEdit');
+
   const searchInput = document.getElementById('searchInput');
   const searchBtn = document.getElementById('searchBtn');
+  const searchSuggestions = document.getElementById('searchSuggestions');
   const browseContainer = document.getElementById('browseContainer');
   const exportBtn = document.getElementById('exportBtn');
   const importInput = document.getElementById('importInput');
@@ -356,11 +411,22 @@
   const addNewBtn = document.getElementById('addNewBtn');
   const groupByOrgBtn = document.getElementById('groupByOrgBtn');
   const groupByLocationBtn = document.getElementById('groupByLocationBtn');
+  const alphaIndex = document.getElementById('alphaIndex');
 
-  const modalOverlay = document.getElementById('modalOverlay');
-  const modalContent = document.getElementById('modalContent');
-  const modalCloseBtn = document.getElementById('modalCloseBtn');
+  const detailBackBtn = document.getElementById('detailBackBtn');
+  const detailTitle = document.getElementById('detailTitle');
+  const detailBody = document.getElementById('detailBody');
 
+  const editBackBtn = document.getElementById('editBackBtn');
+  const editTitle = document.getElementById('editTitle');
+  const editBody = document.getElementById('editBody');
+
+  const totalCount = document.getElementById('totalCount');
+  const maleCount = document.getElementById('maleCount');
+  const femaleCount = document.getElementById('femaleCount');
+  const orgCount = document.getElementById('orgCount');
+
+  // ========== 核心函数 ==========
   function findPandaByName(name) {
     return pandas.find(p => p.name.trim().toLowerCase() === name.trim().toLowerCase());
   }
@@ -372,81 +438,35 @@
     return v === '野外' || v === '野外 ' || v === '野 外';
   }
 
-  // ========== 核心：血缘关系计算 ==========
-  function getRelationships(panda) {
-    if (!panda) return { parents:[], siblingsSameParents:[], siblingsSameMother:[], siblingsSameFather:[], children:[], spouse:[] };
-    const name = panda.name;
-    const mother = isWild(panda.mother) ? '' : panda.mother.trim();
-    const father = isWild(panda.father) ? '' : panda.father.trim();
-
-    // ---- 父母 ----
-    const parents = [];
-    if (mother) { const m = findPandaByName(mother); if (m && m.name !== name) parents.push(m); }
-    if (father) { const f = findPandaByName(father); if (f && f.name !== name) parents.push(f); }
-
-    // ---- 子女：其他熊猫的母亲或父亲 == 当前熊猫的名字 ----
-    const children = pandas.filter(p => {
-      if (p.name === name) return false;
-      const pMother = isWild(p.mother) ? '' : p.mother.trim();
-      const pFather = isWild(p.father) ? '' : p.father.trim();
-      return pMother === name || pFather === name;
-    });
-
-    // ---- 兄弟姐妹 ----
-    const siblingsSameParents = [];
-    const siblingsSameMother = [];
-    const siblingsSameFather = [];
-    pandas.forEach(p => {
-      if (p.name === name) return;
-      const pMother = isWild(p.mother) ? '' : p.mother.trim();
-      const pFather = isWild(p.father) ? '' : p.father.trim();
-      const sameMother = mother && pMother && mother === pMother;
-      const sameFather = father && pFather && father === pFather;
-      if (sameMother && sameFather) {
-        siblingsSameParents.push(p);
-      } else if (sameMother && !sameFather) {
-        siblingsSameMother.push(p);
-      } else if (sameFather && !sameMother) {
-        siblingsSameFather.push(p);
-      }
-    });
-
-    // ---- 配偶：有共同子女（且不是父母、不是自己、不是子女） ----
-    const spouse = [];
-    const myChildrenIds = children.map(c => c.id);
-    pandas.forEach(p => {
-      if (p.name === name) return;
-      // 排除父母
-      if (parents.some(par => par.id === p.id)) return;
-      // 排除子女
-      if (children.some(child => child.id === p.id)) return;
-      // 检查对方是否有子女
-      const pChildren = pandas.filter(c => {
-        const cMother = isWild(c.mother) ? '' : c.mother.trim();
-        const cFather = isWild(c.father) ? '' : c.father.trim();
-        return cMother === p.name || cFather === p.name;
-      });
-      // 如果有共同子女（对方的子女ID与我的子女ID有交集）
-      const pChildrenIds = pChildren.map(c => c.id);
-      const hasCommonChild = pChildrenIds.some(id => myChildrenIds.includes(id));
-      if (hasCommonChild) {
-        spouse.push(p);
-      }
-    });
-
-    return { parents, siblingsSameParents, siblingsSameMother, siblingsSameFather, children, spouse };
-  }
-
-  function formatDate(dateStr) {
-    if (!dateStr) return '—';
-    try { return new Date(dateStr).toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric' }); } 
-    catch { return dateStr; }
+  function getAllNames() {
+    return pandas.map(p => ({ id: p.id, name: p.name }));
   }
 
   function calcAge(birthdayStr) {
-    if (!birthdayStr) return null;
-    let birth;
-    try { birth = new Date(birthdayStr); } catch { return null; }
+    if (!birthdayStr || birthdayStr.trim() === '') return null;
+    let year = null, month = null, day = null;
+    const cleaned = birthdayStr.replace(/\s+/g, '');
+    let match = cleaned.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+    if (match) { year = parseInt(match[1]); month = parseInt(match[2])-1; day = parseInt(match[3]); }
+    if (!match) { match = cleaned.match(/^(\d{4})年(\d{1,2})月(\d{1,2})日/);
+      if (match) { year = parseInt(match[1]); month = parseInt(match[2])-1; day = parseInt(match[3]); } }
+    if (!match) { match = cleaned.match(/^(\d{4})年(\d{1,2})月/);
+      if (match) { year = parseInt(match[1]); month = parseInt(match[2])-1; day = 1; } }
+    if (!match) { match = cleaned.match(/^(\d{4})年/);
+      if (match) { year = parseInt(match[1]); month = 5; day = 30; } }
+    if (!match) { match = cleaned.match(/^(\d{4})-(\d{1,2})$/);
+      if (match) { year = parseInt(match[1]); month = parseInt(match[2])-1; day = 1; } }
+    if (!match) { match = cleaned.match(/^(\d{4})$/);
+      if (match) { year = parseInt(match[1]); month = 5; day = 30; } }
+    if (!match) {
+      try { const d = new Date(birthdayStr);
+        if (!isNaN(d.getTime())) { year = d.getFullYear(); month = d.getMonth(); day = d.getDate(); } } catch(e) {} }
+    if (year === null || isNaN(year)) return null;
+    if (month === null || isNaN(month)) month = 5;
+    if (day === null || isNaN(day)) day = 30;
+    month = Math.max(0, Math.min(11, month));
+    day = Math.max(1, Math.min(30, day));
+    const birth = new Date(year, month, day);
     if (isNaN(birth.getTime())) return null;
     const now = new Date();
     let years = now.getFullYear() - birth.getFullYear();
@@ -454,10 +474,59 @@
     if (months < 0) { years--; months += 12; }
     if (years < 0) return null;
     if (years === 0 && months === 0) return '不到1个月';
+    const isApprox = /^\d{4}$/.test(cleaned) || /^\d{4}年$/.test(cleaned);
+    if (isApprox) return '约' + years + '岁';
     let parts = [];
     if (years > 0) parts.push(years + '岁');
     if (months > 0) parts.push(months + '个月');
-    return parts.join('');
+    return parts.join('') || (years + '岁');
+  }
+
+  function getRelationships(panda) {
+    if (!panda) return { parents:[], siblingsSameParents:[], siblingsSameMother:[], siblingsSameFather:[], children:[], spouse:[] };
+    const name = panda.name;
+    const mother = isWild(panda.mother) ? '' : panda.mother.trim();
+    const father = isWild(panda.father) ? '' : panda.father.trim();
+    const parents = [];
+    if (mother) { const m = findPandaByName(mother); if (m && m.name !== name) parents.push(m); }
+    if (father) { const f = findPandaByName(father); if (f && f.name !== name) parents.push(f); }
+    const children = pandas.filter(p => {
+      if (p.name === name) return false;
+      const pMother = isWild(p.mother) ? '' : p.mother.trim();
+      const pFather = isWild(p.father) ? '' : p.father.trim();
+      return pMother === name || pFather === name;
+    });
+    const siblingsSameParents = [], siblingsSameMother = [], siblingsSameFather = [];
+    pandas.forEach(p => {
+      if (p.name === name) return;
+      const pMother = isWild(p.mother) ? '' : p.mother.trim();
+      const pFather = isWild(p.father) ? '' : p.father.trim();
+      const sameMother = mother && pMother && mother === pMother;
+      const sameFather = father && pFather && father === pFather;
+      if (sameMother && sameFather) siblingsSameParents.push(p);
+      else if (sameMother && !sameFather) siblingsSameMother.push(p);
+      else if (sameFather && !sameMother) siblingsSameFather.push(p);
+    });
+    const spouse = [];
+    const myChildrenIds = children.map(c => c.id);
+    pandas.forEach(p => {
+      if (p.name === name) return;
+      if (parents.some(par => par.id === p.id)) return;
+      if (children.some(child => child.id === p.id)) return;
+      const pChildren = pandas.filter(c => {
+        const cMother = isWild(c.mother) ? '' : c.mother.trim();
+        const cFather = isWild(c.father) ? '' : c.father.trim();
+        return cMother === p.name || cFather === p.name;
+      });
+      if (pChildren.some(c => myChildrenIds.includes(c.id))) spouse.push(p);
+    });
+    return { parents, siblingsSameParents, siblingsSameMother, siblingsSameFather, children, spouse };
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '—';
+    try { return new Date(dateStr).toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric' }); } 
+    catch { return dateStr; }
   }
 
   function getDistinctValues(field) {
@@ -469,332 +538,94 @@
     return Array.from(values).sort();
   }
 
-  // ---------- 弹窗 ----------
-  let modalMode = 'view';
-  let modalPanda = null;
-
-  function openModal(panda, mode = 'view') {
-    modalPanda = panda;
-    modalMode = mode;
-    renderModal();
-    modalOverlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
+  function updateStats() {
+    totalCount.textContent = pandas.length;
+    maleCount.textContent = pandas.filter(p => p.gender === '雄性').length;
+    femaleCount.textContent = pandas.filter(p => p.gender === '雌性').length;
+    orgCount.textContent = new Set(pandas.map(p => p.org || '未归类')).size;
   }
 
-  function closeModal() {
-    modalOverlay.classList.remove('active');
-    document.body.style.overflow = '';
-    modalPanda = null;
+  // ========== 页面切换 ==========
+  function showPage(pageId) {
+    document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    window.scrollTo(0, 0);
   }
 
-  function renderModal() {
-    if (!modalPanda) {
-      modalContent.innerHTML = `<div class="empty-state">数据异常</div>`;
-      return;
-    }
-    if (modalMode === 'edit') {
-      renderEditForm();
-    } else {
-      renderViewMode();
-    }
+  // ========== 拼音首字母 ==========
+  function getPinyinFirstChar(name) {
+    const map = {
+      '花':'H','和':'H','萌':'M','美':'M','成':'C','伦':'L','洋':'Y','白':'B',
+      '英':'Y','灵':'L','勇':'Y','福':'F','华':'H','盟':'M','武':'W','林':'L',
+      '平':'P','金':'J','飞':'F','妙':'M','格':'G','喜':'X','发':'F','浦':'P',
+      '冰':'B','阿':'A','青':'Q','思':'S','佑':'Y','暖':'N','团':'T','虎':'H',
+      '伴':'B','豹':'B','绅':'S','谊':'Y','蕊':'R','紫':'Z','傲':'A','怡':'Y',
+      '瑞':'R','乔':'Q','苏':'S','叻':'L','年':'N','吉':'J','春':'C','张':'Z',
+      '潘':'P','依':'Y','天':'T','檂':'N','乐':'L','贝':'B','艾':'A','功':'G',
+      '园':'Y','润':'R','九':'J','梦':'M','淼':'M','北':'B','川':'C','蓉':'R',
+      '侠':'X','辰':'C','香':'X','轮':'L','昭':'Z','豆':'D','琪':'Q','琳':'L',
+      '斯':'S','吵':'C','闹':'N','庆':'Q','德':'D','雄':'X','绣':'X','云':'Y',
+      '星':'X','文':'W','奥':'A','莉':'L','绩':'J','风':'F','浪':'L','双':'S',
+      '启':'Q','芝':'Z','麻':'M','生':'S','玲':'L','伶':'L','汶':'W','航':'H',
+      '森':'S','晴':'Q','锦':'J','巢':'C','嘟':'D','比':'B','禧':'X','酉':'Y',
+      '元':'Y','草':'C','泰':'T','畅':'C','南':'N','月':'Y','璀':'C','豆':'D',
+      '芸':'Y','秀':'X','伊':'Y','鲁':'L','将':'J','兔':'T','君':'J','运':'Y',
+      '悠':'Y','骄':'J','盼':'P','阳':'Y','雪':'X','妮':'N','睿':'R','辉':'H',
+      '云':'Y','海':'H','妃':'F','心':'X','毛':'M','壮':'Z','娅':'Y','阳':'Y',
+      '佰':'B','贤':'X','加':'J','添':'T','兰':'L','仙':'X','大':'D','安':'A',
+      '可':'K','欢':'H','黎':'L','嘟':'D','嘉':'J','凯':'K','四':'S','京':'J',
+      '茜':'Q','府':'F','兴':'X','离':'L','灵':'L','蜀':'S','田':'T','念':'N',
+      '奇':'Q','七':'Q','八':'B','珠':'Z','秦':'Q','阿':'A','沛':'P','淘':'T',
+      '闽':'M','如':'R','意':'Y','丁':'D','喀':'K','二':'E','笋':'S','贡':'G',
+      '舜':'S','震':'Z','儿':'E','友':'Y','顺':'S','渝':'Y','莽':'M','喜':'X',
+      '辰':'C','灿':'C','好':'H','宝':'B','颖':'Y','兰':'L','贝':'B','双':'S',
+      '重':'C','良':'L','望':'W','悦':'Y','菊':'J','帅':'S','酷':'K','清':'Q',
+      '隆':'L','婷':'T','仔':'Z','恩':'E','然':'R','龙':'L','明':'M','皓':'H',
+      '向':'X','愿':'Y','深':'S','漫':'M','一':'Y','雅':'Y','灵':'L','迈':'M',
+      '华':'H','丽':'L','初':'C','牧':'M','娥':'E','展':'Z','瑶':'Y','晔':'Y',
+      '淑':'S','盈':'Y','得':'D','石':'S','公':'G','唐':'T','胖':'P','涛':'T',
+      '元':'Y','瑞':'R','顿':'D','梁':'L','傲':'A','念':'N','筠':'J','舟':'Z',
+      '满':'M','杰':'J','芊':'Q','逸':'Y','峰':'F','茅':'M','新':'X'
+    };
+    const first = name.charAt(0);
+    return map[first] || first.toUpperCase();
   }
 
-  function renderViewMode() {
-    const p = modalPanda;
-    const rel = getRelationships(p);
-
-    let ageHtml = '';
-    if (p.location && p.location.trim() !== '潘达星') {
-      const age = calcAge(p.birthday);
-      if (age) {
-        ageHtml = `<span class="age-tag">🐣 ${age}</span>`;
-      }
-    }
-
-    let html = `
-      <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; margin-bottom:4px;">
-        <span class="modal-panda-name">🐼 ${p.name}</span>
-        <span class="modal-gender-badge">${p.gender||'未知'}</span>
-        ${ageHtml}
-      </div>
-      <div class="modal-meta">
-        <div class="modal-meta-item"><strong>生日</strong><span>${formatDate(p.birthday)}</span></div>
-        <div class="modal-meta-item"><strong>机构</strong><span>${p.org||'—'}</span></div>
-        <div class="modal-meta-item"><strong>所在地</strong><span>${p.location||'—'}</span></div>
-        <div class="modal-meta-item"><strong>母亲</strong><span>${p.mother||'—'}</span></div>
-        <div class="modal-meta-item"><strong>父亲</strong><span>${p.father||'—'}</span></div>
-      </div>
-    `;
-
-    const relationGroups = [
-      { key: 'parents', label: '👪 父母', list: rel.parents },
-      { key: 'children', label: '🐣 子女', list: rel.children },
-      { key: 'spouse', label: '💕 配偶', list: rel.spouse },
-    ];
-
-    const siblingGroups = [];
-    if (rel.siblingsSameParents.length) {
-      siblingGroups.push({ label: '👫 同父同母', list: rel.siblingsSameParents });
-    }
-    if (rel.siblingsSameMother.length) {
-      siblingGroups.push({ label: '👩‍👧 同母异父', list: rel.siblingsSameMother });
-    }
-    if (rel.siblingsSameFather.length) {
-      siblingGroups.push({ label: '👨‍👧 同父异母', list: rel.siblingsSameFather });
-    }
-
-    let hasRel = false;
-    html += `<div class="modal-relations">`;
-
-    relationGroups.forEach(g => {
-      if (g.list && g.list.length) {
-        hasRel = true;
-        html += `<div class="modal-relation-group"><div class="group-title">${g.label}</div><div class="modal-relation-list">`;
-        g.list.forEach(p2 => {
-          html += `<span class="modal-relation-chip" data-id="${p2.id}"><i class="fas fa-paw"></i> ${p2.name}</span>`;
-        });
-        html += `</div></div>`;
-      }
+  function buildAlphaIndex() {
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    let html = '';
+    letters.forEach(ch => {
+      html += `<button class="alpha-btn" data-letter="${ch}">${ch}</button>`;
     });
-
-    siblingGroups.forEach(g => {
-      if (g.list && g.list.length) {
-        hasRel = true;
-        html += `<div class="modal-relation-group"><div class="group-title">${g.label}</div><div class="modal-relation-list">`;
-        g.list.forEach(p2 => {
-          html += `<span class="modal-relation-chip" data-id="${p2.id}"><i class="fas fa-paw"></i> ${p2.name}</span>`;
-        });
-        html += `</div></div>`;
-      }
-    });
-
-    html += `</div>`;
-    if (!hasRel) html += `<div class="empty-state" style="margin:4px 0 12px;">暂无血缘关联数据</div>`;
-
-    html += `
-      <div class="modal-actions">
-        <button class="btn btn-danger" id="modalDeleteBtn"><i class="fas fa-trash-alt"></i> 删除</button>
-        <button class="btn btn-primary" id="modalEditBtn"><i class="fas fa-edit"></i> 编辑</button>
-        <button class="btn btn-outline" id="modalExitBtn"><i class="fas fa-times"></i> 退出</button>
-      </div>
-    `;
-    modalContent.innerHTML = html;
-
-    document.getElementById('modalDeleteBtn').addEventListener('click', handleDelete);
-    document.getElementById('modalEditBtn').addEventListener('click', () => {
-      modalMode = 'edit';
-      renderModal();
-    });
-    document.getElementById('modalExitBtn').addEventListener('click', closeModal);
-
-    document.querySelectorAll('.modal-relation-chip[data-id]').forEach(el => {
-      el.addEventListener('click', function() {
-        const p2 = getPandaById(this.dataset.id);
-        if (p2) {
-          modalPanda = p2;
-          modalMode = 'view';
-          renderModal();
+    alphaIndex.innerHTML = html;
+    alphaIndex.querySelectorAll('.alpha-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const letter = this.dataset.letter;
+        const allLinks = browseContainer.querySelectorAll('.panda-link');
+        for (let el of allLinks) {
+          const name = el.textContent.trim();
+          const firstChar = getPinyinFirstChar(name);
+          if (firstChar === letter) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.style.transition = 'background 0.2s';
+            el.style.background = '#d4e0d0';
+            setTimeout(() => { el.style.background = ''; }, 600);
+            return;
+          }
         }
+        const msg = document.createElement('div');
+        msg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.7);color:white;padding:12px 24px;border-radius:40px;font-size:1rem;z-index:200;';
+        msg.textContent = '没有 ' + letter + ' 开头的熊猫';
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 1000);
       });
     });
   }
 
-  // ---------- 编辑表单 ----------
-  function renderEditForm() {
-    const p = modalPanda;
-    const orgOptions = getDistinctValues('org');
-    const locationOptions = getDistinctValues('location');
-
-    const orgOpts = orgOptions.map(v => `<option value="${v}" ${v===p.org?'selected':''}>${v}</option>`).join('');
-    const locOpts = locationOptions.map(v => `<option value="${v}" ${v===p.location?'selected':''}>${v}</option>`).join('');
-
-    const html = `
-      <div style="font-size:1.3rem; font-weight:600; color:#1f371f; margin-bottom:14px;">
-        <i class="fas fa-edit"></i> 编辑 ${p.name}
-      </div>
-      <div class="modal-edit-form">
-        <div class="form-row">
-          <label>名字</label>
-          <input type="text" id="modalEditName" value="${p.name}" />
-        </div>
-        <div class="form-row">
-          <label>性别</label>
-          <select id="modalEditGender">
-            <option value="雌性" ${p.gender==='雌性'?'selected':''}>雌性</option>
-            <option value="雄性" ${p.gender==='雄性'?'selected':''}>雄性</option>
-            <option value="未知" ${p.gender==='未知'?'selected':''}>未知</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <label>生日</label>
-          <input type="date" id="modalEditBirthday" value="${p.birthday||''}" />
-        </div>
-        <div class="form-row">
-          <label>机构</label>
-          <div class="input-group">
-            <input type="text" id="modalEditOrg" value="${p.org||''}" placeholder="输入或选择" list="orgList" />
-            <datalist id="orgList">${orgOpts}</datalist>
-            <select id="modalEditOrgSelect" style="flex:0 0 auto; min-width:80px; width:auto; padding:10px 10px;">
-              <option value="">— 选择 —</option>
-              ${orgOpts}
-            </select>
-          </div>
-        </div>
-        <div class="form-row">
-          <label>所在地</label>
-          <div class="input-group">
-            <input type="text" id="modalEditLocation" value="${p.location||''}" placeholder="输入或选择" list="locList" />
-            <datalist id="locList">${locOpts}</datalist>
-            <select id="modalEditLocationSelect" style="flex:0 0 auto; min-width:80px; width:auto; padding:10px 10px;">
-              <option value="">— 选择 —</option>
-              ${locOpts}
-            </select>
-          </div>
-        </div>
-        <div class="form-row">
-          <label>母亲</label>
-          <input type="text" id="modalEditMother" value="${p.mother||''}" placeholder="母亲名字" />
-        </div>
-        <div class="form-row">
-          <label>父亲</label>
-          <input type="text" id="modalEditFather" value="${p.father||''}" placeholder="父亲名字" />
-        </div>
-      </div>
-      <div class="modal-edit-actions">
-        <button class="btn btn-success" id="modalSaveEditBtn"><i class="fas fa-save"></i> 保存</button>
-        <button class="btn btn-outline" id="modalCancelEditBtn"><i class="fas fa-undo-alt"></i> 取消</button>
-      </div>
-    `;
-    modalContent.innerHTML = html;
-
-    const orgInput = document.getElementById('modalEditOrg');
-    const orgSelect = document.getElementById('modalEditOrgSelect');
-    const locInput = document.getElementById('modalEditLocation');
-    const locSelect = document.getElementById('modalEditLocationSelect');
-
-    orgSelect.addEventListener('change', function() {
-      if (this.value) orgInput.value = this.value;
-    });
-    orgInput.addEventListener('input', function() {
-      const opts = orgSelect.querySelectorAll('option');
-      let matched = false;
-      opts.forEach(opt => {
-        if (opt.value && opt.value === this.value) {
-          orgSelect.value = opt.value;
-          matched = true;
-        }
-      });
-      if (!matched && this.value) orgSelect.value = '';
-    });
-
-    locSelect.addEventListener('change', function() {
-      if (this.value) locInput.value = this.value;
-    });
-    locInput.addEventListener('input', function() {
-      const opts = locSelect.querySelectorAll('option');
-      let matched = false;
-      opts.forEach(opt => {
-        if (opt.value && opt.value === this.value) {
-          locSelect.value = opt.value;
-          matched = true;
-        }
-      });
-      if (!matched && this.value) locSelect.value = '';
-    });
-
-    document.getElementById('modalSaveEditBtn').addEventListener('click', handleSaveEdit);
-    document.getElementById('modalCancelEditBtn').addEventListener('click', () => {
-      modalMode = 'view';
-      renderModal();
-    });
-  }
-
-  // ---------- 删除 ----------
-  function handleDelete() {
-    if (!modalPanda) return;
-    if (confirm(`确定要删除熊猫 "${modalPanda.name}" 吗？此操作不可撤销！`)) {
-      const idx = pandas.findIndex(p => p.id === modalPanda.id);
-      if (idx !== -1) {
-        pandas.splice(idx, 1);
-        saveData();
-        alert(`已删除 "${modalPanda.name}"`);
-        closeModal();
-        renderBrowse();
-        doSearch();
-      } else {
-        alert('数据异常，删除失败');
-      }
-    }
-  }
-
-  // ---------- 保存编辑 ----------
-  function handleSaveEdit() {
-    const name = document.getElementById('modalEditName').value.trim();
-    if (!name) { alert('名字不能为空'); return; }
-    const gender = document.getElementById('modalEditGender').value;
-    const birthday = document.getElementById('modalEditBirthday').value || '';
-    const org = document.getElementById('modalEditOrg').value.trim();
-    const location = document.getElementById('modalEditLocation').value.trim();
-    const mother = document.getElementById('modalEditMother').value.trim();
-    const father = document.getElementById('modalEditFather').value.trim();
-
-    const existing = findPandaByName(name);
-    if (existing && existing.id !== modalPanda.id) {
-      alert(`"${name}" 已存在，请使用不同的名字`);
-      return;
-    }
-
-    modalPanda.name = name;
-    modalPanda.gender = gender;
-    modalPanda.birthday = birthday;
-    modalPanda.org = org;
-    modalPanda.location = location;
-    modalPanda.mother = mother;
-    modalPanda.father = father;
-
-    saveData();
-    alert(`已更新 "${name}" 的信息`);
-    modalMode = 'view';
-    renderModal();
-    renderBrowse();
-    doSearch();
-  }
-
-  // ---------- 搜索 ----------
-  function doSearch() {
-    const keyword = searchInput.value.trim();
-    const container = browseContainer;
-    if (!keyword) {
-      renderBrowse();
-      return;
-    }
-    const results = pandas.filter(p => p.name.includes(keyword));
-    if (results.length === 0) {
-      container.innerHTML = `<div class="empty-state" style="padding:30px 8px;">未找到 “${keyword}”</div>`;
-      return;
-    }
-    let html = `<div class="result-grid">`;
-    results.forEach(p => {
-      html += `<div class="result-card" data-id="${p.id}">
-        <div class="name">${p.name} <span class="gender-badge">${p.gender||'未知'}</span></div>
-        <div class="sub">${p.org||'—'} · ${p.location||'—'}</div>
-      </div>`;
-    });
-    html += `</div>`;
-    container.innerHTML = html;
-    document.querySelectorAll('.result-card[data-id]').forEach(el => {
-      el.addEventListener('click', function() {
-        const p = getPandaById(this.dataset.id);
-        if (p) { openModal(p, 'view'); }
-      });
-    });
-  }
-
-  // ---------- 浏览 ----------
+  // ========== 主页：渲染浏览列表 ==========
   function renderBrowse() {
     const pandastarList = [];
     const normalMap = new Map();
-
     pandas.forEach(p => {
       if (p.location && p.location.trim() === '潘达星') {
         pandastarList.push(p);
@@ -810,31 +641,46 @@
     for (let key of sortedKeys) {
       const list = normalMap.get(key);
       const icon = currentGroupMode === 'org' ? 'fa-building' : 'fa-map-pin';
-      html += `<div class="org-section"><div class="org-title"><i class="fas ${icon}"></i> ${key}</div><div class="panda-list">`;
+      html += `<div class="org-section"><div class="org-title">
+        <i class="fas ${icon}"></i> ${key} <span class="count-badge">${list.length}只</span>
+      </div><div class="panda-list">`;
       list.sort((a,b)=> a.name.localeCompare(b.name));
       list.forEach(p => {
-        html += `<span class="panda-link" data-id="${p.id}">${p.name}</span>`;
+        const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
+        const tag = p.gender ? (p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')) : '';
+        html += `<span class="panda-link" data-id="${p.id}">${p.name}${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}</span>`;
       });
-      html += `</div></div>`;
+      html += '</div></div>';
     }
 
     if (pandastarList.length) {
-      html += `<div class="org-section"><div class="org-title"><i class="fas fa-star" style="color:#d4a373;"></i> 潘达星 ✨</div><div class="panda-list">`;
+      const dates = pandastarList.filter(p => p.passingDate).map(p => p.passingDate);
+      let display = '';
+      if (dates.length) {
+        const sorted = dates.slice().sort();
+        display = '🕊️ ' + sorted[0] + ' 〜 ' + sorted[sorted.length-1];
+      }
+      html += `<div class="org-section"><div class="org-title">
+        <i class="fas fa-star" style="color:#d4a373;"></i> 潘达星 ✨ <span class="count-badge">${pandastarList.length}只</span>
+        ${display ? `<span class="passing-date">${display}</span>` : ''}
+      </div><div class="panda-list">`;
       pandastarList.sort((a,b)=> a.name.localeCompare(b.name));
       pandastarList.forEach(p => {
-        html += `<span class="panda-link pandastar" data-id="${p.id}">${p.name}</span>`;
+        const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
+        const tag = p.gender ? (p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')) : '';
+        html += `<span class="panda-link pandastar" data-id="${p.id}">${p.name}${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}</span>`;
       });
-      html += `</div></div>`;
+      html += '</div></div>';
     }
 
-    if (!html) html = `<div class="empty-state">暂无熊猫数据</div>`;
-    browseContainer.innerHTML = html;
+    browseContainer.innerHTML = html || '<div class="empty-state">暂无熊猫数据</div>';
     document.querySelectorAll('.panda-link[data-id]').forEach(el => {
       el.addEventListener('click', function() {
         const p = getPandaById(this.dataset.id);
-        if (p) { openModal(p, 'view'); }
+        if (p) openDetail(p.id);
       });
     });
+    updateStats();
     saveData();
   }
 
@@ -842,200 +688,478 @@
     currentGroupMode = mode;
     groupByOrgBtn.classList.toggle('active-mode', mode === 'org');
     groupByLocationBtn.classList.toggle('active-mode', mode === 'location');
-    if (searchInput.value.trim()) {
-      searchInput.value = '';
-    }
+    if (searchInput.value.trim()) searchInput.value = '';
     renderBrowse();
   }
 
-  // ---------- 导入导出 ----------
+  // ========== 搜索 ==========
+  function updateSuggestions(keyword) {
+    if (!keyword || keyword.length < 1) { searchSuggestions.classList.remove('show'); return; }
+    const results = pandas.filter(p => p.name.includes(keyword)).slice(0, 8);
+    if (results.length === 0) { searchSuggestions.classList.remove('show'); return; }
+    let html = '';
+    results.forEach(p => {
+      html += `<div class="suggestion-item" data-id="${p.id}">
+        <span class="s-name">${p.name}</span>
+        <span class="s-sub">${p.org||'—'} · ${p.location||'—'}</span>
+      </div>`;
+    });
+    searchSuggestions.innerHTML = html;
+    searchSuggestions.classList.add('show');
+    searchSuggestions.querySelectorAll('.suggestion-item').forEach(el => {
+      el.addEventListener('click', function() {
+        const p = getPandaById(this.dataset.id);
+        if (p) { searchInput.value = p.name; searchSuggestions.classList.remove('show'); doSearch(); }
+      });
+    });
+  }
+
+  function doSearch() {
+    const keyword = searchInput.value.trim();
+    searchSuggestions.classList.remove('show');
+    if (!keyword) { renderBrowse(); return; }
+    const results = pandas.filter(p => p.name.includes(keyword));
+    if (results.length === 0) {
+      browseContainer.innerHTML = '<div class="empty-state" style="padding:30px 8px;">未找到 “' + keyword + '”</div>';
+      return;
+    }
+    let html = '<div class="result-grid">';
+    results.forEach(p => {
+      const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
+      html += `<div class="result-card" data-id="${p.id}">
+        <div class="name">${p.name} <span class="gender-badge ${cls}">${p.gender||'未知'}</span></div>
+        <div class="sub">${p.org||'—'} · ${p.location||'—'}</div>
+      </div>`;
+    });
+    html += '</div>';
+    browseContainer.innerHTML = html;
+    document.querySelectorAll('.result-card[data-id]').forEach(el => {
+      el.addEventListener('click', function() {
+        const p = getPandaById(this.dataset.id);
+        if (p) openDetail(p.id);
+      });
+    });
+  }
+
+  // ========== 详情页 ==========
+  function openDetail(pandaId) {
+    if (document.getElementById('pageDetail').classList.contains('active')) {
+      if (currentPandaId && currentPandaId !== pandaId) {
+        detailHistory.push(currentPandaId);
+      }
+    } else {
+      detailHistory = [];
+    }
+    currentPandaId = pandaId;
+    const p = getPandaById(pandaId);
+    if (!p) return;
+    renderDetail(p);
+    showPage('pageDetail');
+    window.scrollTo(0, 0);
+  }
+
+  function renderDetail(p) {
+    const rel = getRelationships(p);
+    detailTitle.textContent = '🐼 ' + p.name;
+
+    let ageHtml = '';
+    if (p.location && p.location.trim() !== '潘达星') {
+      const age = calcAge(p.birthday);
+      if (age) ageHtml = `<span class="age-tag">🐣 ${age}</span>`;
+    }
+    const genderDisplay = p.gender || '未知';
+    const birthdayDisplay = formatDate(p.birthday);
+    const orgDisplay = p.org || '—';
+    const locationDisplay = p.location || '—';
+    const passingDisplay = p.passingDate ? formatDate(p.passingDate) : null;
+
+    let infoHtml = `
+      <div class="detail-info-list">
+        <div class="detail-info-item"><span class="label">性别</span><span class="value"><span class="gender-badge">${genderDisplay}</span> ${ageHtml}</span></div>
+        <div class="detail-info-item"><span class="label">生日</span><span class="value">${birthdayDisplay}</span></div>
+        <div class="detail-info-item"><span class="label">机构</span><span class="value">${orgDisplay}</span></div>
+        <div class="detail-info-item"><span class="label">所在地</span><span class="value">${locationDisplay}</span></div>
+    `;
+    if (passingDisplay) {
+      infoHtml += `<div class="detail-info-item"><span class="label">离世</span><span class="value">${passingDisplay}</span></div>`;
+    }
+    infoHtml += `</div>`;
+
+    const relationGroups = [
+      { key: 'parents', label: '👪 父母', list: rel.parents },
+      { key: 'children', label: '🐣 子女', list: rel.children },
+      { key: 'spouse', label: '💕 配偶', list: rel.spouse },
+    ];
+    const siblingGroups = [];
+    if (rel.siblingsSameParents.length) siblingGroups.push({ label: '👫 同父同母', list: rel.siblingsSameParents });
+    if (rel.siblingsSameMother.length) siblingGroups.push({ label: '👩‍👧 同母', list: rel.siblingsSameMother });
+    if (rel.siblingsSameFather.length) siblingGroups.push({ label: '👨‍👧 同父', list: rel.siblingsSameFather });
+
+    let relHtml = '<div class="detail-relations">';
+    let hasRel = false;
+    [...relationGroups, ...siblingGroups].forEach(g => {
+      if (g.list && g.list.length) {
+        hasRel = true;
+        relHtml += `<div class="detail-relation-group"><div class="group-title">${g.label}</div><div class="detail-relation-list">`;
+        g.list.forEach(p2 => {
+          relHtml += `<span class="detail-relation-chip" data-id="${p2.id}"><i class="fas fa-paw"></i> ${p2.name}</span>`;
+        });
+        relHtml += `</div></div>`;
+      }
+    });
+    relHtml += '</div>';
+    if (!hasRel) relHtml = '<div class="empty-state" style="margin:4px 0 12px;">暂无血缘关联数据</div>';
+
+    const actionsHtml = `
+      <div class="detail-actions">
+        <button class="btn btn-danger" id="detailDeleteBtn"><i class="fas fa-trash-alt"></i> 删除</button>
+        <button class="btn btn-primary" id="detailEditBtn"><i class="fas fa-edit"></i> 编辑</button>
+        <button class="btn btn-outline" id="detailExitBtn"><i class="fas fa-sign-out-alt"></i> 退出</button>
+      </div>
+    `;
+
+    detailBody.innerHTML = infoHtml + relHtml + actionsHtml;
+
+    document.getElementById('detailDeleteBtn').addEventListener('click', function() {
+      if (confirm('确定要删除熊猫 "' + p.name + '" 吗？此操作不可撤销！')) {
+        const idx = pandas.findIndex(item => item.id === p.id);
+        if (idx !== -1) {
+          pandas.splice(idx, 1);
+          saveData();
+          alert('已删除 "' + p.name + '"');
+          detailHistory = [];
+          showPage('pageHome');
+          renderBrowse();
+          doSearch();
+        }
+      }
+    });
+
+    document.getElementById('detailEditBtn').addEventListener('click', function() {
+      openEdit(p.id);
+    });
+
+    document.getElementById('detailExitBtn').addEventListener('click', function() {
+      detailHistory = [];
+      showPage('pageHome');
+    });
+
+    document.querySelectorAll('.detail-relation-chip[data-id]').forEach(el => {
+      el.addEventListener('click', function() {
+        const p2 = getPandaById(this.dataset.id);
+        if (p2) openDetail(p2.id);
+      });
+    });
+
+    detailBackBtn.onclick = function() {
+      if (detailHistory.length > 0) {
+        const prevId = detailHistory.pop();
+        const prevPanda = getPandaById(prevId);
+        if (prevPanda) {
+          currentPandaId = prevId;
+          renderDetail(prevPanda);
+          return;
+        }
+      }
+      detailHistory = [];
+      showPage('pageHome');
+    };
+  }
+
+  // ========== 编辑页 ==========
+  function openEdit(pandaId) {
+    editPandaId = pandaId;
+    const p = getPandaById(pandaId);
+    if (!p) return;
+    const isNew = (pandaId === 'temp_new');
+    editTitle.textContent = isNew ? '📝 录入新熊猫' : '✏️ 编辑 ' + p.name;
+    renderEditForm(p, isNew);
+    showPage('pageEdit');
+    window.scrollTo(0, 0);
+  }
+
+  function createSuggestInput(containerId, options, inputId, initialValue, placeholder) {
+    const container = document.getElementById(containerId);
+    const wrapper = document.createElement('div');
+    wrapper.className = 'custom-suggest';
+    wrapper.innerHTML = `
+      <input type="text" id="${inputId}" value="${initialValue||''}" placeholder="${placeholder||'输入或选择'}" autocomplete="off" />
+      <div class="suggest-dropdown" id="${inputId}_dropdown"></div>
+    `;
+    container.appendChild(wrapper);
+
+    const input = wrapper.querySelector('input');
+    const dropdown = wrapper.querySelector('.suggest-dropdown');
+
+    function renderDropdown(list) {
+      if (!list || list.length === 0) { dropdown.classList.remove('show'); return; }
+      dropdown.innerHTML = list.map(item =>
+        `<div class="suggest-item" data-value="${item}">${item}</div>`
+      ).join('');
+      dropdown.classList.add('show');
+      dropdown.querySelectorAll('.suggest-item').forEach(el => {
+        el.addEventListener('click', function() {
+          input.value = this.dataset.value;
+          dropdown.classList.remove('show');
+          input.dispatchEvent(new Event('input'));
+        });
+      });
+    }
+
+    input.addEventListener('focus', function() {
+      const val = this.value.trim().toLowerCase();
+      const filtered = options.filter(o => o.toLowerCase().includes(val));
+      renderDropdown(filtered);
+    });
+
+    input.addEventListener('input', function() {
+      const val = this.value.trim().toLowerCase();
+      const filtered = options.filter(o => o.toLowerCase().includes(val));
+      renderDropdown(filtered);
+    });
+
+    input.addEventListener('blur', function() {
+      setTimeout(() => dropdown.classList.remove('show'), 200);
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!wrapper.contains(e.target)) dropdown.classList.remove('show');
+    });
+
+    return input;
+  }
+
+  // ================================================================
+  // 关键修改：renderEditForm 中的离世日期逻辑
+  // ================================================================
+  function renderEditForm(p, isNew) {
+    const orgOptions = getDistinctValues('org');
+    const locOptions = getDistinctValues('location');
+    const nameOptions = getAllNames().map(n => n.name).filter(n => n !== p.name);
+
+    const nameVal = isNew ? '' : p.name;
+    const genderVal = p.gender || '雌性';
+    const birthdayVal = p.birthday || '';
+    const orgVal = p.org || '';
+    const locVal = p.location || '';
+    const motherVal = p.mother || '';
+    const fatherVal = p.father || '';
+    const passingVal = p.passingDate || '';
+
+    // 判断是否初始显示离世日期：仅当编辑已有熊猫且所在地为潘达星时显示
+    const showPassing = !isNew && (p.location && p.location.trim() === '潘达星');
+
+    let html = `
+      <div class="edit-form">
+        <div class="form-row">
+          <label>名字 <span class="required">*</span></label>
+          <input type="text" id="editName" value="${nameVal}" placeholder="如：花花" />
+        </div>
+        <div class="form-row">
+          <label>性别</label>
+          <select id="editGender">
+            <option value="雌性" ${genderVal==='雌性'?'selected':''}>雌性</option>
+            <option value="雄性" ${genderVal==='雄性'?'selected':''}>雄性</option>
+            <option value="未知" ${genderVal==='未知'?'selected':''}>未知</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>生日</label>
+          <input type="text" id="editBirthday" value="${birthdayVal}" placeholder="YYYY-MM-DD / YYYY-MM / YYYY" />
+        </div>
+        <div class="form-row">
+          <label>机构</label>
+          <div id="editOrgContainer" style="flex:1;min-width:100px;"></div>
+        </div>
+        <div class="form-row">
+          <label>所在地</label>
+          <div id="editLocContainer" style="flex:1;min-width:100px;"></div>
+        </div>
+    `;
+
+    // 离世日期行：初始根据 showPassing 决定显示/隐藏
+    html += `
+        <div class="form-row" id="editPassingRow" style="display:${showPassing ? 'flex' : 'none'};">
+          <label>离世</label>
+          <input type="date" id="editPassing" value="${passingVal}" />
+        </div>
+    `;
+
+    html += `
+        <div class="form-row">
+          <label>母亲</label>
+          <div id="editMotherContainer" style="flex:1;min-width:100px;"></div>
+        </div>
+        <div class="form-row">
+          <label>父亲</label>
+          <div id="editFatherContainer" style="flex:1;min-width:100px;"></div>
+        </div>
+      </div>
+      <div class="edit-actions">
+        <button class="btn btn-outline" id="editCancelBtn"><i class="fas fa-times"></i> 取消</button>
+        <button class="btn btn-success" id="editSaveBtn"><i class="fas fa-save"></i> 保存</button>
+      </div>
+    `;
+
+    editBody.innerHTML = html;
+
+    const orgInput = createSuggestInput('editOrgContainer', orgOptions, 'editOrg', orgVal, '输入或选择机构');
+    const locInput = createSuggestInput('editLocContainer', locOptions, 'editLoc', locVal, '输入或选择所在地');
+    const motherInput = createSuggestInput('editMotherContainer', nameOptions, 'editMother', motherVal, '输入或选择母亲');
+    const fatherInput = createSuggestInput('editFatherContainer', nameOptions, 'editFather', fatherVal, '输入或选择父亲');
+
+    // 关键：监听所在地输入变化，动态显示/隐藏离世日期
+    const passingRow = document.getElementById('editPassingRow');
+    locInput.addEventListener('input', function() {
+      if (passingRow) {
+        passingRow.style.display = (this.value.trim() === '潘达星') ? 'flex' : 'none';
+      }
+    });
+
+    document.getElementById('editCancelBtn').addEventListener('click', function() {
+      if (isNew) {
+        detailHistory = [];
+        showPage('pageHome');
+      } else {
+        openDetail(p.id);
+      }
+    });
+
+    document.getElementById('editSaveBtn').addEventListener('click', function() {
+      handleEditSave(p, isNew, orgInput, locInput, motherInput, fatherInput);
+    });
+  }
+
+  function handleEditSave(p, isNew, orgInput, locInput, motherInput, fatherInput) {
+    const name = document.getElementById('editName').value.trim();
+    if (!name) { alert('请填写熊猫名字'); return; }
+    const gender = document.getElementById('editGender').value;
+    const birthday = document.getElementById('editBirthday').value.trim();
+    const org = orgInput ? orgInput.value.trim() : '';
+    const location = locInput ? locInput.value.trim() : '';
+    const mother = motherInput ? motherInput.value.trim() : '';
+    const father = fatherInput ? fatherInput.value.trim() : '';
+    const passingInput = document.getElementById('editPassing');
+    const passingDate = passingInput ? passingInput.value : '';
+
+    const existing = findPandaByName(name);
+    if (existing && (isNew || existing.id !== p.id)) {
+      alert('"' + name + '" 已存在，请使用不同的名字');
+      return;
+    }
+
+    if (isNew) {
+      const newPanda = { id: 'p'+(nextId++), name, gender, birthday, org, location, mother, father };
+      if (passingDate) newPanda.passingDate = passingDate;
+      pandas.push(newPanda);
+      saveData();
+      alert('新增 "' + name + '" 成功');
+      detailHistory = [];
+      showPage('pageHome');
+      renderBrowse();
+      doSearch();
+    } else {
+      p.name = name;
+      p.gender = gender;
+      p.birthday = birthday;
+      p.org = org;
+      p.location = location;
+      p.mother = mother;
+      p.father = father;
+      if (passingDate !== undefined) p.passingDate = passingDate;
+      saveData();
+      alert('已更新 "' + name + '" 的信息');
+      renderDetail(p);
+      showPage('pageDetail');
+      renderBrowse();
+      doSearch();
+    }
+  }
+
+  // ========== 新增熊猫 ==========
+  function addNewPanda() {
+    const tempPanda = { id: 'temp_new', name: '', gender: '雌性', birthday: '', org: '', location: '', mother: '', father: '', passingDate: '' };
+    editPandaId = 'temp_new';
+    editTitle.textContent = '📝 录入新熊猫';
+    renderEditForm(tempPanda, true);
+    showPage('pageEdit');
+    window.scrollTo(0, 0);
+  }
+
+  // ========== 导入导出 ==========
   function exportData() {
     const blob = new Blob([JSON.stringify(pandas, null, 2)], { type:'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `pandas_${new Date().toISOString().slice(0,10)}.json`;
-    a.click(); URL.revokeObjectURL(a.href);
+    a.download = 'pandas_' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
   }
 
   function importData(file) {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = function(e) {
       try {
         const imported = JSON.parse(e.target.result);
-        if (Array.isArray(imported) && imported.length && imported[0].name) {
-          if (confirm(`将导入 ${imported.length} 条数据，是否覆盖当前所有数据？\n点击"确定"覆盖，"取消"则追加合并。`)) {
-            pandas = imported;
-          } else {
-            const existingNames = new Set(pandas.map(p => p.name));
-            let added = 0;
-            imported.forEach(p => {
-              if (!existingNames.has(p.name)) {
-                pandas.push(p);
-                existingNames.add(p.name);
-                added++;
-              }
-            });
-            if (added === 0) { alert('所有数据已存在，没有新增'); return; }
-          }
-          const ids = pandas.map(p => { const n = parseInt(String(p.id).replace('p','')); return isNaN(n)?0:n; });
-          nextId = (ids.length ? Math.max(...ids) : 0) + 1;
-          saveData();
-          alert(`导入成功！当前共 ${pandas.length} 条数据`);
-          searchInput.value = '';
-          renderBrowse();
-        } else {
+        if (!Array.isArray(imported) || !imported.length || !imported[0].name) {
           alert('数据格式无效，请检查JSON文件');
+          return;
         }
+        const overwrite = confirm('将导入 ' + imported.length + ' 条数据，是否覆盖当前所有数据？\n点击"确定"覆盖，"取消"则追加合并。');
+        if (overwrite) {
+          pandas = imported;
+        } else {
+          const existing = new Set(pandas.map(p => p.name));
+          let added = 0;
+          imported.forEach(p => { if (!existing.has(p.name)) { pandas.push(p); existing.add(p.name); added++; } });
+          if (added === 0) { alert('所有数据已存在，没有新增'); return; }
+        }
+        const ids = pandas.map(p => { const n = parseInt(String(p.id).replace('p','')); return isNaN(n)?0:n; });
+        nextId = (ids.length ? Math.max(...ids) : 0) + 1;
+        saveData();
+        alert('导入成功！当前共 ' + pandas.length + ' 条数据');
+        searchInput.value = '';
+        detailHistory = [];
+        renderBrowse();
       } catch(err) {
-        alert('解析失败: '+err.message);
+        alert('解析失败: ' + err.message);
       }
     };
     reader.readAsText(file);
   }
 
-  // ---------- 新增熊猫 ----------
-  function addNewPanda() {
-    const newPanda = { id: 'temp_new', name: '', gender: '雌性', birthday: '', org: '', location: '', mother: '', father: '' };
-    modalPanda = newPanda;
-    modalMode = 'edit';
-    modalOverlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    renderNewForm();
-  }
-
-  function renderNewForm() {
-    const orgOptions = getDistinctValues('org');
-    const locationOptions = getDistinctValues('location');
-    const orgOpts = orgOptions.map(v => `<option value="${v}">${v}</option>`).join('');
-    const locOpts = locationOptions.map(v => `<option value="${v}">${v}</option>`).join('');
-
-    const html = `
-      <div style="font-size:1.3rem; font-weight:600; color:#1f371f; margin-bottom:14px;">
-        <i class="fas fa-plus-circle"></i> 录入新熊猫
-      </div>
-      <div class="modal-edit-form">
-        <div class="form-row">
-          <label>名字</label>
-          <input type="text" id="modalEditName" placeholder="如：花花" />
-        </div>
-        <div class="form-row">
-          <label>性别</label>
-          <select id="modalEditGender">
-            <option value="雌性">雌性</option>
-            <option value="雄性">雄性</option>
-            <option value="未知">未知</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <label>生日</label>
-          <input type="date" id="modalEditBirthday" />
-        </div>
-        <div class="form-row">
-          <label>机构</label>
-          <div class="input-group">
-            <input type="text" id="modalEditOrg" placeholder="输入或选择" list="orgList" />
-            <datalist id="orgList">${orgOpts}</datalist>
-            <select id="modalEditOrgSelect" style="flex:0 0 auto; min-width:80px; width:auto; padding:10px 10px;">
-              <option value="">— 选择 —</option>
-              ${orgOpts}
-            </select>
-          </div>
-        </div>
-        <div class="form-row">
-          <label>所在地</label>
-          <div class="input-group">
-            <input type="text" id="modalEditLocation" placeholder="输入或选择" list="locList" />
-            <datalist id="locList">${locOpts}</datalist>
-            <select id="modalEditLocationSelect" style="flex:0 0 auto; min-width:80px; width:auto; padding:10px 10px;">
-              <option value="">— 选择 —</option>
-              ${locOpts}
-            </select>
-          </div>
-        </div>
-        <div class="form-row">
-          <label>母亲</label>
-          <input type="text" id="modalEditMother" placeholder="母亲名字" />
-        </div>
-        <div class="form-row">
-          <label>父亲</label>
-          <input type="text" id="modalEditFather" placeholder="父亲名字" />
-        </div>
-      </div>
-      <div class="modal-edit-actions">
-        <button class="btn btn-success" id="modalSaveNewBtn"><i class="fas fa-save"></i> 保存</button>
-        <button class="btn btn-outline" id="modalCancelNewBtn"><i class="fas fa-times"></i> 取消</button>
-      </div>
-    `;
-    modalContent.innerHTML = html;
-
-    const orgInput = document.getElementById('modalEditOrg');
-    const orgSelect = document.getElementById('modalEditOrgSelect');
-    const locInput = document.getElementById('modalEditLocation');
-    const locSelect = document.getElementById('modalEditLocationSelect');
-
-    orgSelect.addEventListener('change', function() { if (this.value) orgInput.value = this.value; });
-    orgInput.addEventListener('input', function() {
-      const opts = orgSelect.querySelectorAll('option');
-      let matched = false;
-      opts.forEach(opt => { if (opt.value && opt.value === this.value) { orgSelect.value = opt.value; matched = true; } });
-      if (!matched && this.value) orgSelect.value = '';
-    });
-    locSelect.addEventListener('change', function() { if (this.value) locInput.value = this.value; });
-    locInput.addEventListener('input', function() {
-      const opts = locSelect.querySelectorAll('option');
-      let matched = false;
-      opts.forEach(opt => { if (opt.value && opt.value === this.value) { locSelect.value = opt.value; matched = true; } });
-      if (!matched && this.value) locSelect.value = '';
-    });
-
-    document.getElementById('modalSaveNewBtn').addEventListener('click', handleSaveNew);
-    document.getElementById('modalCancelNewBtn').addEventListener('click', closeModal);
-  }
-
-  function handleSaveNew() {
-    const name = document.getElementById('modalEditName').value.trim();
-    if (!name) { alert('请填写熊猫名字'); return; }
-    if (findPandaByName(name)) { alert(`"${name}" 已存在，请使用不同的名字`); return; }
-    const gender = document.getElementById('modalEditGender').value;
-    const birthday = document.getElementById('modalEditBirthday').value || '';
-    const org = document.getElementById('modalEditOrg').value.trim();
-    const location = document.getElementById('modalEditLocation').value.trim();
-    const mother = document.getElementById('modalEditMother').value.trim();
-    const father = document.getElementById('modalEditFather').value.trim();
-
-    const newPanda = { id: 'p'+(nextId++), name, gender, birthday, org, location, mother, father };
-    pandas.push(newPanda);
-    saveData();
-    alert(`新增 "${name}" 成功`);
-    closeModal();
-    searchInput.value = '';
-    renderBrowse();
-  }
-
-  // ---------- 事件绑定 ----------
+  // ========== 事件绑定 ==========
   searchBtn.addEventListener('click', doSearch);
-  searchInput.addEventListener('keyup', e => { if (e.key==='Enter') doSearch(); });
+  searchInput.addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') { doSearch(); return; }
+    updateSuggestions(e.target.value);
+  });
+  searchInput.addEventListener('blur', function() { setTimeout(() => searchSuggestions.classList.remove('show'), 200); });
+  searchInput.addEventListener('focus', function() { if (this.value) updateSuggestions(this.value); });
+
   exportBtn.addEventListener('click', exportData);
-  importInput.addEventListener('change', e => {
-    if (e.target.files.length) { importData(e.target.files[0]); e.target.value=''; }
+  importInput.addEventListener('change', function(e) {
+    if (e.target.files.length) { importData(e.target.files[0]); e.target.value = ''; }
   });
-  refreshBrowseBtn.addEventListener('click', () => {
-    searchInput.value = '';
-    renderBrowse();
-  });
+  refreshBrowseBtn.addEventListener('click', function() { searchInput.value = ''; detailHistory = []; renderBrowse(); });
   addNewBtn.addEventListener('click', addNewPanda);
 
-  groupByOrgBtn.addEventListener('click', () => setGroupMode('org'));
-  groupByLocationBtn.addEventListener('click', () => setGroupMode('location'));
+  groupByOrgBtn.addEventListener('click', function() { setGroupMode('org'); });
+  groupByLocationBtn.addEventListener('click', function() { setGroupMode('location'); });
 
-  modalOverlay.addEventListener('click', function(e) {
-    if (e.target === modalOverlay) closeModal();
-  });
-  modalCloseBtn.addEventListener('click', closeModal);
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && modalOverlay.classList.contains('active')) closeModal();
+  editBackBtn.addEventListener('click', function() {
+    if (editPandaId === 'temp_new') {
+      detailHistory = [];
+      showPage('pageHome');
+    } else if (editPandaId) {
+      openDetail(editPandaId);
+    } else {
+      showPage('pageHome');
+    }
   });
 
+  // ========== 初始化 ==========
+  buildAlphaIndex();
   setGroupMode('org');
 })();
 </script>
