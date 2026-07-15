@@ -7,7 +7,6 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐼</text></svg>" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
-    /* ===== 全局 ===== */
     * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
     body { background: #f3efe8; padding: 16px; min-height: 100vh; display: flex; justify-content: center; }
     #app {
@@ -289,7 +288,6 @@
       border-color: #d0d0c8;
     }
 
-    /* 详情页按钮：返回靠左，删除/族谱/编辑靠右 */
     .detail-actions {
       display: flex;
       flex-wrap: wrap;
@@ -300,9 +298,7 @@
       align-items: center;
     }
     .detail-actions .btn { min-width: 70px; justify-content: center; }
-    .detail-actions .btn-left {
-      margin-right: auto;
-    }
+    .detail-actions .btn-left { margin-right: auto; }
 
     .edit-form .form-row {
       display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-bottom: 10px;
@@ -344,130 +340,42 @@
       padding-top: 16px; border-top: 1px solid #f0ede8; justify-content: flex-end;
     }
 
-    /* ===== 族谱 - 同辈分强制同一行 ===== */
+    /* ===== 族谱缩进列表 ===== */
     .tree-container {
-      padding: 8px 0 20px 0;
+      padding: 16px 8px 20px 8px;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
+      font-family: 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
+      font-size: 14px;
+      line-height: 1.8;
+      background: #faf8f5;
+      border-radius: 16px;
+      border: 1px solid #e3dbcf;
+      min-height: 200px;
     }
-    .tree-root {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
+    .tree-container .tree-line {
+      white-space: pre;
+      display: block;
+      min-height: 1.8em;
+      padding: 0 4px;
     }
-
-    .tree-node {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 0 2px;
-    }
-    .tree-node .node-card {
-      background: #f8f5f0;
-      border: 2px solid #d9d0c0;
-      border-radius: 10px;
-      padding: 3px 10px;
-      min-width: 44px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.12s;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-      font-size: 0.8rem;
-      white-space: nowrap;
-    }
-    .tree-node .node-card:hover {
-      background: #f0ebe2;
-      border-color: #b9ae9a;
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-    .tree-node .node-card.wild-card {
-      background: #f0eee8;
-      border-color: #d0ccc4;
-      cursor: default;
-      opacity: 0.7;
-    }
-    .tree-node .node-card.wild-card:hover {
-      background: #f0eee8;
-      border-color: #d0ccc4;
-      transform: none;
-      box-shadow: none;
-    }
-    .tree-node .node-card .node-name {
-      font-weight: 700;
-      font-size: 0.9rem;
+    .tree-container .tree-line .panda-name-link {
       color: #1f3a1f;
-      line-height: 1.3;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      text-decoration-color: #b9ae9a;
+      text-decoration-thickness: 1px;
+      transition: color 0.15s;
     }
-    .tree-node .node-card .node-name.wild-text {
+    .tree-container .tree-line .panda-name-link:hover {
+      color: #3a5a3a;
+      text-decoration-color: #3a5a3a;
+    }
+    .tree-container .tree-line .wild-text {
       color: #8a8a7a;
-    }
-    .tree-node .node-card .node-gender {
-      font-size: 0.65rem;
-      color: #7a8a76;
-      line-height: 1.2;
-    }
-    .tree-root-card {
-      background: #e8e0d4 !important;
-      border-color: #b9ae9a !important;
-      border-width: 2.5px !important;
-    }
-    .tree-root-card .node-name {
-      font-size: 1.05rem !important;
-    }
-
-    /* 连接线 */
-    .tree-connector {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 1px 0;
-    }
-    .tree-connector .line-down {
-      width: 2px;
-      height: 14px;
-      background: #b8ac9a;
-      flex-shrink: 0;
-    }
-    .tree-connector .line-branch {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      height: 16px;
-      width: 100%;
-      min-width: 30px;
-    }
-    .tree-connector .line-branch .branch-left,
-    .tree-connector .line-branch .branch-right {
-      flex: 1;
-      height: 2px;
-      background: #b8ac9a;
-      min-width: 8px;
-    }
-    .tree-connector .line-branch .branch-center {
-      width: 2px;
-      height: 16px;
-      background: #b8ac9a;
-      flex-shrink: 0;
-    }
-
-    /* 子节点容器 - 强制同一行 */
-    .tree-children {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: nowrap;
-      margin-top: 0px;
-      width: 100%;
-    }
-    .tree-child-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 30px;
-      flex: 0 1 auto;
+      font-weight: 500;
     }
 
     .tree-footer {
@@ -478,6 +386,27 @@
       border-top: 1px solid #f0ede8;
     }
     .tree-footer .btn { min-width: 70px; justify-content: center; }
+
+    @media (max-width: 600px) {
+      .tree-container {
+        font-size: 12px;
+        line-height: 1.6;
+        padding: 12px 6px 16px 6px;
+      }
+      .tree-container .tree-line {
+        min-height: 1.6em;
+      }
+    }
+    @media (max-width: 400px) {
+      .tree-container {
+        font-size: 10px;
+        line-height: 1.4;
+        padding: 10px 4px 14px 4px;
+      }
+      .tree-container .tree-line {
+        min-height: 1.4em;
+      }
+    }
 
     /* ===== 移动端适配 ===== */
     @media (max-width: 600px) {
@@ -495,16 +424,6 @@
       .detail-actions .btn { min-width: 50px; padding: 6px 10px; font-size: 0.7rem; }
       .edit-form .form-row label { min-width: 48px; font-size: 0.8rem; }
       .custom-suggest .suggest-dropdown { max-height: 120px; }
-      .tree-node .node-card { padding: 2px 6px; min-width: 32px; font-size: 0.7rem; border-radius: 6px; }
-      .tree-node .node-card .node-name { font-size: 0.75rem; }
-      .tree-node .node-card .node-gender { font-size: 0.55rem; }
-      .tree-children { gap: 4px; }
-      .tree-connector .line-down { height: 8px; }
-      .tree-connector .line-branch { height: 10px; min-width: 14px; }
-      .tree-connector .line-branch .branch-left,
-      .tree-connector .line-branch .branch-right { min-width: 4px; }
-      .tree-connector .line-branch .branch-center { height: 10px; }
-      .tree-root-card .node-name { font-size: 0.9rem !important; }
       .tree-footer .btn { min-width: 50px; padding: 6px 12px; font-size: 0.75rem; }
       .detail-header .panda-sub { font-size: 0.8rem; }
     }
@@ -585,6 +504,7 @@
         <button class="btn btn-outline" id="treeBackBtn"><i class="fas fa-arrow-left"></i> 返回</button>
       </div>
     </div>
+
   </div>
 </div>
 
@@ -994,7 +914,7 @@
   }
 
   // ================================================================
-  // 族谱
+  // 族谱 - 缩进列表（只显示名字+性别标识）
   // ================================================================
   function buildFamilyTree(panda, visited = new Set()) {
     if (!panda) return null;
@@ -1030,69 +950,62 @@
     };
   }
 
-  // 渲染族谱 - 强制同辈同一行
-  function renderTreeNode(node, depth = 0) {
-    if (!node) return '';
-    if (node._isWild) {
-      return `
-        <div class="tree-node">
-          <div class="node-card wild-card">
-            <div class="node-name wild-text">${node.name}</div>
-          </div>
-        </div>
-      `;
+  function renderTree(panda) {
+    const tree = buildFamilyTree(panda);
+    if (!tree) return '<div class="empty-state">无法构建族谱</div>';
+
+    const lines = [];
+
+    function drawNode(node, prefix = '', isLast = true) {
+      if (!node) return;
+
+      // 野外直接显示
+      if (node._isWild) {
+        lines.push(prefix + '└── ' + '<span class="wild-text">' + node.name + '</span>');
+        return;
+      }
+
+      // 构建显示文本：名字 + 性别标识（只显示 ♀/♂）
+      const genderIcon = node.gender === '雌性' ? ' ♀' : (node.gender === '雄性' ? ' ♂' : '');
+      const displayName = node.name + genderIcon;
+
+      // 根节点不加前缀
+      if (prefix === '' && lines.length === 0) {
+        lines.push('<span class="panda-name-link" data-id="' + node.id + '">' + displayName + '</span>');
+      } else {
+        lines.push(prefix + (isLast ? '└── ' : '├── ') +
+          '<span class="panda-name-link" data-id="' + node.id + '">' + displayName + '</span>');
+      }
+
+      // 收集子节点（母亲和父亲），过滤掉空的
+      const children = [];
+      if (node.mother) children.push(node.mother);
+      if (node.father) children.push(node.father);
+
+      // 递归绘制子节点
+      const newPrefix = prefix + (isLast ? '    ' : '│   ');
+      children.forEach((child, index) => {
+        const isLastChild = index === children.length - 1;
+        drawNode(child, newPrefix, isLastChild);
+      });
     }
-    if (node._cycle) {
-      return `
-        <div class="tree-node">
-          <div class="node-card" style="border-color:#d4a373;background:#faf0e8;">
-            <div class="node-name">🔄 ${node.name}</div>
-            <div class="node-gender">循环引用</div>
-          </div>
-        </div>
-      `;
-    }
 
-    const hasMother = node.mother !== null && node.mother !== undefined;
-    const hasFather = node.father !== null && node.father !== undefined;
-    const hasChildren = hasMother || hasFather;
+    drawNode(tree);
 
-    let genderDisplay = node.gender || '未知';
-    let genderIcon = genderDisplay === '雌性' ? '♀' : (genderDisplay === '雄性' ? '♂' : '');
+    // 包装为HTML
+    let html = '<div class="tree-container">';
+    lines.forEach(line => {
+      html += `<div class="tree-line">${line}</div>`;
+    });
+    html += '</div>';
 
-    let cardClass = 'node-card';
-    if (depth === 0) cardClass += ' tree-root-card';
-
-    let html = `
-      <div class="tree-node">
-        <div class="${cardClass}" data-id="${node.id}" data-wild="false">
-          <div class="node-name">${node.name}</div>
-          <div class="node-gender">${genderIcon} ${genderDisplay}</div>
-        </div>
+    html += `
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid #f0ede8;font-size:0.7rem;color:#8a9a86;display:flex;flex-wrap:wrap;gap:10px;">
+        <span>🌿 野外（终止节点）</span>
+        <span>点击熊猫名字跳转详情</span>
+      </div>
     `;
 
-    if (hasChildren) {
-      html += `
-        <div class="tree-connector">
-          <div class="line-down"></div>
-          <div class="line-branch">
-            <div class="branch-left"></div>
-            <div class="branch-center"></div>
-            <div class="branch-right"></div>
-          </div>
-        </div>
-        <div class="tree-children">
-      `;
-      if (hasMother) {
-        html += `<div class="tree-child-wrapper">${renderTreeNode(node.mother, depth + 1)}</div>`;
-      }
-      if (hasFather) {
-        html += `<div class="tree-child-wrapper">${renderTreeNode(node.father, depth + 1)}</div>`;
-      }
-      html += `</div>`;
-    }
-
-    html += `</div>`;
     return html;
   }
 
@@ -1101,32 +1014,14 @@
     if (!p) return;
     treeTitle.textContent = '🌳 ' + p.name + ' 的族谱';
 
-    const tree = buildFamilyTree(p);
-    if (!tree) {
-      treeBody.innerHTML = '<div class="empty-state">无法构建族谱</div>';
-      showPage('pageTree');
-      return;
-    }
-
-    let html = `<div class="tree-container"><div class="tree-root">`;
-    html += renderTreeNode(tree);
-    html += `</div></div>`;
-
-    html += `
-      <div style="margin-top:12px;padding-top:10px;border-top:1px solid #f0ede8;font-size:0.7rem;color:#8a9a86;display:flex;flex-wrap:wrap;gap:10px;">
-        <span>🌿 野外（终止节点）</span>
-        <span>🔄 循环引用</span>
-        <span style="display:inline-flex;align-items:center;gap:4px;"><span style="display:inline-block;width:14px;height:14px;border-radius:4px;background:#e8e0d4;border:2px solid #b9ae9a;"></span> 当前熊猫</span>
-        <span>⬇️ 长辈在上</span>
-      </div>
-    `;
-
+    const html = renderTree(p);
     treeBody.innerHTML = html;
 
-    treeBody.querySelectorAll('.node-card:not(.wild-card)').forEach(el => {
+    // 绑定点击事件
+    treeBody.querySelectorAll('.panda-name-link').forEach(el => {
       el.addEventListener('click', function() {
         const id = this.dataset.id;
-        if (id && !id.startsWith('wild_')) {
+        if (id) {
           const target = getPandaById(id);
           if (target) {
             openDetail(target.id);
@@ -1196,7 +1091,6 @@
     }
     infoHtml += `</div>`;
 
-    // 父母
     let parentsHtml = '';
     if (rel.parents.length > 0) {
       parentsHtml = `
@@ -1240,7 +1134,6 @@
       relHtml = '<div class="empty-state" style="margin:4px 0 12px;">暂无血缘关联数据</div>';
     }
 
-    // 按钮：返回靠左，删除/族谱/编辑靠右
     const actionsHtml = `
       <div class="detail-actions">
         <button class="btn btn-outline btn-left" id="detailExitBtn"><i class="fas fa-arrow-left"></i> 返回</button>
@@ -1503,9 +1396,6 @@
     }
   }
 
-  // ================================================================
-  // 新增
-  // ================================================================
   function addNewPanda() {
     const tempPanda = { id: 'temp_new', name: '', gender: '雌性', birthday: '', org: '', location: '', mother: '', father: '', passingDate: '', pedigree: '' };
     editPandaId = 'temp_new';
@@ -1515,9 +1405,6 @@
     window.scrollTo(0, 0);
   }
 
-  // ================================================================
-  // 导入导出
-  // ================================================================
   function exportData() {
     const blob = new Blob([JSON.stringify(pandas, null, 2)], { type:'application/json' });
     const a = document.createElement('a');
@@ -1599,9 +1486,6 @@
     }
   });
 
-  // ================================================================
-  // 初始化
-  // ================================================================
   buildAlphaIndex();
   setGroupMode('org');
 })();
