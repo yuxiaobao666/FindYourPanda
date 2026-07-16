@@ -1824,106 +1824,107 @@
   // 保存编辑（含 name+alias 唯一性检查）
   // ================================================================
   function handleEditSave(p, isNew, orgInput, locInput, motherSelector, fatherSelector) {
-    const name = document.getElementById('editName').value.trim();
-    if (!name) { alert('请填写熊猫名字'); return; }
-    const alias = document.getElementById('editAlias').value.trim();
+  const name = document.getElementById('editName').value.trim();
+  if (!name) { alert('请填写熊猫名字'); return; }
+  const alias = document.getElementById('editAlias').value.trim();
 
-    // 检查 (name + alias) 组合是否已存在（排除自己）
-    const existing = pandas.find(item => {
-      if (isNew && item.id === 'temp_new') return false;
-      if (!isNew && item.id === p.id) return false;
-      const itemAlias = (item.alias || '').trim().toLowerCase();
-      const inputAlias = (alias || '').trim().toLowerCase();
-      return item.name.trim().toLowerCase() === name.toLowerCase() &&
-             itemAlias === inputAlias;
-    });
-    if (existing) {
-      const displayName = name + (alias ? '（' + alias + '）' : '');
-      alert('"' + displayName + '" 已存在，请使用不同的名字或别名');
-      return;
-    }
-
-    const gender = document.getElementById('editGender').value;
-    const birthday = document.getElementById('editBirthday').value.trim();
-    const pedigree = document.getElementById('editPedigree').value.trim();
-    const org = orgInput ? orgInput.value.trim() : '';
-    const location = locInput ? locInput.value.trim() : '';
-    const passingInput = document.getElementById('editPassing');
-    const passingDate = passingInput ? passingInput.value : '';
-
-    const motherSelected = motherSelector.getSelected();
-    const fatherSelected = fatherSelector.getSelected();
-    const motherInputValue = motherSelector.getInputValue();
-    const fatherInputValue = fatherSelector.getInputValue();
-
-    if (motherInputValue && !motherSelected.id) {
-      alert('母亲 "' + motherInputValue + '" 未匹配到任何熊猫，请先录入该熊猫或清空此字段');
-      return;
-    }
-    if (fatherInputValue && !fatherSelected.id) {
-      alert('父亲 "' + fatherInputValue + '" 未匹配到任何熊猫，请先录入该熊猫或清空此字段');
-      return;
-    }
-
-    if (motherSelected.id === p.id) {
-      alert('不能选择自己作为母亲');
-      return;
-    }
-    if (fatherSelected.id === p.id) {
-      alert('不能选择自己作为父亲');
-      return;
-    }
-
-    const motherId = motherSelected.id || '';
-    const fatherId = fatherSelected.id || '';
-    const motherName = motherSelected.id ? (getPandaById(motherSelected.id)?.name || '') : (motherInputValue || '');
-    const fatherName = fatherSelected.id ? (getPandaById(fatherSelected.id)?.name || '') : (fatherInputValue || '');
-
-    if (isNew) {
-      const newPanda = {
-        id: 'p' + (nextId++),
-        name,
-        alias,
-        gender,
-        birthday,
-        org,
-        location,
-        mother: motherName,
-        father: fatherName,
-        motherId: motherId,
-        fatherId: fatherId,
-        pedigree,
-        passingDate: passingDate || ''
-      };
-      pandas.push(newPanda);
-      saveData();
-      alert('新增 "' + name + (alias ? '（' + alias + '）' : '') + '" 成功');
-      detailHistory = [];
-      showPage('pageHome');
-      renderBrowse();
-      doSearch();
-    } else {
-      p.name = name;
-      p.alias = alias;
-      p.gender = gender;
-      p.birthday = birthday;
-      p.pedigree = pedigree;
-      p.org = org;
-      p.location = location;
-      p.mother = motherName;
-      p.father = fatherName;
-      p.motherId = motherId;
-      p.fatherId = fatherId;
-      if (passingDate !== undefined) p.passingDate = passingDate;
-      saveData();
-      alert('已更新 "' + name + (alias ? '（' + alias + '）' : '') + '" 的信息');
-      renderDetail(p);
-      showPage('pageDetail');
-      renderBrowse();
-      doSearch();
-    }
+  // 检查 (name + alias) 组合是否已存在（排除自己）
+  const existing = pandas.find(item => {
+    if (isNew && item.id === 'temp_new') return false;
+    if (!isNew && item.id === p.id) return false;
+    const itemAlias = (item.alias || '').trim().toLowerCase();
+    const inputAlias = (alias || '').trim().toLowerCase();
+    return item.name.trim().toLowerCase() === name.toLowerCase() &&
+           itemAlias === inputAlias;
+  });
+  if (existing) {
+    const displayName = name + (alias ? '（' + alias + '）' : '');
+    alert('"' + displayName + '" 已存在，请使用不同的名字或别名');
+    return;
   }
 
+  const gender = document.getElementById('editGender').value;
+  const birthday = document.getElementById('editBirthday').value.trim();
+  const pedigree = document.getElementById('editPedigree').value.trim();
+  const org = orgInput ? orgInput.value.trim() : '';
+  const location = locInput ? locInput.value.trim() : '';
+  const passingInput = document.getElementById('editPassing');
+  const passingDate = passingInput ? passingInput.value : '';
+
+  const motherSelected = motherSelector.getSelected();
+  const fatherSelected = fatherSelector.getSelected();
+  const motherInputValue = motherSelector.getInputValue();
+  const fatherInputValue = fatherSelector.getInputValue();
+
+  // 修复：如果输入的是"野外"，跳过匹配检查
+  if (motherInputValue && motherInputValue !== '野外' && !motherSelected.id) {
+    alert('母亲 "' + motherInputValue + '" 未匹配到任何熊猫，请先录入该熊猫或清空此字段');
+    return;
+  }
+  if (fatherInputValue && fatherInputValue !== '野外' && !fatherSelected.id) {
+    alert('父亲 "' + fatherInputValue + '" 未匹配到任何熊猫，请先录入该熊猫或清空此字段');
+    return;
+  }
+
+  if (motherSelected.id === p.id) {
+    alert('不能选择自己作为母亲');
+    return;
+  }
+  if (fatherSelected.id === p.id) {
+    alert('不能选择自己作为父亲');
+    return;
+  }
+
+  const motherId = motherSelected.id || '';
+  const fatherId = fatherSelected.id || '';
+  // 如果输入的是"野外"，直接使用"野外"作为名字
+  const motherName = motherInputValue === '野外' ? '野外' : (motherSelected.id ? (getPandaById(motherSelected.id)?.name || '') : (motherInputValue || ''));
+  const fatherName = fatherInputValue === '野外' ? '野外' : (fatherSelected.id ? (getPandaById(fatherSelected.id)?.name || '') : (fatherInputValue || ''));
+
+  if (isNew) {
+    const newPanda = {
+      id: 'p' + (nextId++),
+      name,
+      alias,
+      gender,
+      birthday,
+      org,
+      location,
+      mother: motherName,
+      father: fatherName,
+      motherId: motherId,
+      fatherId: fatherId,
+      pedigree,
+      passingDate: passingDate || ''
+    };
+    pandas.push(newPanda);
+    saveData();
+    alert('新增 "' + name + (alias ? '（' + alias + '）' : '') + '" 成功');
+    detailHistory = [];
+    showPage('pageHome');
+    renderBrowse();
+    doSearch();
+  } else {
+    p.name = name;
+    p.alias = alias;
+    p.gender = gender;
+    p.birthday = birthday;
+    p.pedigree = pedigree;
+    p.org = org;
+    p.location = location;
+    p.mother = motherName;
+    p.father = fatherName;
+    p.motherId = motherId;
+    p.fatherId = fatherId;
+    if (passingDate !== undefined) p.passingDate = passingDate;
+    saveData();
+    alert('已更新 "' + name + (alias ? '（' + alias + '）' : '') + '" 的信息');
+    renderDetail(p);
+    showPage('pageDetail');
+    renderBrowse();
+    doSearch();
+  }
+}
   // ================================================================
   // 新增熊猫
   // ================================================================
