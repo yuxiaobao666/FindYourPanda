@@ -7,7 +7,6 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐼</text></svg>" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
-    /* ===== 全部样式（已包含 .panda-selector） ===== */
     * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
     body { background: #f3efe8; padding: 16px; min-height: 100vh; display: flex; justify-content: center; }
     #app {
@@ -29,10 +28,13 @@
       padding: 10px 22px; border-radius: 40px 40px 0 0; font-weight: 600; color: #4b5f48;
       background: #f0ece5; cursor: pointer; transition: 0.1s; border: 1px solid transparent;
       font-size: 0.95rem; display: flex; align-items: center; gap: 8px;
+      user-select: none;
     }
     .nav-tab i { font-size: 1rem; }
     .nav-tab.active { background: #3a5a3a; color: white; border-color: #2d4a2d; }
     .nav-tab:hover:not(.active) { background: #e3dbcf; }
+    .nav-tab.home-tab { cursor: pointer; }
+
     .storage-status {
       font-size: 0.75rem; color: #2d6b4c; background: #f0ede8;
       padding: 6px 14px; border-radius: 40px; display: inline-flex; align-items: center;
@@ -61,6 +63,7 @@
     .btn-danger:hover { background: #8f2e2e; }
     .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
     .btn-group .btn.active-mode { background: #3a5a3a; color: white; border-color: #2d4a2d; }
+    .btn-group .btn.filter-active { background: #5a7a5a; color: white; border-color: #4a6a4a; }
 
     .search-box {
       display: flex; background: #f0ede8; border-radius: 60px; padding: 4px 4px 4px 20px;
@@ -134,12 +137,24 @@
       background: #f3efe9; padding: 2px 14px; border-radius: 40px;
     }
     .panda-list { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+
+    /* 列表项：名字 + 状态标记 + 性别标签 */
     .panda-link {
       cursor: pointer; color: #1f3a1f; background: #f3efe9; padding: 5px 16px;
       border-radius: 40px; font-weight: 500; border: 1px solid #dbd2c4;
-      transition: 0.1s; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 6px;
+      transition: 0.1s; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 4px;
     }
     .panda-link:hover { background: #d9d0c0; border-color: #9b8b77; }
+    .panda-link .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 2px;
+      flex-shrink: 0;
+    }
+    .panda-link .status-dot.complete { background: #2d8a4e; }
+    .panda-link .status-dot.incomplete { background: #d4a030; }
     .panda-link .gender-tag {
       font-size: 0.65rem; font-weight: 600; padding: 0 6px; border-radius: 20px;
       background: #d9d0c0; color: #4a5a48;
@@ -156,8 +171,20 @@
     .result-card {
       background: #faf8f5; border-radius: 24px; padding: 14px 18px;
       border: 1px solid #e3dbcf; cursor: pointer; transition: 0.1s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     .result-card:hover { background: #f0ebe2; border-color: #b9ae9a; }
+    .result-card .status-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .result-card .status-dot.complete { background: #2d8a4e; }
+    .result-card .status-dot.incomplete { background: #d4a030; }
     .result-card .name {
       font-weight: 700; font-size: 1.2rem; color: #1f3a1f;
     }
@@ -255,6 +282,21 @@
       border-radius: 40px;
       font-size: 0.8rem;
     }
+    .detail-info-item .value .status-badge {
+      display: inline-block;
+      padding: 0 12px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .detail-info-item .value .status-badge.complete {
+      background: #d4e8d4;
+      color: #1a5a2a;
+    }
+    .detail-info-item .value .status-badge.incomplete {
+      background: #f5edd4;
+      color: #8a7020;
+    }
 
     .detail-relations { margin: 4px 0 8px; }
     .detail-relation-group {
@@ -333,7 +375,6 @@
       margin-right: auto;
     }
 
-    /* ===== 编辑表单 ===== */
     .edit-form .form-row {
       display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-bottom: 10px;
     }
@@ -351,7 +392,54 @@
       outline: 2px solid #5f825c; border-color: transparent;
     }
 
-    /* ===== 母亲/父亲搜索选择器 ===== */
+    /* 信息完善开关 */
+    .complete-toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0 4px 0;
+      border-top: 1px solid #f0ede8;
+      margin-top: 6px;
+    }
+    .complete-toggle-row .toggle-label {
+      font-weight: 500;
+      color: #2f402d;
+      font-size: 0.9rem;
+    }
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: #d0c8bc;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.2s;
+      flex-shrink: 0;
+    }
+    .toggle-switch.active {
+      background: #2d8a4e;
+    }
+    .toggle-switch .toggle-knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    }
+    .toggle-switch.active .toggle-knob {
+      left: 22px;
+    }
+    .toggle-status-text {
+      font-size: 0.85rem;
+      color: #5a6a56;
+    }
+    .toggle-status-text.complete { color: #2d8a4e; font-weight: 500; }
+    .toggle-status-text.incomplete { color: #d4a030; font-weight: 500; }
+
     .panda-selector {
       position: relative;
       flex: 1;
@@ -475,8 +563,13 @@
     .custom-suggest .suggest-dropdown .suggest-item:last-child { border-bottom: none; }
 
     .edit-actions {
-      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px;
-      padding-top: 16px; border-top: 1px solid #f0ede8; justify-content: flex-end;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #f0ede8;
+      justify-content: flex-end;
     }
 
     /* ===== 族谱 ===== */
@@ -654,13 +747,18 @@
       .detail-header .panda-sub { font-size: 0.8rem; }
       .panda-link .alias-tag { font-size: 0.6rem; }
       .result-card .alias-text { font-size: 0.75rem; }
+      .panda-link .status-dot { width: 6px; height: 6px; }
+      .result-card .status-dot { width: 8px; height: 8px; }
+      .toggle-switch { width: 36px; height: 20px; }
+      .toggle-switch .toggle-knob { width: 16px; height: 16px; }
+      .toggle-switch.active .toggle-knob { left: 18px; }
     }
   </style>
 </head>
 <body>
 <div id="app">
   <div class="nav-tabs">
-    <div class="nav-tab active" data-page="pageHome"><i class="fas fa-list"></i> 🐼熊猫档案🐼</div>
+    <span class="nav-tab active home-tab" id="homeTitle"><i class="fas fa-list"></i> 🐼熊猫档案🐼</span>
     <span class="storage-status" id="storageStatus">💾 0 条数据已保存</span>
   </div>
 
@@ -671,6 +769,8 @@
         <div class="stat-item">🐻 <span class="num" id="maleCount">0</span><span class="label">雄</span></div>
         <div class="stat-item">🐼 <span class="num" id="femaleCount">0</span><span class="label">雌</span></div>
         <div class="stat-item">🏛️ <span class="num" id="orgCount">0</span><span class="label">个机构</span></div>
+        <div class="stat-item">✅ <span class="num" id="completeCount">0</span><span class="label">已完善</span></div>
+        <div class="stat-item">🟡 <span class="num" id="incompleteCount">0</span><span class="label">待补充</span></div>
       </div>
 
       <div class="browse-toolbar" style="margin-bottom:10px;">
@@ -695,7 +795,11 @@
           <span style="font-size:0.85rem; color:#4b5f48;">列示方式：</span>
           <button class="btn btn-sm btn-outline active-mode" id="groupByOrgBtn"><i class="fas fa-building"></i> 机构</button>
           <button class="btn btn-sm btn-outline" id="groupByLocationBtn"><i class="fas fa-map-pin"></i> 所在地</button>
-          <button class="btn btn-sm btn-outline" id="refreshBrowseBtn"><i class="fas fa-sync-alt"></i> 刷新</button>
+          <span style="font-size:0.85rem; color:#4b5f48; margin-left:8px;">筛选：</span>
+          <button class="btn btn-sm btn-outline filter-active" id="filterAllBtn">全部</button>
+          <button class="btn btn-sm btn-outline" id="filterCompleteBtn">✅ 已完善</button>
+          <button class="btn btn-sm btn-outline" id="filterIncompleteBtn">🟡 待补充</button>
+          <button class="btn btn-sm btn-outline" id="refreshBrowseBtn" style="margin-left:4px;"><i class="fas fa-sync-alt"></i> 刷新</button>
         </div>
       </div>
 
@@ -737,6 +841,7 @@
   // ================================================================
   const STORAGE_KEY = 'pandaAppData';
   let currentGroupMode = 'org';
+  let currentFilter = 'all'; // 'all' | 'complete' | 'incomplete'
   let currentPandaId = null;
   let editPandaId = null;
   let detailHistory = [];
@@ -762,17 +867,22 @@
       try {
         const data = JSON.parse(stored);
         if (Array.isArray(data) && data.length > 0) {
-          data.forEach(p => migrateAlias(p));
+          data.forEach(p => {
+            migrateAlias(p);
+            if (p.isComplete === undefined) p.isComplete = false;
+            if (p.motherId === undefined) p.motherId = '';
+            if (p.fatherId === undefined) p.fatherId = '';
+          });
           return data;
         }
       } catch (e) {}
     }
     return [
-      { id: 'p1', name: '花花', gender: '雌性', birthday: '2020-07-04', org: '成都大熊猫繁育研究基地', location: '', mother: '成功', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '' },
-      { id: 'p2', name: '和叶', gender: '雌性', birthday: '2020-07-04', org: '成都大熊猫繁育研究基地', location: '', mother: '成功', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '' },
-      { id: 'p3', name: '萌兰', gender: '雄性', birthday: '2015-07-04', org: '北京动物园', location: '北京', mother: '萌萌', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '' },
-      { id: 'p4', name: '美兰', gender: '雄性', birthday: '2006-09-06', org: '成都大熊猫繁育研究基地', location: '', mother: '伦伦', father: '洋洋', motherId: '', fatherId: '', pedigree: '', alias: '' },
-      { id: 'p5', name: '成功', gender: '雌性', birthday: '2000-08-01', org: '成都大熊猫繁育研究基地', location: '潘达星', mother: '成成', father: '安安', motherId: '', fatherId: '', pedigree: '', alias: '' },
+      { id: 'p1', name: '花花', gender: '雌性', birthday: '2020-07-04', org: '成都大熊猫繁育研究基地', location: '', mother: '成功', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false },
+      { id: 'p2', name: '和叶', gender: '雌性', birthday: '2020-07-04', org: '成都大熊猫繁育研究基地', location: '', mother: '成功', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false },
+      { id: 'p3', name: '萌兰', gender: '雄性', birthday: '2015-07-04', org: '北京动物园', location: '北京', mother: '萌萌', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false },
+      { id: 'p4', name: '美兰', gender: '雄性', birthday: '2006-09-06', org: '成都大熊猫繁育研究基地', location: '', mother: '伦伦', father: '洋洋', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false },
+      { id: 'p5', name: '成功', gender: '雌性', birthday: '2000-08-01', org: '成都大熊猫繁育研究基地', location: '潘达星', mother: '成成', father: '安安', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false },
     ];
   }
 
@@ -797,6 +907,7 @@
   const pageDetail = document.getElementById('pageDetail');
   const pageEdit = document.getElementById('pageEdit');
   const pageTree = document.getElementById('pageTree');
+  const homeTitle = document.getElementById('homeTitle');
 
   const searchInput = document.getElementById('searchInput');
   const searchBtn = document.getElementById('searchBtn');
@@ -808,6 +919,9 @@
   const addNewBtn = document.getElementById('addNewBtn');
   const groupByOrgBtn = document.getElementById('groupByOrgBtn');
   const groupByLocationBtn = document.getElementById('groupByLocationBtn');
+  const filterAllBtn = document.getElementById('filterAllBtn');
+  const filterCompleteBtn = document.getElementById('filterCompleteBtn');
+  const filterIncompleteBtn = document.getElementById('filterIncompleteBtn');
   const alphaIndex = document.getElementById('alphaIndex');
 
   const detailTitle = document.getElementById('detailTitle');
@@ -823,6 +937,8 @@
   const maleCount = document.getElementById('maleCount');
   const femaleCount = document.getElementById('femaleCount');
   const orgCount = document.getElementById('orgCount');
+  const completeCount = document.getElementById('completeCount');
+  const incompleteCount = document.getElementById('incompleteCount');
 
   // ================================================================
   // 核心函数
@@ -981,10 +1097,18 @@
   }
 
   function updateStats() {
-    totalCount.textContent = pandas.length;
-    maleCount.textContent = pandas.filter(p => p.gender === '雄性').length;
-    femaleCount.textContent = pandas.filter(p => p.gender === '雌性').length;
-    orgCount.textContent = new Set(pandas.map(p => p.org || '未归类')).size;
+    const total = pandas.length;
+    const male = pandas.filter(p => p.gender === '雄性').length;
+    const female = pandas.filter(p => p.gender === '雌性').length;
+    const orgs = new Set(pandas.map(p => p.org || '未归类'));
+    const complete = pandas.filter(p => p.isComplete === true).length;
+    const incomplete = total - complete;
+    totalCount.textContent = total;
+    maleCount.textContent = male;
+    femaleCount.textContent = female;
+    orgCount.textContent = orgs.size;
+    completeCount.textContent = complete;
+    incompleteCount.textContent = incomplete;
   }
 
   function showPage(pageId) {
@@ -1071,7 +1195,16 @@
   function renderBrowse() {
     const pandastarList = [];
     const normalMap = new Map();
-    pandas.forEach(p => {
+
+    // 先根据筛选条件过滤熊猫
+    let filteredPandas = pandas;
+    if (currentFilter === 'complete') {
+      filteredPandas = pandas.filter(p => p.isComplete === true);
+    } else if (currentFilter === 'incomplete') {
+      filteredPandas = pandas.filter(p => p.isComplete !== true);
+    }
+
+    filteredPandas.forEach(p => {
       if (p.location && p.location.trim() === '潘达星') {
         pandastarList.push(p);
       } else {
@@ -1094,7 +1227,12 @@
         const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
         const tag = p.gender ? (p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')) : '';
         const displayName = getDisplayName(p);
-        html += `<span class="panda-link" data-id="${p.id}">${displayName}${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}</span>`;
+        const dotClass = p.isComplete ? 'complete' : 'incomplete';
+        html += `<span class="panda-link" data-id="${p.id}">
+          <span class="status-dot ${dotClass}"></span>
+          ${displayName}
+          ${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}
+        </span>`;
       });
       html += '</div></div>';
     }
@@ -1115,12 +1253,22 @@
         const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
         const tag = p.gender ? (p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')) : '';
         const displayName = getDisplayName(p);
-        html += `<span class="panda-link pandastar" data-id="${p.id}">${displayName}${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}</span>`;
+        const dotClass = p.isComplete ? 'complete' : 'incomplete';
+        html += `<span class="panda-link pandastar" data-id="${p.id}">
+          <span class="status-dot ${dotClass}"></span>
+          ${displayName}
+          ${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}
+        </span>`;
       });
       html += '</div></div>';
     }
 
-    browseContainer.innerHTML = html || '<div class="empty-state">暂无熊猫数据</div>';
+    if (!html) {
+      const msg = currentFilter === 'complete' ? '没有已完善的熊猫' :
+                  currentFilter === 'incomplete' ? '没有待补充的熊猫' : '暂无熊猫数据';
+      html = '<div class="empty-state">' + msg + '</div>';
+    }
+    browseContainer.innerHTML = html;
     document.querySelectorAll('.panda-link[data-id]').forEach(el => {
       el.addEventListener('click', function() {
         const p = getPandaById(this.dataset.id);
@@ -1135,6 +1283,16 @@
     currentGroupMode = mode;
     groupByOrgBtn.classList.toggle('active-mode', mode === 'org');
     groupByLocationBtn.classList.toggle('active-mode', mode === 'location');
+    if (searchInput.value.trim()) searchInput.value = '';
+    renderBrowse();
+  }
+
+  function setFilter(filter) {
+    currentFilter = filter;
+    filterAllBtn.classList.toggle('filter-active', filter === 'all');
+    filterCompleteBtn.classList.toggle('filter-active', filter === 'complete');
+    filterIncompleteBtn.classList.toggle('filter-active', filter === 'incomplete');
+    // 如果搜索框有内容，清空搜索
     if (searchInput.value.trim()) searchInput.value = '';
     renderBrowse();
   }
@@ -1154,8 +1312,9 @@
     let html = '';
     results.forEach(p => {
       const displayName = getDisplayName(p);
+      const dotClass = p.isComplete ? 'complete' : 'incomplete';
       html += `<div class="suggestion-item" data-id="${p.id}">
-        <span class="s-name">${displayName}</span>
+        <span class="s-name"><span class="status-dot ${dotClass}" style="display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;"></span>${displayName}</span>
         <span class="s-sub">${p.org||'—'} · ${p.location||'—'}</span>
       </div>`;
     });
@@ -1187,9 +1346,13 @@
     results.forEach(p => {
       const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
       const displayName = getDisplayName(p);
+      const dotClass = p.isComplete ? 'complete' : 'incomplete';
       html += `<div class="result-card" data-id="${p.id}">
-        <div class="name">${displayName} <span class="gender-badge ${cls}">${p.gender||'未知'}</span></div>
-        <div class="sub">${p.org||'—'} · ${p.location||'—'}</div>
+        <span class="status-dot ${dotClass}"></span>
+        <div>
+          <div class="name">${displayName} <span class="gender-badge ${cls}">${p.gender||'未知'}</span></div>
+          <div class="sub">${p.org||'—'} · ${p.location||'—'}</div>
+        </div>
       </div>`;
     });
     html += '</div>';
@@ -1396,6 +1559,8 @@
     const genderDisplay = p.gender || '未知';
     const genderIcon = genderDisplay === '雌性' ? '♀' : (genderDisplay === '雄性' ? '♂' : '');
     const aliasDisplay = p.alias ? '（' + p.alias + '）' : '';
+    const statusClass = p.isComplete ? 'complete' : 'incomplete';
+    const statusLabel = p.isComplete ? '✅ 已完善' : '🟡 待补充';
 
     let headerHtml = `
       <div class="detail-header">
@@ -1424,7 +1589,10 @@
     if (p.alias) {
       infoHtml += `<div class="detail-info-item"><span class="label">别名</span><span class="value">${p.alias}</span></div>`;
     }
-    infoHtml += `</div>`;
+    infoHtml += `
+        <div class="detail-info-item"><span class="label">状态</span><span class="value"><span class="status-badge ${statusClass}">${statusLabel}</span></span></div>
+      </div>
+    `;
 
     let parentsHtml = '';
     if (rel.parents.length > 0) {
@@ -1711,6 +1879,7 @@
     const passingVal = p.passingDate || '';
     const pedigreeVal = p.pedigree || '';
     const showPassing = !isNew && (p.location && p.location.trim() === '潘达星');
+    const isComplete = p.isComplete || false;
 
     let motherDisplay = '';
     let motherId = p.motherId || '';
@@ -1784,6 +1953,15 @@
           <label>父亲</label>
           <div id="editFatherContainer" style="flex:1;min-width:100px;"></div>
         </div>
+        <div class="complete-toggle-row">
+          <span class="toggle-label">信息已完善</span>
+          <div class="toggle-switch ${isComplete ? 'active' : ''}" id="completeToggle">
+            <div class="toggle-knob"></div>
+          </div>
+          <span class="toggle-status-text ${isComplete ? 'complete' : 'incomplete'}" id="completeStatusText">
+            ${isComplete ? '✅ 已完善' : '🟡 待补充'}
+          </span>
+        </div>
       </div>
       <div class="edit-actions">
         <button class="btn btn-outline" id="editCancelBtn"><i class="fas fa-times"></i> 取消</button>
@@ -1798,6 +1976,23 @@
 
     const motherSelector = createPandaSelector('editMotherContainer', 'editMother', motherDisplay, motherId, '输入搜索母亲...');
     const fatherSelector = createPandaSelector('editFatherContainer', 'editFather', fatherDisplay, fatherId, '输入搜索父亲...');
+
+    // 切换开关
+    const toggle = document.getElementById('completeToggle');
+    const statusText = document.getElementById('completeStatusText');
+    let currentComplete = isComplete;
+
+    toggle.addEventListener('click', function() {
+      currentComplete = !currentComplete;
+      this.classList.toggle('active', currentComplete);
+      if (currentComplete) {
+        statusText.textContent = '✅ 已完善';
+        statusText.className = 'toggle-status-text complete';
+      } else {
+        statusText.textContent = '🟡 待补充';
+        statusText.className = 'toggle-status-text incomplete';
+      }
+    });
 
     const passingRow = document.getElementById('editPassingRow');
     locInput.addEventListener('input', function() {
@@ -1816,120 +2011,122 @@
     });
 
     document.getElementById('editSaveBtn').addEventListener('click', function() {
-      handleEditSave(p, isNew, orgInput, locInput, motherSelector, fatherSelector);
+      handleEditSave(p, isNew, orgInput, locInput, motherSelector, fatherSelector, currentComplete);
     });
   }
 
   // ================================================================
-  // 保存编辑（含 name+alias 唯一性检查）
+  // 保存编辑（含 name+alias 唯一性检查 + 野外支持）
   // ================================================================
-  function handleEditSave(p, isNew, orgInput, locInput, motherSelector, fatherSelector) {
-  const name = document.getElementById('editName').value.trim();
-  if (!name) { alert('请填写熊猫名字'); return; }
-  const alias = document.getElementById('editAlias').value.trim();
+  function handleEditSave(p, isNew, orgInput, locInput, motherSelector, fatherSelector, isComplete) {
+    const name = document.getElementById('editName').value.trim();
+    if (!name) { alert('请填写熊猫名字'); return; }
+    const alias = document.getElementById('editAlias').value.trim();
 
-  // 检查 (name + alias) 组合是否已存在（排除自己）
-  const existing = pandas.find(item => {
-    if (isNew && item.id === 'temp_new') return false;
-    if (!isNew && item.id === p.id) return false;
-    const itemAlias = (item.alias || '').trim().toLowerCase();
-    const inputAlias = (alias || '').trim().toLowerCase();
-    return item.name.trim().toLowerCase() === name.toLowerCase() &&
-           itemAlias === inputAlias;
-  });
-  if (existing) {
-    const displayName = name + (alias ? '（' + alias + '）' : '');
-    alert('"' + displayName + '" 已存在，请使用不同的名字或别名');
-    return;
+    // 检查 (name + alias) 组合是否已存在（排除自己）
+    const existing = pandas.find(item => {
+      if (isNew && item.id === 'temp_new') return false;
+      if (!isNew && item.id === p.id) return false;
+      const itemAlias = (item.alias || '').trim().toLowerCase();
+      const inputAlias = (alias || '').trim().toLowerCase();
+      return item.name.trim().toLowerCase() === name.toLowerCase() &&
+             itemAlias === inputAlias;
+    });
+    if (existing) {
+      const displayName = name + (alias ? '（' + alias + '）' : '');
+      alert('"' + displayName + '" 已存在，请使用不同的名字或别名');
+      return;
+    }
+
+    const gender = document.getElementById('editGender').value;
+    const birthday = document.getElementById('editBirthday').value.trim();
+    const pedigree = document.getElementById('editPedigree').value.trim();
+    const org = orgInput ? orgInput.value.trim() : '';
+    const location = locInput ? locInput.value.trim() : '';
+    const passingInput = document.getElementById('editPassing');
+    const passingDate = passingInput ? passingInput.value : '';
+
+    const motherSelected = motherSelector.getSelected();
+    const fatherSelected = fatherSelector.getSelected();
+    const motherInputValue = motherSelector.getInputValue();
+    const fatherInputValue = fatherSelector.getInputValue();
+
+    // 如果输入的是"野外"，跳过匹配检查
+    if (motherInputValue && motherInputValue !== '野外' && !motherSelected.id) {
+      alert('母亲 "' + motherInputValue + '" 未匹配到任何熊猫，请先录入该熊猫或清空此字段');
+      return;
+    }
+    if (fatherInputValue && fatherInputValue !== '野外' && !fatherSelected.id) {
+      alert('父亲 "' + fatherInputValue + '" 未匹配到任何熊猫，请先录入该熊猫或清空此字段');
+      return;
+    }
+
+    if (motherSelected.id === p.id) {
+      alert('不能选择自己作为母亲');
+      return;
+    }
+    if (fatherSelected.id === p.id) {
+      alert('不能选择自己作为父亲');
+      return;
+    }
+
+    const motherId = motherSelected.id || '';
+    const fatherId = fatherSelected.id || '';
+    const motherName = motherInputValue === '野外' ? '野外' : (motherSelected.id ? (getPandaById(motherSelected.id)?.name || '') : (motherInputValue || ''));
+    const fatherName = fatherInputValue === '野外' ? '野外' : (fatherSelected.id ? (getPandaById(fatherSelected.id)?.name || '') : (fatherInputValue || ''));
+
+    if (isNew) {
+      const newPanda = {
+        id: 'p' + (nextId++),
+        name,
+        alias,
+        gender,
+        birthday,
+        org,
+        location,
+        mother: motherName,
+        father: fatherName,
+        motherId: motherId,
+        fatherId: fatherId,
+        pedigree,
+        passingDate: passingDate || '',
+        isComplete: isComplete || false
+      };
+      pandas.push(newPanda);
+      saveData();
+      alert('新增 "' + name + (alias ? '（' + alias + '）' : '') + '" 成功');
+      detailHistory = [];
+      showPage('pageHome');
+      renderBrowse();
+      doSearch();
+    } else {
+      p.name = name;
+      p.alias = alias;
+      p.gender = gender;
+      p.birthday = birthday;
+      p.pedigree = pedigree;
+      p.org = org;
+      p.location = location;
+      p.mother = motherName;
+      p.father = fatherName;
+      p.motherId = motherId;
+      p.fatherId = fatherId;
+      p.isComplete = isComplete || false;
+      if (passingDate !== undefined) p.passingDate = passingDate;
+      saveData();
+      alert('已更新 "' + name + (alias ? '（' + alias + '）' : '') + '" 的信息');
+      renderDetail(p);
+      showPage('pageDetail');
+      renderBrowse();
+      doSearch();
+    }
   }
 
-  const gender = document.getElementById('editGender').value;
-  const birthday = document.getElementById('editBirthday').value.trim();
-  const pedigree = document.getElementById('editPedigree').value.trim();
-  const org = orgInput ? orgInput.value.trim() : '';
-  const location = locInput ? locInput.value.trim() : '';
-  const passingInput = document.getElementById('editPassing');
-  const passingDate = passingInput ? passingInput.value : '';
-
-  const motherSelected = motherSelector.getSelected();
-  const fatherSelected = fatherSelector.getSelected();
-  const motherInputValue = motherSelector.getInputValue();
-  const fatherInputValue = fatherSelector.getInputValue();
-
-  // 修复：如果输入的是"野外"，跳过匹配检查
-  if (motherInputValue && motherInputValue !== '野外' && !motherSelected.id) {
-    alert('母亲 "' + motherInputValue + '" 未匹配到任何熊猫，请先录入该熊猫或清空此字段');
-    return;
-  }
-  if (fatherInputValue && fatherInputValue !== '野外' && !fatherSelected.id) {
-    alert('父亲 "' + fatherInputValue + '" 未匹配到任何熊猫，请先录入该熊猫或清空此字段');
-    return;
-  }
-
-  if (motherSelected.id === p.id) {
-    alert('不能选择自己作为母亲');
-    return;
-  }
-  if (fatherSelected.id === p.id) {
-    alert('不能选择自己作为父亲');
-    return;
-  }
-
-  const motherId = motherSelected.id || '';
-  const fatherId = fatherSelected.id || '';
-  // 如果输入的是"野外"，直接使用"野外"作为名字
-  const motherName = motherInputValue === '野外' ? '野外' : (motherSelected.id ? (getPandaById(motherSelected.id)?.name || '') : (motherInputValue || ''));
-  const fatherName = fatherInputValue === '野外' ? '野外' : (fatherSelected.id ? (getPandaById(fatherSelected.id)?.name || '') : (fatherInputValue || ''));
-
-  if (isNew) {
-    const newPanda = {
-      id: 'p' + (nextId++),
-      name,
-      alias,
-      gender,
-      birthday,
-      org,
-      location,
-      mother: motherName,
-      father: fatherName,
-      motherId: motherId,
-      fatherId: fatherId,
-      pedigree,
-      passingDate: passingDate || ''
-    };
-    pandas.push(newPanda);
-    saveData();
-    alert('新增 "' + name + (alias ? '（' + alias + '）' : '') + '" 成功');
-    detailHistory = [];
-    showPage('pageHome');
-    renderBrowse();
-    doSearch();
-  } else {
-    p.name = name;
-    p.alias = alias;
-    p.gender = gender;
-    p.birthday = birthday;
-    p.pedigree = pedigree;
-    p.org = org;
-    p.location = location;
-    p.mother = motherName;
-    p.father = fatherName;
-    p.motherId = motherId;
-    p.fatherId = fatherId;
-    if (passingDate !== undefined) p.passingDate = passingDate;
-    saveData();
-    alert('已更新 "' + name + (alias ? '（' + alias + '）' : '') + '" 的信息');
-    renderDetail(p);
-    showPage('pageDetail');
-    renderBrowse();
-    doSearch();
-  }
-}
   // ================================================================
   // 新增熊猫
   // ================================================================
   function addNewPanda() {
-    const tempPanda = { id: 'temp_new', name: '', alias: '', gender: '雌性', birthday: '', org: '', location: '', mother: '', father: '', motherId: '', fatherId: '', passingDate: '', pedigree: '' };
+    const tempPanda = { id: 'temp_new', name: '', alias: '', gender: '雌性', birthday: '', org: '', location: '', mother: '', father: '', motherId: '', fatherId: '', passingDate: '', pedigree: '', isComplete: false };
     editPandaId = 'temp_new';
     editTitle.textContent = '📝 录入新熊猫';
     renderEditForm(tempPanda, true);
@@ -1958,8 +2155,9 @@
           alert('数据格式无效，请检查JSON文件');
           return;
         }
-        imported.forEach(p => migrateAlias(p));
         imported.forEach(p => {
+          migrateAlias(p);
+          if (p.isComplete === undefined) p.isComplete = false;
           if (p.motherId === undefined) p.motherId = '';
           if (p.fatherId === undefined) p.fatherId = '';
         });
@@ -1996,6 +2194,13 @@
   // ================================================================
   // 事件绑定
   // ================================================================
+  // 顶部标题回首页
+  homeTitle.addEventListener('click', function() {
+    detailHistory = [];
+    showPage('pageHome');
+    renderBrowse();
+  });
+
   searchBtn.addEventListener('click', doSearch);
   searchInput.addEventListener('keyup', function(e) {
     if (e.key === 'Enter') { doSearch(); return; }
@@ -2013,6 +2218,10 @@
 
   groupByOrgBtn.addEventListener('click', function() { setGroupMode('org'); });
   groupByLocationBtn.addEventListener('click', function() { setGroupMode('location'); });
+
+  filterAllBtn.addEventListener('click', function() { setFilter('all'); });
+  filterCompleteBtn.addEventListener('click', function() { setFilter('complete'); });
+  filterIncompleteBtn.addEventListener('click', function() { setFilter('incomplete'); });
 
   editBackBtn.addEventListener('click', function() {
     if (editPandaId === 'temp_new') {
