@@ -64,6 +64,7 @@
     .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
     .btn-group .btn.active-mode { background: #3a5a3a; color: white; border-color: #2d4a2d; }
     .btn-group .btn.filter-active { background: #5a7a5a; color: white; border-color: #4a6a4a; }
+    .btn-group .btn.filter-active:hover { background: #4a6a4a; }
 
     .search-box {
       display: flex; background: #f0ede8; border-radius: 60px; padding: 4px 4px 4px 20px;
@@ -107,18 +108,45 @@
     .stats-row .stat-item .num { font-weight: 700; font-size: 1.1rem; color: #1f3a1f; }
     .stats-row .stat-item .label { color: #6a7a66; }
 
-    .alpha-index {
-      display: flex; flex-wrap: wrap; gap: 2px; padding: 8px 0 12px 0;
-      border-bottom: 1px solid #f0ede8; margin-bottom: 16px; justify-content: center;
+    .filter-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px 24px;
+      padding: 8px 0 12px 0;
+      border-bottom: 1px solid #f0ede8;
+      margin-bottom: 16px;
     }
-    .alpha-index .alpha-btn {
-      width: 32px; height: 32px; border-radius: 50%; border: none;
-      background: transparent; color: #5a6a56; font-size: 0.75rem;
-      font-weight: 600; cursor: pointer; transition: 0.1s;
-      display: flex; align-items: center; justify-content: center;
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
     }
-    .alpha-index .alpha-btn:hover { background: #e3dbcf; color: #2d462b; }
-    .alpha-index .alpha-btn.active { background: #3a5a3a; color: white; }
+    .filter-group .label {
+      font-size: 0.85rem;
+      color: #5a6a56;
+      font-weight: 500;
+    }
+    .filter-group .btn {
+      font-size: 0.8rem;
+      padding: 4px 14px;
+      border-radius: 40px;
+      background: #f0ede8;
+      border: 1px solid #e0d8cc;
+      color: #5a6a56;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+    .filter-group .btn:hover {
+      background: #e3dbcf;
+    }
+    .filter-group .btn.active {
+      background: #3a5a3a;
+      color: white;
+      border-color: #2d4a2d;
+    }
+    .filter-group .btn i { margin-right: 4px; }
 
     .org-section {
       margin-bottom: 22px; border-bottom: 1px dashed #d6cec0; padding-bottom: 12px;
@@ -138,7 +166,6 @@
     }
     .panda-list { display: flex; flex-wrap: wrap; gap: 6px 12px; }
 
-    /* 列表项：名字 + 状态标记 + 性别标签 */
     .panda-link {
       cursor: pointer; color: #1f3a1f; background: #f3efe9; padding: 5px 16px;
       border-radius: 40px; font-weight: 500; border: 1px solid #dbd2c4;
@@ -298,6 +325,38 @@
       color: #8a7020;
     }
 
+    .life-events-section {
+      background: #f8f5f0;
+      border-radius: 16px;
+      padding: 12px 16px;
+      margin: 8px 0 16px 0;
+    }
+    .life-events-section .section-title {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #2d462b;
+      margin-bottom: 8px;
+    }
+    .life-events-section .event-item {
+      display: flex;
+      align-items: baseline;
+      padding: 3px 0;
+      border-bottom: 1px solid #eeebe5;
+      font-size: 0.9rem;
+    }
+    .life-events-section .event-item:last-child {
+      border-bottom: none;
+    }
+    .life-events-section .event-item .event-date {
+      color: #6a7a66;
+      min-width: 100px;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    .life-events-section .event-item .event-text {
+      color: #1f2a1d;
+    }
+
     .detail-relations { margin: 4px 0 8px; }
     .detail-relation-group {
       background: #f8f5f0;
@@ -375,6 +434,7 @@
       margin-right: auto;
     }
 
+    /* ===== 编辑页样式 ===== */
     .edit-form .form-row {
       display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-bottom: 10px;
     }
@@ -392,14 +452,108 @@
       outline: 2px solid #5f825c; border-color: transparent;
     }
 
-    /* 信息完善开关 */
+    .life-events-edit {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #f0ede8;
+    }
+    .life-events-edit .events-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #2d462b;
+      margin-bottom: 8px;
+    }
+    .life-events-edit .event-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+      border-bottom: 1px solid #f5f0ea;
+      font-size: 0.9rem;
+    }
+    .life-events-edit .event-row .event-date {
+      color: #6a7a66;
+      min-width: 100px;
+      flex-shrink: 0;
+    }
+    .life-events-edit .event-row .event-text {
+      flex: 1;
+      color: #1f2a1d;
+    }
+    .life-events-edit .event-row .del-event-btn {
+      background: none;
+      border: none;
+      color: #c0a8a0;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0 4px;
+      transition: 0.1s;
+    }
+    .life-events-edit .event-row .del-event-btn:hover {
+      color: #b33c3c;
+    }
+    .life-events-edit .add-event-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .life-events-edit .add-event-row input[type="date"] {
+      padding: 6px 12px;
+      border-radius: 40px;
+      border: 1px solid #cdc0ae;
+      background: white;
+      font-size: 0.85rem;
+      outline: none;
+      min-width: 120px;
+    }
+    .life-events-edit .add-event-row input[type="date"]:focus {
+      outline: 2px solid #5f825c;
+      border-color: transparent;
+    }
+    .life-events-edit .add-event-row input[type="text"] {
+      flex: 1;
+      min-width: 120px;
+      padding: 6px 14px;
+      border-radius: 40px;
+      border: 1px solid #cdc0ae;
+      background: white;
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .life-events-edit .add-event-row input[type="text"]:focus {
+      outline: 2px solid #5f825c;
+      border-color: transparent;
+    }
+    .life-events-edit .add-event-row .add-event-btn {
+      padding: 6px 16px;
+      border-radius: 40px;
+      border: none;
+      background: #3a5a3a;
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+    .life-events-edit .add-event-row .add-event-btn:hover {
+      background: #2d4a2d;
+    }
+    .life-events-edit .empty-events-edit {
+      color: #8a9a86;
+      font-style: italic;
+      font-size: 0.85rem;
+      padding: 4px 0;
+    }
+
+    /* ===== 信息完善开关（放在熊生大事之前，有间距） ===== */
     .complete-toggle-row {
       display: flex;
       align-items: center;
       gap: 12px;
       padding: 8px 0 4px 0;
-      border-top: 1px solid #f0ede8;
-      margin-top: 6px;
+      margin-bottom: 4px;
     }
     .complete-toggle-row .toggle-label {
       font-weight: 500;
@@ -440,13 +594,13 @@
     .toggle-status-text.complete { color: #2d8a4e; font-weight: 500; }
     .toggle-status-text.incomplete { color: #d4a030; font-weight: 500; }
 
+    /* ===== 母亲/父亲选择器（无清空按钮） ===== */
     .panda-selector {
       position: relative;
       flex: 1;
       min-width: 100px;
       display: flex;
       align-items: center;
-      gap: 4px;
       background: white;
       border: 1px solid #cdc0ae;
       border-radius: 40px;
@@ -465,21 +619,6 @@
       font-size: 0.9rem;
       outline: none;
       min-width: 60px;
-    }
-    .panda-selector .clear-btn {
-      background: none;
-      border: none;
-      color: #b0a8a0;
-      cursor: pointer;
-      padding: 4px 8px;
-      font-size: 0.9rem;
-      border-radius: 50%;
-      transition: 0.1s;
-      flex-shrink: 0;
-    }
-    .panda-selector .clear-btn:hover {
-      color: #6a5a4a;
-      background: #f0ebe5;
     }
     .panda-selector .selector-dropdown {
       position: absolute;
@@ -718,8 +857,9 @@
       .stats-row { padding: 10px 14px; gap: 8px 14px; }
       .stats-row .stat-item { font-size: 0.8rem; }
       .stats-row .stat-item .num { font-size: 1rem; }
-      .alpha-index .alpha-btn { width: 28px; height: 28px; font-size: 0.7rem; }
-      .page-view .page-header .page-title { font-size: 1.2rem; }
+      .filter-toolbar { gap: 10px; padding: 4px 0 10px 0; }
+      .filter-group .btn { font-size: 0.7rem; padding: 3px 10px; }
+      .filter-group .label { font-size: 0.75rem; }
       .detail-header .panda-name { font-size: 1.6rem; }
       .detail-header .panda-alias { font-size: 0.85rem; }
       .detail-info-item { font-size: 0.85rem; }
@@ -728,7 +868,6 @@
       .edit-form .form-row label { min-width: 48px; font-size: 0.8rem; }
       .panda-selector { padding: 2px 4px 2px 10px; }
       .panda-selector input { font-size: 0.8rem; padding: 4px 2px; }
-      .panda-selector .clear-btn { padding: 2px 6px; font-size: 0.8rem; }
       .panda-selector .selector-dropdown { max-height: 140px; }
       .panda-selector .selector-dropdown .dropdown-item { padding: 6px 12px; font-size: 0.8rem; }
       .custom-suggest .suggest-dropdown { max-height: 120px; }
@@ -749,6 +888,11 @@
       .result-card .alias-text { font-size: 0.75rem; }
       .panda-link .status-dot { width: 6px; height: 6px; }
       .result-card .status-dot { width: 8px; height: 8px; }
+      .life-events-section .event-item .event-date { min-width: 80px; font-size: 0.8rem; }
+      .life-events-edit .event-row .event-date { min-width: 80px; font-size: 0.8rem; }
+      .life-events-edit .add-event-row input[type="date"] { min-width: 100px; font-size: 0.8rem; }
+      .life-events-edit .add-event-row input[type="text"] { font-size: 0.8rem; }
+      .life-events-edit .add-event-row .add-event-btn { font-size: 0.75rem; padding: 4px 12px; }
       .toggle-switch { width: 36px; height: 20px; }
       .toggle-switch .toggle-knob { width: 16px; height: 16px; }
       .toggle-switch.active .toggle-knob { left: 18px; }
@@ -790,20 +934,21 @@
         </div>
       </div>
 
-      <div class="browse-toolbar" style="margin:4px 0 8px;">
-        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-          <span style="font-size:0.85rem; color:#4b5f48;">列示方式：</span>
-          <button class="btn btn-sm btn-outline active-mode" id="groupByOrgBtn"><i class="fas fa-building"></i> 机构</button>
-          <button class="btn btn-sm btn-outline" id="groupByLocationBtn"><i class="fas fa-map-pin"></i> 所在地</button>
-          <span style="font-size:0.85rem; color:#4b5f48; margin-left:8px;">筛选：</span>
-          <button class="btn btn-sm btn-outline filter-active" id="filterAllBtn">全部</button>
-          <button class="btn btn-sm btn-outline" id="filterCompleteBtn">✅ 已完善</button>
-          <button class="btn btn-sm btn-outline" id="filterIncompleteBtn">🟡 待补充</button>
-          <button class="btn btn-sm btn-outline" id="refreshBrowseBtn" style="margin-left:4px;"><i class="fas fa-sync-alt"></i> 刷新</button>
+      <div class="filter-toolbar">
+        <div class="filter-group">
+          <span class="label">🏢 分组：</span>
+          <button class="btn active" id="groupByOrgBtn"><i class="fas fa-building"></i> 机构</button>
+          <button class="btn" id="groupByLocationBtn"><i class="fas fa-map-pin"></i> 所在地</button>
         </div>
+        <div class="filter-group">
+          <span class="label">📋 筛选：</span>
+          <button class="btn active" id="filterAllBtn">全部</button>
+          <button class="btn" id="filterCompleteBtn">✅ 已完善</button>
+          <button class="btn" id="filterIncompleteBtn">🟡 待补充</button>
+        </div>
+        <button class="btn btn-sm btn-outline" id="refreshBrowseBtn" style="margin-left:auto;"><i class="fas fa-sync-alt"></i> 刷新</button>
       </div>
 
-      <div class="alpha-index" id="alphaIndex"></div>
       <div id="browseContainer"></div>
     </div>
 
@@ -841,14 +986,11 @@
   // ================================================================
   const STORAGE_KEY = 'pandaAppData';
   let currentGroupMode = 'org';
-  let currentFilter = 'all'; // 'all' | 'complete' | 'incomplete'
+  let currentFilter = 'all';
   let currentPandaId = null;
   let editPandaId = null;
   let detailHistory = [];
 
-  // ================================================================
-  // 别名自动迁移
-  // ================================================================
   function migrateAlias(panda) {
     if (!panda) return;
     if (panda.alias !== undefined && panda.alias !== null) return;
@@ -872,17 +1014,18 @@
             if (p.isComplete === undefined) p.isComplete = false;
             if (p.motherId === undefined) p.motherId = '';
             if (p.fatherId === undefined) p.fatherId = '';
+            if (p.lifeEvents === undefined) p.lifeEvents = [];
           });
           return data;
         }
       } catch (e) {}
     }
     return [
-      { id: 'p1', name: '花花', gender: '雌性', birthday: '2020-07-04', org: '成都大熊猫繁育研究基地', location: '', mother: '成功', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false },
-      { id: 'p2', name: '和叶', gender: '雌性', birthday: '2020-07-04', org: '成都大熊猫繁育研究基地', location: '', mother: '成功', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false },
-      { id: 'p3', name: '萌兰', gender: '雄性', birthday: '2015-07-04', org: '北京动物园', location: '北京', mother: '萌萌', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false },
-      { id: 'p4', name: '美兰', gender: '雄性', birthday: '2006-09-06', org: '成都大熊猫繁育研究基地', location: '', mother: '伦伦', father: '洋洋', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false },
-      { id: 'p5', name: '成功', gender: '雌性', birthday: '2000-08-01', org: '成都大熊猫繁育研究基地', location: '潘达星', mother: '成成', father: '安安', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false },
+      { id: 'p1', name: '花花', gender: '雌性', birthday: '2020-07-04', org: '成都大熊猫繁育研究基地', location: '', mother: '成功', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [] },
+      { id: 'p2', name: '和叶', gender: '雌性', birthday: '2020-07-04', org: '成都大熊猫繁育研究基地', location: '', mother: '成功', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [] },
+      { id: 'p3', name: '萌兰', gender: '雄性', birthday: '2015-07-04', org: '北京动物园', location: '北京', mother: '萌萌', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [] },
+      { id: 'p4', name: '美兰', gender: '雄性', birthday: '2006-09-06', org: '成都大熊猫繁育研究基地', location: '', mother: '伦伦', father: '洋洋', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [] },
+      { id: 'p5', name: '成功', gender: '雌性', birthday: '2000-08-01', org: '成都大熊猫繁育研究基地', location: '潘达星', mother: '成成', father: '安安', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [] },
     ];
   }
 
@@ -922,7 +1065,6 @@
   const filterAllBtn = document.getElementById('filterAllBtn');
   const filterCompleteBtn = document.getElementById('filterCompleteBtn');
   const filterIncompleteBtn = document.getElementById('filterIncompleteBtn');
-  const alphaIndex = document.getElementById('alphaIndex');
 
   const detailTitle = document.getElementById('detailTitle');
   const detailBody = document.getElementById('detailBody');
@@ -1118,85 +1260,12 @@
   }
 
   // ================================================================
-  // 拼音首字母
-  // ================================================================
-  function getPinyinFirstChar(name) {
-    const map = {
-      '花':'H','和':'H','萌':'M','美':'M','成':'C','伦':'L','洋':'Y','白':'B',
-      '英':'Y','灵':'L','勇':'Y','福':'F','华':'H','盟':'M','武':'W','林':'L',
-      '平':'P','金':'J','飞':'F','妙':'M','格':'G','喜':'X','发':'F','浦':'P',
-      '冰':'B','阿':'A','青':'Q','思':'S','佑':'Y','暖':'N','团':'T','虎':'H',
-      '伴':'B','豹':'B','绅':'S','谊':'Y','蕊':'R','紫':'Z','傲':'A','怡':'Y',
-      '瑞':'R','乔':'Q','苏':'S','叻':'L','年':'N','吉':'J','春':'C','张':'Z',
-      '潘':'P','依':'Y','天':'T','檂':'N','乐':'L','贝':'B','艾':'A','功':'G',
-      '园':'Y','润':'R','九':'J','梦':'M','淼':'M','北':'B','川':'C','蓉':'R',
-      '侠':'X','辰':'C','香':'X','轮':'L','昭':'Z','豆':'D','琪':'Q','琳':'L',
-      '斯':'S','吵':'C','闹':'N','庆':'Q','德':'D','雄':'X','绣':'X','云':'Y',
-      '星':'X','文':'W','奥':'A','莉':'L','绩':'J','风':'F','浪':'L','双':'S',
-      '启':'Q','芝':'Z','麻':'M','生':'S','玲':'L','伶':'L','汶':'W','航':'H',
-      '森':'S','晴':'Q','锦':'J','巢':'C','嘟':'D','比':'B','禧':'X','酉':'Y',
-      '元':'Y','草':'C','泰':'T','畅':'C','南':'N','月':'Y','璀':'C','豆':'D',
-      '芸':'Y','秀':'X','伊':'Y','鲁':'L','将':'J','兔':'T','君':'J','运':'Y',
-      '悠':'Y','骄':'J','盼':'P','阳':'Y','雪':'X','妮':'N','睿':'R','辉':'H',
-      '云':'Y','海':'H','妃':'F','心':'X','毛':'M','壮':'Z','娅':'Y','阳':'Y',
-      '佰':'B','贤':'X','加':'J','添':'T','兰':'L','仙':'X','大':'D','安':'A',
-      '可':'K','欢':'H','黎':'L','嘟':'D','嘉':'J','凯':'K','四':'S','京':'J',
-      '茜':'Q','府':'F','兴':'X','离':'L','灵':'L','蜀':'S','田':'T','念':'N',
-      '奇':'Q','七':'Q','八':'B','珠':'Z','秦':'Q','阿':'A','沛':'P','淘':'T',
-      '闽':'M','如':'R','意':'Y','丁':'D','喀':'K','二':'E','笋':'S','贡':'G',
-      '舜':'S','震':'Z','儿':'E','友':'Y','顺':'S','渝':'Y','莽':'M','喜':'X',
-      '辰':'C','灿':'C','好':'H','宝':'B','颖':'Y','兰':'L','贝':'B','双':'S',
-      '重':'C','良':'L','望':'W','悦':'Y','菊':'J','帅':'S','酷':'K','清':'Q',
-      '隆':'L','婷':'T','仔':'Z','恩':'E','然':'R','龙':'L','明':'M','皓':'H',
-      '向':'X','愿':'Y','深':'S','漫':'M','一':'Y','雅':'Y','灵':'L','迈':'M',
-      '华':'H','丽':'L','初':'C','牧':'M','娥':'E','展':'Z','瑶':'Y','晔':'Y',
-      '淑':'S','盈':'Y','得':'D','石':'S','公':'G','唐':'T','胖':'P','涛':'T',
-      '元':'Y','瑞':'R','顿':'D','梁':'L','傲':'A','念':'N','筠':'J','舟':'Z',
-      '满':'M','杰':'J','芊':'Q','逸':'Y','峰':'F','茅':'M','新':'X'
-    };
-    const first = name.charAt(0);
-    return map[first] || first.toUpperCase();
-  }
-
-  function buildAlphaIndex() {
-    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-    let html = '';
-    letters.forEach(ch => {
-      html += `<button class="alpha-btn" data-letter="${ch}">${ch}</button>`;
-    });
-    alphaIndex.innerHTML = html;
-    alphaIndex.querySelectorAll('.alpha-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const letter = this.dataset.letter;
-        const allLinks = browseContainer.querySelectorAll('.panda-link');
-        for (let el of allLinks) {
-          const name = el.textContent.trim();
-          const firstChar = getPinyinFirstChar(name);
-          if (firstChar === letter) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            el.style.transition = 'background 0.2s';
-            el.style.background = '#d4e0d0';
-            setTimeout(() => { el.style.background = ''; }, 600);
-            return;
-          }
-        }
-        const msg = document.createElement('div');
-        msg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.7);color:white;padding:12px 24px;border-radius:40px;font-size:1rem;z-index:200;';
-        msg.textContent = '没有 ' + letter + ' 开头的熊猫';
-        document.body.appendChild(msg);
-        setTimeout(() => msg.remove(), 1000);
-      });
-    });
-  }
-
-  // ================================================================
   // 主页
   // ================================================================
   function renderBrowse() {
     const pandastarList = [];
     const normalMap = new Map();
 
-    // 先根据筛选条件过滤熊猫
     let filteredPandas = pandas;
     if (currentFilter === 'complete') {
       filteredPandas = pandas.filter(p => p.isComplete === true);
@@ -1281,18 +1350,17 @@
 
   function setGroupMode(mode) {
     currentGroupMode = mode;
-    groupByOrgBtn.classList.toggle('active-mode', mode === 'org');
-    groupByLocationBtn.classList.toggle('active-mode', mode === 'location');
+    groupByOrgBtn.classList.toggle('active', mode === 'org');
+    groupByLocationBtn.classList.toggle('active', mode === 'location');
     if (searchInput.value.trim()) searchInput.value = '';
     renderBrowse();
   }
 
   function setFilter(filter) {
     currentFilter = filter;
-    filterAllBtn.classList.toggle('filter-active', filter === 'all');
-    filterCompleteBtn.classList.toggle('filter-active', filter === 'complete');
-    filterIncompleteBtn.classList.toggle('filter-active', filter === 'incomplete');
-    // 如果搜索框有内容，清空搜索
+    filterAllBtn.classList.toggle('active', filter === 'all');
+    filterCompleteBtn.classList.toggle('active', filter === 'complete');
+    filterIncompleteBtn.classList.toggle('active', filter === 'incomplete');
     if (searchInput.value.trim()) searchInput.value = '';
     renderBrowse();
   }
@@ -1515,7 +1583,7 @@
   }
 
   // ================================================================
-  // 详情页 - 返回上一层级
+  // 详情页
   // ================================================================
   function goBackDetail() {
     if (detailHistory.length > 0) {
@@ -1594,6 +1662,23 @@
       </div>
     `;
 
+    const events = p.lifeEvents || [];
+    let eventsHtml = '';
+    if (events.length > 0) {
+      const sorted = [...events].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+      let eventItems = '';
+      sorted.forEach(e => {
+        const dateDisplay = e.date || '未知日期';
+        eventItems += `<div class="event-item"><span class="event-date">${dateDisplay}</span><span class="event-text">${e.event}</span></div>`;
+      });
+      eventsHtml = `
+        <div class="life-events-section">
+          <div class="section-title">📜 熊生大事</div>
+          ${eventItems}
+        </div>
+      `;
+    }
+
     let parentsHtml = '';
     if (rel.parents.length > 0) {
       parentsHtml = `
@@ -1650,7 +1735,7 @@
       </div>
     `;
 
-    detailBody.innerHTML = headerHtml + infoHtml + relHtml + actionsHtml;
+    detailBody.innerHTML = headerHtml + infoHtml + eventsHtml + relHtml + actionsHtml;
 
     document.getElementById('detailExitBtn').addEventListener('click', goBackDetail);
 
@@ -1689,22 +1774,21 @@
   }
 
   // ================================================================
-  // 编辑页 - 母亲/父亲搜索选择器
+  // 编辑页
   // ================================================================
   function createPandaSelector(containerId, fieldName, currentValue, currentId, placeholder) {
     const container = document.getElementById(containerId);
     const wrapper = document.createElement('div');
     wrapper.className = 'panda-selector';
+    // 注意：这里去掉了清空按钮（×）
     wrapper.innerHTML = `
       <input type="text" id="${fieldName}_input" value="${currentValue || ''}" placeholder="${placeholder || '输入搜索...'}" autocomplete="off" />
-      <button class="clear-btn" id="${fieldName}_clear" title="清空">×</button>
       <div class="selector-dropdown" id="${fieldName}_dropdown"></div>
     `;
     container.appendChild(wrapper);
 
     const input = wrapper.querySelector('input');
     const dropdown = wrapper.querySelector('.selector-dropdown');
-    const clearBtn = wrapper.querySelector('.clear-btn');
     let selectedId = currentId || '';
     let selectedDisplay = currentValue || '';
 
@@ -1772,15 +1856,6 @@
       setTimeout(() => dropdown.classList.remove('show'), 200);
     });
 
-    clearBtn.addEventListener('click', function() {
-      input.value = '';
-      selectedId = '';
-      selectedDisplay = '';
-      dropdown.classList.remove('show');
-      input.dispatchEvent(new Event('input'));
-      input.focus();
-    });
-
     document.addEventListener('click', function(e) {
       if (!wrapper.contains(e.target)) dropdown.classList.remove('show');
     });
@@ -1798,9 +1873,6 @@
     };
   }
 
-  // ================================================================
-  // 编辑页 - 普通文本联想（机构/所在地）
-  // ================================================================
   function createSuggestInput(containerId, options, inputId, initialValue, placeholder) {
     const container = document.getElementById(containerId);
     const wrapper = document.createElement('div');
@@ -1852,9 +1924,6 @@
     return input;
   }
 
-  // ================================================================
-  // 编辑页
-  // ================================================================
   function openEdit(pandaId) {
     editPandaId = pandaId;
     const p = getPandaById(pandaId);
@@ -1871,6 +1940,7 @@
     const locOptions = getDistinctValues('location');
 
     const nameVal = isNew ? '' : p.name;
+    // 别名提示词修改
     const aliasVal = isNew ? '' : (p.alias || '');
     const genderVal = p.gender || '雌性';
     const birthdayVal = p.birthday || '';
@@ -1880,6 +1950,7 @@
     const pedigreeVal = p.pedigree || '';
     const showPassing = !isNew && (p.location && p.location.trim() === '潘达星');
     const isComplete = p.isComplete || false;
+    const events = p.lifeEvents || [];
 
     let motherDisplay = '';
     let motherId = p.motherId || '';
@@ -1901,6 +1972,23 @@
       fatherDisplay = p.father;
     }
 
+    let eventsHtml = '';
+    if (events.length > 0) {
+      const sorted = [...events].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+      sorted.forEach((e, idx) => {
+        const dateDisplay = e.date || '未知日期';
+        eventsHtml += `
+          <div class="event-row">
+            <span class="event-date">${dateDisplay}</span>
+            <span class="event-text">${e.event}</span>
+            <button class="del-event-btn" data-index="${idx}" title="删除">×</button>
+          </div>
+        `;
+      });
+    } else {
+      eventsHtml = `<div class="empty-events-edit">暂无记录</div>`;
+    }
+
     let html = `
       <div class="edit-form">
         <div class="form-row">
@@ -1909,7 +1997,7 @@
         </div>
         <div class="form-row">
           <label>别名</label>
-          <input type="text" id="editAlias" value="${aliasVal}" placeholder="如：香港海洋公园" />
+          <input type="text" id="editAlias" value="${aliasVal}" placeholder="请输入熊猫的别名" />
         </div>
         <div class="form-row">
           <label>性别</label>
@@ -1953,6 +2041,8 @@
           <label>父亲</label>
           <div id="editFatherContainer" style="flex:1;min-width:100px;"></div>
         </div>
+
+        <!-- 信息完善开关（放在熊生大事之前） -->
         <div class="complete-toggle-row">
           <span class="toggle-label">信息已完善</span>
           <div class="toggle-switch ${isComplete ? 'active' : ''}" id="completeToggle">
@@ -1961,6 +2051,19 @@
           <span class="toggle-status-text ${isComplete ? 'complete' : 'incomplete'}" id="completeStatusText">
             ${isComplete ? '✅ 已完善' : '🟡 待补充'}
           </span>
+        </div>
+
+        <!-- 熊生大事 -->
+        <div class="life-events-edit">
+          <div class="events-title">📜 熊生大事</div>
+          <div id="eventsListContainer">
+            ${eventsHtml}
+          </div>
+          <div class="add-event-row">
+            <input type="date" id="newEventDate" />
+            <input type="text" id="newEventText" placeholder="输入大事内容..." />
+            <button class="add-event-btn" id="addEventBtn">+ 添加</button>
+          </div>
         </div>
       </div>
       <div class="edit-actions">
@@ -1977,7 +2080,75 @@
     const motherSelector = createPandaSelector('editMotherContainer', 'editMother', motherDisplay, motherId, '输入搜索母亲...');
     const fatherSelector = createPandaSelector('editFatherContainer', 'editFather', fatherDisplay, fatherId, '输入搜索父亲...');
 
-    // 切换开关
+    const addEventBtn = document.getElementById('addEventBtn');
+    const newEventDate = document.getElementById('newEventDate');
+    const newEventText = document.getElementById('newEventText');
+    const eventsListContainer = document.getElementById('eventsListContainer');
+    let currentEvents = [...events];
+
+    if (newEventDate) {
+      const today = new Date().toISOString().slice(0, 10);
+      newEventDate.value = today;
+    }
+
+    function renderEventList() {
+      if (currentEvents.length === 0) {
+        eventsListContainer.innerHTML = '<div class="empty-events-edit">暂无记录</div>';
+        return;
+      }
+      const sorted = [...currentEvents].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+      let html2 = '';
+      sorted.forEach((e, idx) => {
+        const dateDisplay = e.date || '未知日期';
+        html2 += `
+          <div class="event-row">
+            <span class="event-date">${dateDisplay}</span>
+            <span class="event-text">${e.event}</span>
+            <button class="del-event-btn" data-index="${idx}" title="删除">×</button>
+          </div>
+        `;
+      });
+      eventsListContainer.innerHTML = html2;
+      eventsListContainer.querySelectorAll('.del-event-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const idx = parseInt(this.dataset.index);
+          currentEvents.splice(idx, 1);
+          renderEventList();
+        });
+      });
+    }
+
+    addEventBtn.addEventListener('click', function() {
+      const date = newEventDate.value.trim();
+      const text = newEventText.value.trim();
+      if (!text) {
+        alert('请填写大事内容');
+        return;
+      }
+      if (!date) {
+        alert('请选择日期');
+        return;
+      }
+      currentEvents.push({ date, event: text });
+      newEventText.value = '';
+      renderEventList();
+    });
+
+    newEventText.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addEventBtn.click();
+      }
+    });
+
+    eventsListContainer.querySelectorAll('.del-event-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const idx = parseInt(this.dataset.index);
+        currentEvents.splice(idx, 1);
+        renderEventList();
+      });
+    });
+
     const toggle = document.getElementById('completeToggle');
     const statusText = document.getElementById('completeStatusText');
     let currentComplete = isComplete;
@@ -2011,19 +2182,16 @@
     });
 
     document.getElementById('editSaveBtn').addEventListener('click', function() {
+      p.lifeEvents = currentEvents;
       handleEditSave(p, isNew, orgInput, locInput, motherSelector, fatherSelector, currentComplete);
     });
   }
 
-  // ================================================================
-  // 保存编辑（含 name+alias 唯一性检查 + 野外支持）
-  // ================================================================
   function handleEditSave(p, isNew, orgInput, locInput, motherSelector, fatherSelector, isComplete) {
     const name = document.getElementById('editName').value.trim();
     if (!name) { alert('请填写熊猫名字'); return; }
     const alias = document.getElementById('editAlias').value.trim();
 
-    // 检查 (name + alias) 组合是否已存在（排除自己）
     const existing = pandas.find(item => {
       if (isNew && item.id === 'temp_new') return false;
       if (!isNew && item.id === p.id) return false;
@@ -2051,7 +2219,6 @@
     const motherInputValue = motherSelector.getInputValue();
     const fatherInputValue = fatherSelector.getInputValue();
 
-    // 如果输入的是"野外"，跳过匹配检查
     if (motherInputValue && motherInputValue !== '野外' && !motherSelected.id) {
       alert('母亲 "' + motherInputValue + '" 未匹配到任何熊猫，请先录入该熊猫或清空此字段');
       return;
@@ -2075,6 +2242,8 @@
     const motherName = motherInputValue === '野外' ? '野外' : (motherSelected.id ? (getPandaById(motherSelected.id)?.name || '') : (motherInputValue || ''));
     const fatherName = fatherInputValue === '野外' ? '野外' : (fatherSelected.id ? (getPandaById(fatherSelected.id)?.name || '') : (fatherInputValue || ''));
 
+    const lifeEvents = p.lifeEvents || [];
+
     if (isNew) {
       const newPanda = {
         id: 'p' + (nextId++),
@@ -2090,7 +2259,8 @@
         fatherId: fatherId,
         pedigree,
         passingDate: passingDate || '',
-        isComplete: isComplete || false
+        isComplete: isComplete || false,
+        lifeEvents: lifeEvents
       };
       pandas.push(newPanda);
       saveData();
@@ -2112,6 +2282,7 @@
       p.motherId = motherId;
       p.fatherId = fatherId;
       p.isComplete = isComplete || false;
+      p.lifeEvents = lifeEvents;
       if (passingDate !== undefined) p.passingDate = passingDate;
       saveData();
       alert('已更新 "' + name + (alias ? '（' + alias + '）' : '') + '" 的信息');
@@ -2122,11 +2293,8 @@
     }
   }
 
-  // ================================================================
-  // 新增熊猫
-  // ================================================================
   function addNewPanda() {
-    const tempPanda = { id: 'temp_new', name: '', alias: '', gender: '雌性', birthday: '', org: '', location: '', mother: '', father: '', motherId: '', fatherId: '', passingDate: '', pedigree: '', isComplete: false };
+    const tempPanda = { id: 'temp_new', name: '', alias: '', gender: '雌性', birthday: '', org: '', location: '', mother: '', father: '', motherId: '', fatherId: '', passingDate: '', pedigree: '', isComplete: false, lifeEvents: [] };
     editPandaId = 'temp_new';
     editTitle.textContent = '📝 录入新熊猫';
     renderEditForm(tempPanda, true);
@@ -2134,9 +2302,6 @@
     window.scrollTo(0, 0);
   }
 
-  // ================================================================
-  // 导入导出
-  // ================================================================
   function exportData() {
     const blob = new Blob([JSON.stringify(pandas, null, 2)], { type:'application/json' });
     const a = document.createElement('a');
@@ -2160,6 +2325,7 @@
           if (p.isComplete === undefined) p.isComplete = false;
           if (p.motherId === undefined) p.motherId = '';
           if (p.fatherId === undefined) p.fatherId = '';
+          if (p.lifeEvents === undefined) p.lifeEvents = [];
         });
 
         const overwrite = confirm('将导入 ' + imported.length + ' 条数据，是否覆盖当前所有数据？\n点击"确定"覆盖，"取消"则追加合并。');
@@ -2194,7 +2360,6 @@
   // ================================================================
   // 事件绑定
   // ================================================================
-  // 顶部标题回首页
   homeTitle.addEventListener('click', function() {
     detailHistory = [];
     showPage('pageHome');
@@ -2245,7 +2410,6 @@
   // ================================================================
   // 初始化
   // ================================================================
-  buildAlphaIndex();
   setGroupMode('org');
 })();
 </script>
