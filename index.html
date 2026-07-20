@@ -1758,7 +1758,6 @@
   // ================================================================
   function createSuggestInputWithWildcard(containerId, options, inputId, initialValue, placeholder) {
     const container = document.getElementById(containerId);
-    // 清空容器，防止重复
     container.innerHTML = '';
     const wrapper = document.createElement('div');
     wrapper.className = 'custom-suggest';
@@ -1774,6 +1773,9 @@
     // 过滤掉"野外"
     const filteredOptions = options.filter(o => o !== '野外');
 
+    // 获取所有熊猫的显示名（名字+别名）用于下拉
+    const allPandas = getAllPandaOptions().filter(o => o.name !== '野外');
+
     function renderDropdown(list) {
       if (!list || list.length === 0) {
         dropdown.innerHTML = `<div class="no-match">未找到匹配的熊猫</div>`;
@@ -1781,16 +1783,16 @@
         return;
       }
       dropdown.innerHTML = list.map(item =>
-        `<div class="suggest-item" data-value="${item}">${item}</div>`
+        `<div class="suggest-item" data-value="${item.display}">🐼 ${item.display}</div>`
       ).join('');
       dropdown.classList.add('show');
       dropdown.querySelectorAll('.suggest-item').forEach(el => {
         el.addEventListener('click', function() {
-          const value = this.dataset.value;
-          input.value = value;
-          // 查找对应的 ID
-          const panda = findPandaByName(value);
-          if (panda) input.dataset.selectedId = panda.id;
+          const display = this.dataset.value;
+          input.value = display;
+          // 根据显示名查找对应的熊猫
+          const matched = allPandas.find(p => p.display === display);
+          if (matched) input.dataset.selectedId = matched.id;
           dropdown.classList.remove('show');
           input.dispatchEvent(new Event('input'));
         });
@@ -1801,12 +1803,12 @@
       const val = this.value.trim();
       if (val && val !== '野外') {
         const kw = val.toLowerCase();
-        const filtered = filteredOptions.filter(o => o.toLowerCase().includes(kw));
+        const filtered = allPandas.filter(p => p.display.toLowerCase().includes(kw));
         renderDropdown(filtered);
       } else if (val === '野外') {
         dropdown.classList.remove('show');
       } else {
-        renderDropdown(filteredOptions.slice(0, 10));
+        renderDropdown(allPandas.slice(0, 10));
       }
     });
 
@@ -1825,7 +1827,7 @@
         return;
       }
       const kw = val.toLowerCase();
-      const filtered = filteredOptions.filter(o => o.toLowerCase().includes(kw));
+      const filtered = allPandas.filter(p => p.display.toLowerCase().includes(kw));
       renderDropdown(filtered);
     });
 
@@ -1837,7 +1839,6 @@
       if (!wrapper.contains(e.target)) dropdown.classList.remove('show');
     });
 
-    // 如果初始值是"野外"，标记
     if (initialValue === '野外') {
       input.dataset.isWild = 'true';
     }
@@ -1910,7 +1911,6 @@
   function renderEditForm(p, isNew) {
     const orgOptions = getDistinctValues('org');
     const locOptions = getDistinctValues('location');
-    const allPandaNames = getAllPandaOptions().map(o => o.name).filter(n => n !== '野外');
 
     const nameVal = isNew ? '' : p.name;
     const aliasVal = isNew ? '' : (p.alias || '');
@@ -2050,15 +2050,14 @@
 
     editBody.innerHTML = html;
 
-    // 机构/所在地
     const orgInput = createSuggestInput('editOrgContainer', orgOptions, 'editOrg', orgVal, '输入或选择机构');
     const locInput = createSuggestInput('editLocContainer', locOptions, 'editLoc', locVal, '输入或选择所在地');
 
-    // 母亲/父亲（使用和机构/所在地相同的样式）
+    const allPandaNames = getAllPandaOptions().map(o => o.display).filter(n => n !== '野外');
+
     const motherInput = createSuggestInputWithWildcard('editMotherContainer', allPandaNames, 'editMother', motherDisplay, '输入搜索母亲...');
     const fatherInput = createSuggestInputWithWildcard('editFatherContainer', allPandaNames, 'editFather', fatherDisplay, '输入搜索父亲...');
 
-    // 事件管理
     const addEventBtn = document.getElementById('addEventBtn');
     const newEventDate = document.getElementById('newEventDate');
     const newEventText = document.getElementById('newEventText');
