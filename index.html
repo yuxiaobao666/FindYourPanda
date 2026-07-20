@@ -1756,95 +1756,102 @@
   // ================================================================
   // 编辑页
   // ================================================================
-  function createSuggestInputWithWildcard(containerId, options, inputId, initialValue, placeholder) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = '';
-    const wrapper = document.createElement('div');
-    wrapper.className = 'custom-suggest';
-    wrapper.innerHTML = `
-      <input type="text" id="${inputId}" value="${initialValue || ''}" placeholder="${placeholder || '输入或选择'}" autocomplete="off" />
-      <div class="suggest-dropdown" id="${inputId}_dropdown"></div>
-    `;
-    container.appendChild(wrapper);
+ function createSuggestInputWithWildcard(containerId, options, inputId, initialValue, placeholder) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  const wrapper = document.createElement('div');
+  wrapper.className = 'custom-suggest';
+  wrapper.innerHTML = `
+    <input type="text" id="${inputId}" value="${initialValue || ''}" placeholder="${placeholder || '输入或选择'}" autocomplete="off" />
+    <div class="suggest-dropdown" id="${inputId}_dropdown"></div>
+  `;
+  container.appendChild(wrapper);
 
-    const input = wrapper.querySelector('input');
-    const dropdown = wrapper.querySelector('.suggest-dropdown');
+  const input = wrapper.querySelector('input');
+  const dropdown = wrapper.querySelector('.suggest-dropdown');
 
-    // 过滤掉"野外"
-    const filteredOptions = options.filter(o => o !== '野外');
+  // 过滤掉"野外"
+  const filteredOptions = options.filter(o => o !== '野外');
 
-    // 获取所有熊猫的显示名（名字+别名）用于下拉
-    const allPandas = getAllPandaOptions().filter(o => o.name !== '野外');
+  // 获取所有熊猫的显示名（名字+别名）用于下拉
+  const allPandas = getAllPandaOptions().filter(o => o.name !== '野外');
 
-    function renderDropdown(list) {
-      if (!list || list.length === 0) {
-        dropdown.innerHTML = `<div class="no-match">未找到匹配的熊猫</div>`;
-        dropdown.classList.add('show');
-        return;
-      }
-      dropdown.innerHTML = list.map(item =>
-        `<div class="suggest-item" data-value="${item.display}">🐼 ${item.display}</div>`
-      ).join('');
-      dropdown.classList.add('show');
-      dropdown.querySelectorAll('.suggest-item').forEach(el => {
-        el.addEventListener('click', function() {
-          const display = this.dataset.value;
-          input.value = display;
-          // 根据显示名查找对应的熊猫
-          const matched = allPandas.find(p => p.display === display);
-          if (matched) input.dataset.selectedId = matched.id;
-          dropdown.classList.remove('show');
-          input.dispatchEvent(new Event('input'));
-        });
-      });
+  // ===== 关键修复：初始化时自动匹配 selectedId =====
+  if (initialValue) {
+    const matched = allPandas.find(p => p.display === initialValue);
+    if (matched) {
+      input.dataset.selectedId = matched.id;
     }
+  }
 
-    input.addEventListener('focus', function() {
-      const val = this.value.trim();
-      if (val && val !== '野外') {
-        const kw = val.toLowerCase();
-        const filtered = allPandas.filter(p => p.display.toLowerCase().includes(kw));
-        renderDropdown(filtered);
-      } else if (val === '野外') {
+  function renderDropdown(list) {
+    if (!list || list.length === 0) {
+      dropdown.innerHTML = `<div class="no-match">未找到匹配的熊猫</div>`;
+      dropdown.classList.add('show');
+      return;
+    }
+    dropdown.innerHTML = list.map(item =>
+      `<div class="suggest-item" data-value="${item.display}">🐼 ${item.display}</div>`
+    ).join('');
+    dropdown.classList.add('show');
+    dropdown.querySelectorAll('.suggest-item').forEach(el => {
+      el.addEventListener('click', function() {
+        const display = this.dataset.value;
+        input.value = display;
+        const matched = allPandas.find(p => p.display === display);
+        if (matched) input.dataset.selectedId = matched.id;
         dropdown.classList.remove('show');
-      } else {
-        renderDropdown(allPandas.slice(0, 10));
-      }
+        input.dispatchEvent(new Event('input'));
+      });
     });
+  }
 
-    input.addEventListener('input', function() {
-      const val = this.value.trim();
-      if (!val) {
-        this.dataset.selectedId = '';
-        dropdown.classList.remove('show');
-        input.dispatchEvent(new Event('input'));
-        return;
-      }
-      if (val === '野外') {
-        this.dataset.selectedId = '';
-        dropdown.classList.remove('show');
-        input.dispatchEvent(new Event('input'));
-        return;
-      }
+  input.addEventListener('focus', function() {
+    const val = this.value.trim();
+    if (val && val !== '野外') {
       const kw = val.toLowerCase();
       const filtered = allPandas.filter(p => p.display.toLowerCase().includes(kw));
       renderDropdown(filtered);
-    });
-
-    input.addEventListener('blur', function() {
-      setTimeout(() => dropdown.classList.remove('show'), 200);
-    });
-
-    document.addEventListener('click', function(e) {
-      if (!wrapper.contains(e.target)) dropdown.classList.remove('show');
-    });
-
-    if (initialValue === '野外') {
-      input.dataset.isWild = 'true';
+    } else if (val === '野外') {
+      dropdown.classList.remove('show');
+    } else {
+      renderDropdown(allPandas.slice(0, 10));
     }
+  });
 
-    return input;
+  input.addEventListener('input', function() {
+    const val = this.value.trim();
+    if (!val) {
+      this.dataset.selectedId = '';
+      dropdown.classList.remove('show');
+      input.dispatchEvent(new Event('input'));
+      return;
+    }
+    if (val === '野外') {
+      this.dataset.selectedId = '';
+      dropdown.classList.remove('show');
+      input.dispatchEvent(new Event('input'));
+      return;
+    }
+    const kw = val.toLowerCase();
+    const filtered = allPandas.filter(p => p.display.toLowerCase().includes(kw));
+    renderDropdown(filtered);
+  });
+
+  input.addEventListener('blur', function() {
+    setTimeout(() => dropdown.classList.remove('show'), 200);
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!wrapper.contains(e.target)) dropdown.classList.remove('show');
+  });
+
+  if (initialValue === '野外') {
+    input.dataset.isWild = 'true';
   }
+
+  return input;
+}
 
   function createSuggestInput(containerId, options, inputId, initialValue, placeholder) {
     const container = document.getElementById(containerId);
