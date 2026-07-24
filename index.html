@@ -271,6 +271,27 @@
       color: #5a6a56;
       padding-bottom: 2px;
     }
+    .detail-header .relation-btn {
+      margin-left: auto;
+      background: #5a7a5a;
+      color: white;
+      border: none;
+      border-radius: 40px;
+      padding: 6px 16px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .detail-header .relation-btn:hover {
+      background: #4a6a4a;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
 
     .detail-info-list {
       background: #f8f5f0;
@@ -608,7 +629,7 @@
     .toggle-status-text.complete { color: #2d8a4e; font-weight: 500; }
     .toggle-status-text.incomplete { color: #d4a030; font-weight: 500; }
 
-    /* ===== custom-suggest (机构/所在地/母亲/父亲 统一使用) ===== */
+    /* ===== custom-suggest ===== */
     .custom-suggest {
       position: relative;
       flex: 1;
@@ -807,6 +828,128 @@
     }
     .tree-footer .btn { min-width: 70px; justify-content: center; }
 
+    /* ===== 亲缘关系页面 ===== */
+    .relation-container {
+      padding: 4px 0 12px 0;
+    }
+    .relation-search-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      background: #f8f5f0;
+      padding: 12px 16px;
+      border-radius: 16px;
+      border: 1px solid #e3dbcf;
+    }
+    .relation-search-row .search-label {
+      font-weight: 600;
+      color: #2d462b;
+      font-size: 0.95rem;
+    }
+    .relation-search-row .custom-suggest {
+      min-width: 160px;
+      flex: 0 1 240px;
+    }
+    .relation-search-row .custom-suggest input {
+      padding: 6px 14px;
+      font-size: 0.85rem;
+    }
+    .relation-search-row .btn {
+      padding: 6px 18px;
+      font-size: 0.85rem;
+    }
+    .relation-search-row .search-hint {
+      font-size: 0.75rem;
+      color: #8a9a86;
+      margin-left: 4px;
+    }
+
+    .relation-result {
+      margin-top: 12px;
+    }
+    .relation-result .no-result {
+      color: #8a9a86;
+      font-style: italic;
+      padding: 20px 0;
+      text-align: center;
+    }
+    .relation-result .ancestor-group {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f0ede8;
+    }
+    .relation-result .ancestor-group:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+    .relation-result .ancestor-title {
+      font-weight: 700;
+      color: #2d462b;
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+    }
+    .relation-result .ancestor-title .badge {
+      font-weight: 400;
+      font-size: 0.8rem;
+      color: #6a7a66;
+      background: #f0ede8;
+      padding: 0 10px;
+      border-radius: 40px;
+      margin-left: 8px;
+    }
+    .relation-result .path-item {
+      font-family: 'Courier New', monospace;
+      font-size: 0.92rem;
+      padding: 2px 0 2px 8px;
+      color: #1f2a1d;
+      cursor: pointer;
+      transition: 0.1s;
+      border-radius: 8px;
+      padding: 3px 10px;
+    }
+    .relation-result .path-item:hover {
+      background: #f0ebe2;
+    }
+    .relation-result .path-item .gender-icon {
+      font-weight: 400;
+      color: #7a8a76;
+    }
+    .relation-result .path-item .panda-name-link {
+      color: #1f3a1f;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    .relation-result .path-item .panda-name-link:hover {
+      text-decoration: underline;
+      color: #2d4a2d;
+    }
+    .relation-result .copy-area {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #f0ede8;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .relation-result .copy-area .btn {
+      font-size: 0.85rem;
+    }
+
+    .relation-info-banner {
+      background: #f5f0ea;
+      border-radius: 40px;
+      padding: 4px 16px;
+      font-size: 0.8rem;
+      color: #6a7a66;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+    .relation-info-banner i {
+      margin-right: 6px;
+      color: #b78a5c;
+    }
+
     @media (max-width: 600px) {
       #app { padding: 14px; border-radius: 24px; }
       .nav-tab { padding: 8px 14px; font-size: 0.8rem; }
@@ -820,6 +963,7 @@
       .detail-header .panda-name { font-size: 1.6rem; }
       .detail-header .panda-alias { font-size: 0.85rem; }
       .detail-header .panda-age { font-size: 0.8rem; }
+      .detail-header .relation-btn { font-size: 0.7rem; padding: 4px 12px; }
       .detail-info-item { font-size: 0.85rem; }
       .detail-info-item .label { min-width: 60px; }
       .detail-actions .btn { min-width: 50px; padding: 6px 10px; font-size: 0.7rem; }
@@ -851,6 +995,10 @@
       .toggle-switch { width: 36px; height: 20px; }
       .toggle-switch .toggle-knob { width: 16px; height: 16px; }
       .toggle-switch.active .toggle-knob { left: 18px; }
+      .relation-search-row { flex-direction: column; align-items: stretch; gap: 8px; }
+      .relation-search-row .custom-suggest { flex: 1; min-width: unset; }
+      .relation-search-row .btn { align-self: flex-start; }
+      .relation-result .path-item { font-size: 0.8rem; padding: 2px 6px; }
     }
   </style>
 </head>
@@ -862,6 +1010,7 @@
   </div>
 
   <div class="page-container">
+    <!-- 主页 -->
     <div id="pageHome" class="page-view active">
       <div class="stats-row" id="statsRow">
         <div class="stat-item"><span class="num" id="totalCount">0</span><span class="label">只</span></div>
@@ -908,6 +1057,7 @@
       <div id="browseContainer"></div>
     </div>
 
+    <!-- 详情页 -->
     <div id="pageDetail" class="page-view">
       <div class="page-header">
         <span class="page-title" id="detailTitle">🐼 熊猫</span>
@@ -915,6 +1065,7 @@
       <div id="detailBody"></div>
     </div>
 
+    <!-- 编辑页 -->
     <div id="pageEdit" class="page-view">
       <div class="page-header">
         <button class="back-btn" id="editBackBtn"><i class="fas fa-arrow-left"></i> 取消</button>
@@ -923,6 +1074,7 @@
       <div id="editBody"></div>
     </div>
 
+    <!-- 族谱页 -->
     <div id="pageTree" class="page-view">
       <div class="page-header">
         <span class="page-title" id="treeTitle">🌳 家族族谱</span>
@@ -930,6 +1082,17 @@
       <div id="treeBody"></div>
       <div class="tree-footer">
         <button class="btn btn-outline" id="treeBackBtn"><i class="fas fa-arrow-left"></i> 返回</button>
+      </div>
+    </div>
+
+    <!-- 亲缘关系页 -->
+    <div id="pageRelation" class="page-view">
+      <div class="page-header">
+        <span class="page-title" id="relationTitle">🔍 亲缘关系查询</span>
+      </div>
+      <div id="relationBody"></div>
+      <div class="tree-footer">
+        <button class="btn btn-outline" id="relationBackBtn"><i class="fas fa-arrow-left"></i> 返回</button>
       </div>
     </div>
   </div>
@@ -1006,6 +1169,7 @@
   const pageDetail = document.getElementById('pageDetail');
   const pageEdit = document.getElementById('pageEdit');
   const pageTree = document.getElementById('pageTree');
+  const pageRelation = document.getElementById('pageRelation');
   const homeTitle = document.getElementById('homeTitle');
 
   const searchInput = document.getElementById('searchInput');
@@ -1030,6 +1194,9 @@
   const treeBackBtn = document.getElementById('treeBackBtn');
   const treeTitle = document.getElementById('treeTitle');
   const treeBody = document.getElementById('treeBody');
+  const relationBackBtn = document.getElementById('relationBackBtn');
+  const relationTitle = document.getElementById('relationTitle');
+  const relationBody = document.getElementById('relationBody');
 
   const totalCount = document.getElementById('totalCount');
   const maleCount = document.getElementById('maleCount');
@@ -1563,6 +1730,386 @@
   }
 
   // ================================================================
+  // 亲缘关系查询（5代以内，只返回最近共同祖先）
+  // ================================================================
+  // ================================================================
+// 亲缘关系查询（5代以内，过滤冗余共同祖先）
+// ================================================================
+function findAncestors(panda, maxDepth = 5) {
+  if (!panda) return [];
+  const results = [];
+
+  function traverse(current, path, depth) {
+    if (depth > maxDepth) return;
+    if (!current) return;
+    const newPath = [...path, current.id];
+    results.push({
+      ids: newPath,
+      names: newPath.map(id => {
+        const p = getPandaById(id);
+        return p ? { id: p.id, name: p.name, gender: p.gender || '未知' } : null;
+      }).filter(Boolean),
+      lastId: current.id,
+      depth: depth
+    });
+    const mother = current.motherId ? getPandaById(current.motherId) : null;
+    const father = current.fatherId ? getPandaById(current.fatherId) : null;
+    if (mother && !isWild(mother.name)) {
+      traverse(mother, newPath, depth + 1);
+    }
+    if (father && !isWild(father.name)) {
+      traverse(father, newPath, depth + 1);
+    }
+  }
+
+  traverse(panda, [], 0);
+  return results;
+}
+
+// ===== 核心修复：过滤冗余共同祖先 =====
+function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
+  if (!pandaA || !pandaB || pandaA.id === pandaB.id) return [];
+
+  const ancestorsA = findAncestors(pandaA, maxDepth);
+  const ancestorsB = findAncestors(pandaB, maxDepth);
+
+  // 构建 A 的祖先 ID -> 最短路径
+  const aPathMap = new Map();
+  ancestorsA.forEach(path => {
+    const lastId = path.lastId;
+    if (!aPathMap.has(lastId) || path.depth < aPathMap.get(lastId).depth) {
+      aPathMap.set(lastId, path);
+    }
+  });
+
+  // 构建 B 的祖先 ID -> 最短路径
+  const bPathMap = new Map();
+  ancestorsB.forEach(path => {
+    const lastId = path.lastId;
+    if (!bPathMap.has(lastId) || path.depth < bPathMap.get(lastId).depth) {
+      bPathMap.set(lastId, path);
+    }
+  });
+
+  // 找到所有共同祖先
+  const commonIds = [];
+  aPathMap.forEach((path, id) => {
+    if (bPathMap.has(id)) {
+      commonIds.push(id);
+    }
+  });
+
+  if (commonIds.length === 0) return [];
+
+  // ===== 过滤冗余共同祖先 =====
+  // 规则：如果某个共同祖先出现在另一个共同祖先的路径中，则舍弃（保留更近的那个）
+  const filteredIds = commonIds.filter(id => {
+    // 检查是否有另一个共同祖先出现在 id 的路径中（且不是 id 本身）
+    const pathA = aPathMap.get(id);
+    const pathB = bPathMap.get(id);
+    // 取两条路径中较短的那条来检查
+    const pathToCheck = pathA.ids.length <= pathB.ids.length ? pathA.ids : pathB.ids;
+    // 排除 id 本身
+    const otherCommonIds = commonIds.filter(otherId => otherId !== id);
+    for (let otherId of otherCommonIds) {
+      // 检查 otherId 是否出现在 pathToCheck 中
+      if (pathToCheck.includes(otherId)) {
+        return false; // 有更近的共同祖先，当前这个被过滤掉
+      }
+    }
+    return true;
+  });
+
+  // 按深度排序（小的在前）
+  filteredIds.sort((a, b) => {
+    const depthA = aPathMap.get(a).depth;
+    const depthB = aPathMap.get(b).depth;
+    return depthA - depthB;
+  });
+
+  const result = [];
+  filteredIds.forEach(id => {
+    const pathA = aPathMap.get(id);
+    const pathB = bPathMap.get(id);
+    if (pathA && pathB) {
+      result.push({
+        ancestorId: id,
+        ancestorName: getPandaById(id)?.name || '未知',
+        ancestorGender: getPandaById(id)?.gender || '未知',
+        pathA: pathA.names.map(n => ({ id: n.id, name: n.name, gender: n.gender })),
+        pathB: pathB.names.map(n => ({ id: n.id, name: n.name, gender: n.gender })),
+        depthA: pathA.depth,
+        depthB: pathB.depth,
+      });
+    }
+  });
+
+  return result;
+}
+
+  function formatPathForDisplay(path, targetName) {
+    if (!path || path.length === 0) return '';
+    return path.map(p => {
+      const genderIcon = p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '');
+      return p.name + genderIcon;
+    }).join('-');
+  }
+
+  function generateCopyText(pandaA, pandaB, results) {
+    if (!results || results.length === 0) {
+      return `🐼${pandaA.name}与🐼${pandaB.name}在5代以内没有找到共同祖先。`;
+    }
+
+    let text = `🐼${pandaA.name}与🐼${pandaB.name}的亲缘关系是：\n\n`;
+    results.forEach((r, idx) => {
+      const pathA = formatPathForDisplay(r.pathA);
+      const pathB = formatPathForDisplay(r.pathB);
+      text += `${idx+1}、 ${r.ancestorName}${r.ancestorGender === '雌性' ? '♀' : (r.ancestorGender === '雄性' ? '♂' : '')}\n`;
+      text += `${pathA}\n`;
+      text += `${pathB}\n\n`;
+    });
+    return text.trim();
+  }
+
+  // ================================================================
+  // 亲缘关系页面
+  // ================================================================
+  let relationPandaA = null;
+  let relationPandaB = null;
+
+  function openRelation(pandaId) {
+    const p = getPandaById(pandaId);
+    if (!p) return;
+    relationPandaA = p;
+    relationPandaB = null;
+    renderRelationPage();
+    showPage('pageRelation');
+    window.scrollTo(0, 0);
+  }
+
+  function renderRelationPage() {
+    const container = relationBody;
+    const pA = relationPandaA;
+    if (!pA) {
+      container.innerHTML = '<div class="empty-state">请先选择一只熊猫</div>';
+      return;
+    }
+
+    const pA_display = getDisplayName(pA);
+    const pA_genderIcon = pA.gender === '雌性' ? '♀' : (pA.gender === '雄性' ? '♂' : '');
+
+    let html = `
+      <div class="relation-container">
+        <div class="relation-info-banner">
+          <i class="fas fa-info-circle"></i> 查询范围为 5 代以内的血缘关系
+        </div>
+
+        <div class="relation-search-row">
+          <span class="search-label">🐼 ${pA_display} ${pA_genderIcon}  ↔ </span>
+          <div id="relationTargetContainer" style="flex:1;min-width:120px;"></div>
+          <button class="btn btn-primary" id="relationQueryBtn"><i class="fas fa-search"></i> 查询</button>
+          <span class="search-hint">输入熊猫名字搜索</span>
+        </div>
+
+        <div id="relationResultContainer">
+          <div class="empty-state" style="padding:20px 8px;">输入第二只熊猫的名字，点击「查询」查看亲缘关系</div>
+        </div>
+      </div>
+    `;
+
+    container.innerHTML = html;
+
+    const targetContainer = document.getElementById('relationTargetContainer');
+    const allPandas = getAllPandaOptions().filter(o => o.id !== pA.id);
+    const targetInput = createRelationSuggestInput(targetContainer, allPandas, 'relationTarget', '', '输入第二只熊猫...');
+
+    document.getElementById('relationQueryBtn').addEventListener('click', function() {
+      const val = targetInput.value.trim();
+      if (!val) {
+        alert('请输入第二只熊猫的名字');
+        return;
+      }
+      const matched = findPandaByName(val);
+      if (!matched) {
+        alert('未找到名为 "' + val + '" 的熊猫');
+        return;
+      }
+      if (matched.id === pA.id) {
+        alert('不能选择自己');
+        return;
+      }
+      relationPandaB = matched;
+      performRelationQuery(pA, matched);
+    });
+
+    targetInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('relationQueryBtn').click();
+      }
+    });
+  }
+
+  function createRelationSuggestInput(container, options, inputId, initialValue, placeholder) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'custom-suggest';
+    wrapper.innerHTML = `
+      <input type="text" id="${inputId}" value="${initialValue||''}" placeholder="${placeholder||'输入或选择'}" autocomplete="off" />
+      <div class="suggest-dropdown" id="${inputId}_dropdown"></div>
+    `;
+    container.appendChild(wrapper);
+
+    const input = wrapper.querySelector('input');
+    const dropdown = wrapper.querySelector('.suggest-dropdown');
+
+    function renderDropdown(list) {
+      if (!list || list.length === 0) {
+        dropdown.innerHTML = `<div class="no-match">未找到匹配的熊猫</div>`;
+        dropdown.classList.add('show');
+        return;
+      }
+      dropdown.innerHTML = list.map(item =>
+        `<div class="suggest-item" data-value="${item.display}">🐼 ${item.display}</div>`
+      ).join('');
+      dropdown.classList.add('show');
+      dropdown.querySelectorAll('.suggest-item').forEach(el => {
+        el.addEventListener('click', function() {
+          const value = this.dataset.value;
+          input.value = value;
+          dropdown.classList.remove('show');
+          input.dispatchEvent(new Event('input'));
+        });
+      });
+    }
+
+    input.addEventListener('focus', function() {
+      const val = this.value.trim().toLowerCase();
+      if (val) {
+        const filtered = options.filter(o => o.display.toLowerCase().includes(val));
+        renderDropdown(filtered);
+      } else {
+        renderDropdown(options.slice(0, 10));
+      }
+    });
+
+    input.addEventListener('input', function() {
+      const val = this.value.trim().toLowerCase();
+      if (!val) {
+        dropdown.classList.remove('show');
+        return;
+      }
+      const filtered = options.filter(o => o.display.toLowerCase().includes(val));
+      renderDropdown(filtered);
+    });
+
+    input.addEventListener('blur', function() {
+      setTimeout(() => dropdown.classList.remove('show'), 200);
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!wrapper.contains(e.target)) dropdown.classList.remove('show');
+    });
+
+    return input;
+  }
+
+  function performRelationQuery(pA, pB) {
+    const container = document.getElementById('relationResultContainer');
+    const results = findCommonAncestors(pA, pB, 5);
+
+    const pA_display = getDisplayName(pA);
+    const pB_display = getDisplayName(pB);
+
+    if (results.length === 0) {
+      container.innerHTML = `
+        <div class="relation-result">
+          <div class="no-result">🐼${pA_display} 与 🐼${pB_display} 没有找到 5 代以内的共同祖先</div>
+        </div>
+      `;
+      return;
+    }
+
+    let html = `<div class="relation-result">`;
+
+    // 修改标题：不再显示"有X个共同祖先"
+    html += `<div style="font-size:0.85rem;color:#5a6a56;margin-bottom:12px;">
+      🐼${pA_display} 与 🐼${pB_display} 的亲缘关系是：
+    </div>`;
+
+    results.forEach((r, idx) => {
+      const ancestor = getPandaById(r.ancestorId);
+      const ancestorDisplay = ancestor ? getDisplayName(ancestor) : r.ancestorName;
+      const ancestorGender = r.ancestorGender || '未知';
+      const genderIcon = ancestorGender === '雌性' ? '♀' : (ancestorGender === '雄性' ? '♂' : '');
+
+      const pathA_str = r.pathA.map(p => `${p.name}${p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')}`).join('-');
+      const pathB_str = r.pathB.map(p => `${p.name}${p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')}`).join('-');
+
+      html += `
+        <div class="ancestor-group">
+          <div class="ancestor-title">
+            ${idx+1}、 ${ancestorDisplay} ${genderIcon}
+            <span class="badge">第 ${Math.min(r.depthA, r.depthB)} 代</span>
+          </div>
+          <div class="path-item" data-path='${JSON.stringify(r.pathA)}'>
+            ${pathA_str}
+          </div>
+          <div class="path-item" data-path='${JSON.stringify(r.pathB)}'>
+            ${pathB_str}
+          </div>
+        </div>
+      `;
+    });
+
+    const copyText = generateCopyText(pA, pB, results);
+    html += `
+      <div class="copy-area">
+        <button class="btn btn-success" id="relationCopyBtn"><i class="fas fa-copy"></i> 一键复制</button>
+      </div>
+    `;
+
+    container.innerHTML = html;
+
+    container.querySelectorAll('.path-item').forEach(el => {
+      el.addEventListener('click', function() {
+        try {
+          const pathData = JSON.parse(this.dataset.path);
+          if (pathData && pathData.length > 0) {
+            for (let p of pathData) {
+              if (p.id !== pA.id && p.id !== pB.id) {
+                const target = getPandaById(p.id);
+                if (target) {
+                  openDetail(target.id);
+                  return;
+                }
+              }
+            }
+            const last = pathData[pathData.length - 1];
+            if (last) {
+              const target = getPandaById(last.id);
+              if (target) openDetail(target.id);
+            }
+          }
+        } catch (e) {}
+      });
+    });
+
+    document.getElementById('relationCopyBtn').addEventListener('click', function() {
+      navigator.clipboard.writeText(copyText).then(() => {
+        alert('已复制到剪贴板！');
+      }).catch(() => {
+        const textarea = document.createElement('textarea');
+        textarea.value = copyText;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('已复制到剪贴板！');
+      });
+    });
+  }
+
+  // ================================================================
   // 详情页
   // ================================================================
   function goBackDetail() {
@@ -1613,6 +2160,7 @@
         <span class="panda-name">🐼 ${p.name}</span>
         <span class="panda-alias">${aliasDisplay}</span>
         ${ageStr ? `<span class="panda-age">${ageStr}</span>` : ''}
+        <button class="relation-btn" id="detailRelationBtn"><i class="fas fa-sitemap"></i> 查亲缘</button>
       </div>
     `;
 
@@ -1717,6 +2265,10 @@
 
     detailBody.innerHTML = headerHtml + infoHtml + eventsHtml + relHtml + actionsHtml;
 
+    document.getElementById('detailRelationBtn').addEventListener('click', function() {
+      openRelation(p.id);
+    });
+
     document.getElementById('detailExitBtn').addEventListener('click', goBackDetail);
 
     document.getElementById('detailDeleteBtn').addEventListener('click', function() {
@@ -1754,104 +2306,99 @@
   }
 
   // ================================================================
-  // 编辑页
+  // 编辑页（精简保留）
   // ================================================================
   function createSuggestInputWithWildcard(containerId, options, inputId, initialValue, placeholder) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = '';
-  const wrapper = document.createElement('div');
-  wrapper.className = 'custom-suggest';
-  wrapper.innerHTML = `
-    <input type="text" id="${inputId}" value="${initialValue || ''}" placeholder="${placeholder || '输入或选择'}" autocomplete="off" />
-    <div class="suggest-dropdown" id="${inputId}_dropdown"></div>
-  `;
-  container.appendChild(wrapper);
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    const wrapper = document.createElement('div');
+    wrapper.className = 'custom-suggest';
+    wrapper.innerHTML = `
+      <input type="text" id="${inputId}" value="${initialValue || ''}" placeholder="${placeholder || '输入或选择'}" autocomplete="off" />
+      <div class="suggest-dropdown" id="${inputId}_dropdown"></div>
+    `;
+    container.appendChild(wrapper);
 
-  const input = wrapper.querySelector('input');
-  const dropdown = wrapper.querySelector('.suggest-dropdown');
+    const input = wrapper.querySelector('input');
+    const dropdown = wrapper.querySelector('.suggest-dropdown');
 
-  // 过滤掉"野外"
-  const filteredOptions = options.filter(o => o !== '野外');
+    const allPandas = getAllPandaOptions().filter(o => o.name !== '野外');
 
-  // 获取所有熊猫的显示名（名字+别名）用于下拉
-  const allPandas = getAllPandaOptions().filter(o => o.name !== '野外');
-
-  // ===== 关键修复：初始化时自动匹配 selectedId =====
-  if (initialValue) {
-    const matched = allPandas.find(p => p.display === initialValue);
-    if (matched) {
-      input.dataset.selectedId = matched.id;
+    if (initialValue) {
+      const matched = allPandas.find(p => p.display === initialValue);
+      if (matched) {
+        input.dataset.selectedId = matched.id;
+      }
     }
-  }
 
-  function renderDropdown(list) {
-    if (!list || list.length === 0) {
-      dropdown.innerHTML = `<div class="no-match">未找到匹配的熊猫</div>`;
+    function renderDropdown(list) {
+      if (!list || list.length === 0) {
+        dropdown.innerHTML = `<div class="no-match">未找到匹配的熊猫</div>`;
+        dropdown.classList.add('show');
+        return;
+      }
+      dropdown.innerHTML = list.map(item =>
+        `<div class="suggest-item" data-value="${item.display}">🐼 ${item.display}</div>`
+      ).join('');
       dropdown.classList.add('show');
-      return;
+      dropdown.querySelectorAll('.suggest-item').forEach(el => {
+        el.addEventListener('click', function() {
+          const display = this.dataset.value;
+          input.value = display;
+          const matched = allPandas.find(p => p.display === display);
+          if (matched) input.dataset.selectedId = matched.id;
+          dropdown.classList.remove('show');
+          input.dispatchEvent(new Event('input'));
+        });
+      });
     }
-    dropdown.innerHTML = list.map(item =>
-      `<div class="suggest-item" data-value="${item.display}">🐼 ${item.display}</div>`
-    ).join('');
-    dropdown.classList.add('show');
-    dropdown.querySelectorAll('.suggest-item').forEach(el => {
-      el.addEventListener('click', function() {
-        const display = this.dataset.value;
-        input.value = display;
-        const matched = allPandas.find(p => p.display === display);
-        if (matched) input.dataset.selectedId = matched.id;
+
+    input.addEventListener('focus', function() {
+      const val = this.value.trim();
+      if (val && val !== '野外') {
+        const kw = val.toLowerCase();
+        const filtered = allPandas.filter(p => p.display.toLowerCase().includes(kw));
+        renderDropdown(filtered);
+      } else if (val === '野外') {
+        dropdown.classList.remove('show');
+      } else {
+        renderDropdown(allPandas.slice(0, 10));
+      }
+    });
+
+    input.addEventListener('input', function() {
+      const val = this.value.trim();
+      if (!val) {
+        this.dataset.selectedId = '';
         dropdown.classList.remove('show');
         input.dispatchEvent(new Event('input'));
-      });
-    });
-  }
-
-  input.addEventListener('focus', function() {
-    const val = this.value.trim();
-    if (val && val !== '野外') {
+        return;
+      }
+      if (val === '野外') {
+        this.dataset.selectedId = '';
+        dropdown.classList.remove('show');
+        input.dispatchEvent(new Event('input'));
+        return;
+      }
       const kw = val.toLowerCase();
       const filtered = allPandas.filter(p => p.display.toLowerCase().includes(kw));
       renderDropdown(filtered);
-    } else if (val === '野外') {
-      dropdown.classList.remove('show');
-    } else {
-      renderDropdown(allPandas.slice(0, 10));
+    });
+
+    input.addEventListener('blur', function() {
+      setTimeout(() => dropdown.classList.remove('show'), 200);
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!wrapper.contains(e.target)) dropdown.classList.remove('show');
+    });
+
+    if (initialValue === '野外') {
+      input.dataset.isWild = 'true';
     }
-  });
 
-  input.addEventListener('input', function() {
-    const val = this.value.trim();
-    if (!val) {
-      this.dataset.selectedId = '';
-      dropdown.classList.remove('show');
-      input.dispatchEvent(new Event('input'));
-      return;
-    }
-    if (val === '野外') {
-      this.dataset.selectedId = '';
-      dropdown.classList.remove('show');
-      input.dispatchEvent(new Event('input'));
-      return;
-    }
-    const kw = val.toLowerCase();
-    const filtered = allPandas.filter(p => p.display.toLowerCase().includes(kw));
-    renderDropdown(filtered);
-  });
-
-  input.addEventListener('blur', function() {
-    setTimeout(() => dropdown.classList.remove('show'), 200);
-  });
-
-  document.addEventListener('click', function(e) {
-    if (!wrapper.contains(e.target)) dropdown.classList.remove('show');
-  });
-
-  if (initialValue === '野外') {
-    input.dataset.isWild = 'true';
+    return input;
   }
-
-  return input;
-}
 
   function createSuggestInput(containerId, options, inputId, initialValue, placeholder) {
     const container = document.getElementById(containerId);
@@ -2385,6 +2932,14 @@
   });
 
   treeBackBtn.addEventListener('click', function() {
+    if (currentPandaId) {
+      openDetail(currentPandaId);
+    } else {
+      showPage('pageHome');
+    }
+  });
+
+  relationBackBtn.addEventListener('click', function() {
     if (currentPandaId) {
       openDetail(currentPandaId);
     } else {
