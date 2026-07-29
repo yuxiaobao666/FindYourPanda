@@ -137,6 +137,7 @@
       color: #5a6a56;
       cursor: pointer;
       transition: 0.1s;
+      line-height: 1.4;
     }
     .filter-group .btn:hover {
       background: #e3dbcf;
@@ -295,12 +296,14 @@
 
     .detail-info-list {
       background: #f8f5f0;
+      border: 1px solid #e3dbcf;
       border-radius: 16px;
       padding: 12px 16px;
       margin-bottom: 16px;
     }
     .life-events-section {
       background: #f8f5f0;
+      border: 1px solid #e3dbcf;
       border-radius: 16px;
       padding: 12px 16px;
       margin-bottom: 16px;
@@ -470,7 +473,7 @@
       margin-right: auto;
     }
 
-    /* ===== 编辑页样式 ===== */
+    /* 编辑页样式 */
     .edit-form .form-row {
       display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-bottom: 10px;
     }
@@ -629,7 +632,7 @@
     .toggle-status-text.complete { color: #2d8a4e; font-weight: 500; }
     .toggle-status-text.incomplete { color: #d4a030; font-weight: 500; }
 
-    /* ===== custom-suggest ===== */
+    /* custom-suggest */
     .custom-suggest {
       position: relative;
       flex: 1;
@@ -689,146 +692,45 @@
       justify-content: flex-end;
     }
 
-    /* ===== 族谱 ===== */
-    .tree-container {
-      padding: 8px 0 20px 0;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .tree-root {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-    }
-    .tree-node {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 0 2px;
-    }
-    .tree-node .node-card {
-      background: #faf8f5;
-      border: 2px solid #e0d8cc;
-      border-radius: 30px;
-      padding: 4px 14px;
-      min-width: 44px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.15s;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.03);
-      font-size: 0.8rem;
-      white-space: nowrap;
-    }
-    .tree-node .node-card:hover {
-      background: #f0ebe2;
-      border-color: #c4b8a8;
-      transform: translateY(-1px);
-      box-shadow: 0 3px 10px rgba(0,0,0,0.06);
-    }
-    .tree-node .node-card.wild-card {
-      background: #f5f3ef;
-      border-color: #d8d2c8;
-      cursor: default;
-      opacity: 0.6;
-    }
-    .tree-node .node-card.wild-card:hover {
-      background: #f5f3ef;
-      border-color: #d8d2c8;
-      transform: none;
-      box-shadow: none;
-    }
-    .tree-node .node-card .node-name {
-      font-weight: 700;
-      font-size: 0.9rem;
-      color: #1f3a1f;
-      line-height: 1.3;
-    }
-    .tree-node .node-card .node-alias {
-      font-size: 0.6rem;
-      color: #8a9a86;
-      font-weight: 400;
-      margin-left: 4px;
-    }
-    .tree-node .node-card .node-name.wild-text {
-      color: #9a9a8a;
-    }
-    .tree-node .node-card .node-gender {
-      font-size: 0.6rem;
-      color: #8a9a86;
-      line-height: 1.2;
-      letter-spacing: 0.3px;
-    }
-    .tree-root-card {
-      background: #e8e0d4 !important;
-      border-color: #b9ae9a !important;
-      border-width: 2.5px !important;
-    }
-    .tree-root-card .node-name {
-      font-size: 1.05rem !important;
-    }
-    .tree-connector {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2px 0;
-    }
-    .tree-connector .line-down {
-      width: 2px;
-      height: 14px;
-      background: #d0c8bc;
-      flex-shrink: 0;
-      border-radius: 2px;
-    }
-    .tree-connector .line-branch {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    /* 导出格式选择 */
+    .export-dropdown {
       position: relative;
-      height: 16px;
+      display: inline-block;
+    }
+    .export-dropdown .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      min-width: 100px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      border-radius: 16px;
+      padding: 6px 0;
+      z-index: 60;
+      border: 1px solid #e0d8cc;
+      margin-top: 4px;
+    }
+    .export-dropdown .dropdown-content.show {
+      display: block;
+    }
+    .export-dropdown .dropdown-content .dropdown-item {
+      padding: 8px 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: #2a3a28;
+      transition: 0.1s;
+      border: none;
+      background: none;
       width: 100%;
-      min-width: 30px;
+      text-align: left;
+      font-family: inherit;
     }
-    .tree-connector .line-branch .branch-left,
-    .tree-connector .line-branch .branch-right {
-      flex: 1;
-      height: 2px;
-      background: #d0c8bc;
-      min-width: 8px;
-      border-radius: 2px;
+    .export-dropdown .dropdown-content .dropdown-item:hover {
+      background: #f0ede8;
     }
-    .tree-connector .line-branch .branch-center {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #d0c8bc;
-      flex-shrink: 0;
-    }
-    .tree-children {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: nowrap;
-      margin-top: 0px;
-      width: 100%;
-    }
-    .tree-child-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 30px;
-      flex: 0 1 auto;
-    }
-    .tree-footer {
-      display: flex;
-      justify-content: flex-start;
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid #f0ede8;
-    }
-    .tree-footer .btn { min-width: 70px; justify-content: center; }
 
-    /* ===== 亲缘关系页面 ===== */
+    /* 亲缘关系页面 */
     .relation-container {
       padding: 4px 0 12px 0;
     }
@@ -846,7 +748,12 @@
     .relation-search-row .search-label {
       font-weight: 600;
       color: #2d462b;
-      font-size: 0.95rem;
+      font-size: 1.2rem;
+    }
+    .relation-search-row .search-label .panda-name-display {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1f3a1f;
     }
     .relation-search-row .custom-suggest {
       min-width: 160px;
@@ -859,11 +766,6 @@
     .relation-search-row .btn {
       padding: 6px 18px;
       font-size: 0.85rem;
-    }
-    .relation-search-row .search-hint {
-      font-size: 0.75rem;
-      color: #8a9a86;
-      margin-left: 4px;
     }
 
     .relation-result {
@@ -890,15 +792,6 @@
       font-size: 1.05rem;
       margin-bottom: 6px;
     }
-    .relation-result .ancestor-title .badge {
-      font-weight: 400;
-      font-size: 0.8rem;
-      color: #6a7a66;
-      background: #f0ede8;
-      padding: 0 10px;
-      border-radius: 40px;
-      margin-left: 8px;
-    }
     .relation-result .path-item {
       font-family: 'Courier New', monospace;
       font-size: 0.92rem;
@@ -924,6 +817,12 @@
     .relation-result .path-item .panda-name-link:hover {
       text-decoration: underline;
       color: #2d4a2d;
+    }
+    .relation-result .result-headline {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #1f3a1f;
+      margin-bottom: 16px;
     }
     .relation-result .copy-area {
       margin-top: 16px;
@@ -970,18 +869,6 @@
       .edit-form .form-row label { min-width: 48px; font-size: 0.8rem; }
       .custom-suggest input { font-size: 0.8rem; padding: 6px 12px; }
       .custom-suggest .suggest-dropdown { max-height: 120px; }
-      .tree-node .node-card { padding: 2px 8px; min-width: 32px; font-size: 0.7rem; border-radius: 20px; }
-      .tree-node .node-card .node-name { font-size: 0.75rem; }
-      .tree-node .node-card .node-alias { font-size: 0.5rem; }
-      .tree-node .node-card .node-gender { font-size: 0.55rem; }
-      .tree-children { gap: 4px; }
-      .tree-connector .line-down { height: 8px; }
-      .tree-connector .line-branch { height: 10px; min-width: 14px; }
-      .tree-connector .line-branch .branch-left,
-      .tree-connector .line-branch .branch-right { min-width: 4px; }
-      .tree-connector .line-branch .branch-center { width: 4px; height: 4px; }
-      .tree-root-card .node-name { font-size: 0.9rem !important; }
-      .tree-footer .btn { min-width: 50px; padding: 6px 12px; font-size: 0.75rem; }
       .detail-header .panda-sub { font-size: 0.8rem; }
       .panda-link .alias-tag { font-size: 0.6rem; }
       .result-card .alias-text { font-size: 0.75rem; }
@@ -999,6 +886,8 @@
       .relation-search-row .custom-suggest { flex: 1; min-width: unset; }
       .relation-search-row .btn { align-self: flex-start; }
       .relation-result .path-item { font-size: 0.8rem; padding: 2px 6px; }
+      .relation-result .result-headline { font-size: 1.1rem; }
+      .relation-search-row .search-label .panda-name-display { font-size: 1.2rem; }
     }
   </style>
 </head>
@@ -1019,7 +908,7 @@
         <div class="stat-item">🏛️ <span class="num" id="orgCount">0</span><span class="label">个机构</span></div>
         <div class="stat-item">✅ <span class="num" id="completeCount">0</span><span class="label">已完善</span></div>
         <div class="stat-item">🟡 <span class="num" id="incompleteCount">0</span><span class="label">待补充</span></div>
-        <div class="stat-item">🎂 <span class="num" id="birthdayCount">0</span><span class="label">今日生日</span></div>
+        <div class="stat-item">🎂 <span class="num" id="birthdayCount">0</span><span class="label">今天生日</span></div>
       </div>
 
       <div class="browse-toolbar" style="margin-bottom:10px;">
@@ -1031,7 +920,13 @@
         </div>
         <div class="btn-group">
           <button class="btn btn-primary" id="addNewBtn"><i class="fas fa-plus-circle"></i> 录入</button>
-          <button class="btn btn-success" id="exportBtn"><i class="fas fa-download"></i> 导出</button>
+          <div class="export-dropdown">
+            <button class="btn btn-success" id="exportBtn"><i class="fas fa-download"></i> 导出 ▼</button>
+            <div class="dropdown-content" id="exportDropdown">
+              <button class="dropdown-item" data-format="json">📄 JSON</button>
+              <button class="dropdown-item" data-format="csv">📊 CSV</button>
+            </div>
+          </div>
           <label class="btn btn-success import-label">
             <i class="fas fa-upload"></i> 导入
             <input type="file" id="importInput" accept=".json" />
@@ -1044,13 +939,14 @@
           <span class="label">🏢 分组：</span>
           <button class="btn active" id="groupByOrgBtn"><i class="fas fa-building"></i> 机构</button>
           <button class="btn" id="groupByLocationBtn"><i class="fas fa-map-pin"></i> 所在地</button>
+          <button class="btn" id="groupByAgeBtn"><i class="fas fa-clock"></i> 年龄</button>
         </div>
         <div class="filter-group">
           <span class="label">📋 筛选：</span>
           <button class="btn active" id="filterAllBtn">全部</button>
           <button class="btn" id="filterCompleteBtn">✅ 已完善</button>
           <button class="btn" id="filterIncompleteBtn">🟡 待补充</button>
-          <button class="btn" id="filterBirthdayBtn">🎂 今日生日</button>
+          <button class="btn" id="filterBirthdayBtn">🎂 今天生日</button>
         </div>
       </div>
 
@@ -1074,24 +970,13 @@
       <div id="editBody"></div>
     </div>
 
-    <!-- 族谱页 -->
-    <div id="pageTree" class="page-view">
-      <div class="page-header">
-        <span class="page-title" id="treeTitle">🌳 家族族谱</span>
-      </div>
-      <div id="treeBody"></div>
-      <div class="tree-footer">
-        <button class="btn btn-outline" id="treeBackBtn"><i class="fas fa-arrow-left"></i> 返回</button>
-      </div>
-    </div>
-
     <!-- 亲缘关系页 -->
     <div id="pageRelation" class="page-view">
       <div class="page-header">
         <span class="page-title" id="relationTitle">🔍 亲缘关系查询</span>
       </div>
       <div id="relationBody"></div>
-      <div class="tree-footer">
+      <div class="tree-footer" style="display:flex;justify-content:flex-start;margin-top:20px;padding-top:16px;border-top:1px solid #f0ede8;">
         <button class="btn btn-outline" id="relationBackBtn"><i class="fas fa-arrow-left"></i> 返回</button>
       </div>
     </div>
@@ -1168,7 +1053,6 @@
   const pageHome = document.getElementById('pageHome');
   const pageDetail = document.getElementById('pageDetail');
   const pageEdit = document.getElementById('pageEdit');
-  const pageTree = document.getElementById('pageTree');
   const pageRelation = document.getElementById('pageRelation');
   const homeTitle = document.getElementById('homeTitle');
 
@@ -1177,10 +1061,12 @@
   const searchSuggestions = document.getElementById('searchSuggestions');
   const browseContainer = document.getElementById('browseContainer');
   const exportBtn = document.getElementById('exportBtn');
+  const exportDropdown = document.getElementById('exportDropdown');
   const importInput = document.getElementById('importInput');
   const addNewBtn = document.getElementById('addNewBtn');
   const groupByOrgBtn = document.getElementById('groupByOrgBtn');
   const groupByLocationBtn = document.getElementById('groupByLocationBtn');
+  const groupByAgeBtn = document.getElementById('groupByAgeBtn');
   const filterAllBtn = document.getElementById('filterAllBtn');
   const filterCompleteBtn = document.getElementById('filterCompleteBtn');
   const filterIncompleteBtn = document.getElementById('filterIncompleteBtn');
@@ -1191,9 +1077,6 @@
   const editBackBtn = document.getElementById('editBackBtn');
   const editTitle = document.getElementById('editTitle');
   const editBody = document.getElementById('editBody');
-  const treeBackBtn = document.getElementById('treeBackBtn');
-  const treeTitle = document.getElementById('treeTitle');
-  const treeBody = document.getElementById('treeBody');
   const relationBackBtn = document.getElementById('relationBackBtn');
   const relationTitle = document.getElementById('relationTitle');
   const relationBody = document.getElementById('relationBody');
@@ -1248,10 +1131,30 @@
     } catch { return dateStr; }
   }
 
+  // 计算年龄（潘达星不计算，但所在地为空时可以计算）
   function calcAge(birthdayStr) {
     if (!birthdayStr || birthdayStr.trim() === '') return null;
     const isStandard = /^\d{4}[-\/]\d{1,2}[-\/]\d{1,2}/.test(birthdayStr);
-    if (!isStandard) return null;
+    if (!isStandard) {
+      // 只有年份，按当年9月1日计算
+      const yearMatch = birthdayStr.match(/^(\d{4})/);
+      if (yearMatch) {
+        const year = parseInt(yearMatch[1]);
+        const birth = new Date(year, 8, 1); // 9月1日（月份从0开始，8=9月）
+        if (isNaN(birth.getTime())) return null;
+        const now = new Date();
+        let years = now.getFullYear() - birth.getFullYear();
+        let months = now.getMonth() - birth.getMonth();
+        if (months < 0) { years--; months += 12; }
+        if (years < 0) return null;
+        if (years === 0 && months === 0) return '不到1个月';
+        let parts = [];
+        if (years > 0) parts.push(years + '岁');
+        if (months > 0) parts.push(months + '个月');
+        return parts.join('') || (years + '岁');
+      }
+      return null;
+    }
     let year = null, month = null, day = null;
     const cleaned = birthdayStr.replace(/\s+/g, '');
     let match = cleaned.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
@@ -1276,6 +1179,46 @@
     if (years > 0) parts.push(years + '岁');
     if (months > 0) parts.push(months + '个月');
     return parts.join('') || (years + '岁');
+  }
+
+  // 获取年龄分组（5岁一组）
+  function getAgeGroup(birthdayStr) {
+    if (!birthdayStr) return null;
+    const isStandard = /^\d{4}[-\/]\d{1,2}[-\/]\d{1,2}/.test(birthdayStr);
+    let year = null, month = 5, day = 30;
+    if (isStandard) {
+      const cleaned = birthdayStr.replace(/\s+/g, '');
+      let match = cleaned.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+      if (match) { year = parseInt(match[1]); month = parseInt(match[2])-1; day = parseInt(match[3]); }
+      if (!match) {
+        try { const d = new Date(birthdayStr);
+          if (!isNaN(d.getTime())) { year = d.getFullYear(); month = d.getMonth(); day = d.getDate(); } } catch(e) {} }
+    } else {
+      const yearMatch = birthdayStr.match(/^(\d{4})/);
+      if (yearMatch) {
+        year = parseInt(yearMatch[1]);
+        month = 8; // 9月1日
+        day = 1;
+      }
+    }
+    if (year === null || isNaN(year)) return null;
+    month = Math.max(0, Math.min(11, month));
+    day = Math.max(1, Math.min(30, day));
+    const birth = new Date(year, month, day);
+    if (isNaN(birth.getTime())) return null;
+    const now = new Date();
+    let years = now.getFullYear() - birth.getFullYear();
+    if (now.getMonth() < birth.getMonth() || (now.getMonth() === birth.getMonth() && now.getDate() < birth.getDate())) {
+      years--;
+    }
+    if (years < 0) return null;
+    if (years < 5) return '0-5岁';
+    if (years < 10) return '5-10岁';
+    if (years < 15) return '10-15岁';
+    if (years < 20) return '15-20岁';
+    if (years < 25) return '20-25岁';
+    if (years < 30) return '25-30岁';
+    return '30岁以上';
   }
 
   function isTodayBirthday(birthdayStr) {
@@ -1403,6 +1346,7 @@
   function renderBrowse() {
     const pandastarList = [];
     const normalMap = new Map();
+    const ageMap = new Map();
 
     let filteredPandas = pandas;
     if (currentFilter === 'complete') {
@@ -1413,63 +1357,104 @@
       filteredPandas = pandas.filter(p => isTodayBirthday(p.birthday));
     }
 
-    filteredPandas.forEach(p => {
-      if (p.location && p.location.trim() === '潘达星') {
-        pandastarList.push(p);
-      } else {
-        const key = currentGroupMode === 'org' ? (p.org || '未归类') : (p.location || '未知所在地');
-        if (!normalMap.has(key)) normalMap.set(key, []);
-        normalMap.get(key).push(p);
-      }
-    });
-
-    let html = '';
-    const sortedKeys = Array.from(normalMap.keys()).sort();
-    for (let key of sortedKeys) {
-      const list = normalMap.get(key);
-      const icon = currentGroupMode === 'org' ? 'fa-building' : 'fa-map-pin';
-      html += `<div class="org-section"><div class="org-title">
-        <i class="fas ${icon}"></i> ${key} <span class="count-badge">${list.length}只</span>
-      </div><div class="panda-list">`;
-      list.sort((a,b)=> a.name.localeCompare(b.name));
-      list.forEach(p => {
-        const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
-        const tag = p.gender ? (p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')) : '';
-        const displayName = getDisplayName(p);
-        const dotClass = p.isComplete ? 'complete' : 'incomplete';
-        html += `<span class="panda-link" data-id="${p.id}">
-          <span class="status-dot ${dotClass}"></span>
-          ${displayName}
-          ${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}
-        </span>`;
+    if (currentGroupMode === 'age') {
+      // 年龄分组：排除潘达星
+      filteredPandas.forEach(p => {
+        if (p.location && p.location.trim() === '潘达星') return;
+        const ageGroup = getAgeGroup(p.birthday);
+        if (ageGroup) {
+          if (!ageMap.has(ageGroup)) ageMap.set(ageGroup, []);
+          ageMap.get(ageGroup).push(p);
+        } else {
+          if (!ageMap.has('年龄未知')) ageMap.set('年龄未知', []);
+          ageMap.get('年龄未知').push(p);
+        }
       });
-      html += '</div></div>';
+    } else {
+      filteredPandas.forEach(p => {
+        if (p.location && p.location.trim() === '潘达星') {
+          pandastarList.push(p);
+        } else {
+          const key = currentGroupMode === 'org' ? (p.org || '未归类') : (p.location || '未知所在地');
+          if (!normalMap.has(key)) normalMap.set(key, []);
+          normalMap.get(key).push(p);
+        }
+      });
     }
 
-    if (pandastarList.length) {
-      const dates = pandastarList.filter(p => p.passingDate).map(p => p.passingDate);
-      let display = '';
-      if (dates.length) {
-        const sorted = dates.slice().sort();
-        display = '🕊️ ' + sorted[0] + ' 〜 ' + sorted[sorted.length-1];
+    let html = '';
+
+    if (currentGroupMode === 'age') {
+      const ageGroups = ['0-5岁', '5-10岁', '10-15岁', '15-20岁', '20-25岁', '25-30岁', '30岁以上', '年龄未知'];
+      for (let key of ageGroups) {
+        const list = ageMap.get(key) || [];
+        if (list.length === 0) continue;
+        const icon = 'fa-clock';
+        html += `<div class="org-section"><div class="org-title">
+          <i class="fas ${icon}"></i> ${key} <span class="count-badge">${list.length}只</span>
+        </div><div class="panda-list">`;
+        list.sort((a,b)=> a.name.localeCompare(b.name));
+        list.forEach(p => {
+          const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
+          const tag = p.gender ? (p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')) : '';
+          const displayName = getDisplayName(p);
+          const dotClass = p.isComplete ? 'complete' : 'incomplete';
+          html += `<span class="panda-link" data-id="${p.id}">
+            <span class="status-dot ${dotClass}"></span>
+            ${displayName}
+            ${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}
+          </span>`;
+        });
+        html += '</div></div>';
       }
-      html += `<div class="org-section"><div class="org-title">
-        <i class="fas fa-star" style="color:#d4a373;"></i> 潘达星 ✨ <span class="count-badge">${pandastarList.length}只</span>
-        ${display ? `<span class="passing-date">${display}</span>` : ''}
-      </div><div class="panda-list">`;
-      pandastarList.sort((a,b)=> a.name.localeCompare(b.name));
-      pandastarList.forEach(p => {
-        const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
-        const tag = p.gender ? (p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')) : '';
-        const displayName = getDisplayName(p);
-        const dotClass = p.isComplete ? 'complete' : 'incomplete';
-        html += `<span class="panda-link pandastar" data-id="${p.id}">
-          <span class="status-dot ${dotClass}"></span>
-          ${displayName}
-          ${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}
-        </span>`;
-      });
-      html += '</div></div>';
+    } else {
+      const sortedKeys = Array.from(normalMap.keys()).sort();
+      for (let key of sortedKeys) {
+        const list = normalMap.get(key);
+        const icon = currentGroupMode === 'org' ? 'fa-building' : 'fa-map-pin';
+        html += `<div class="org-section"><div class="org-title">
+          <i class="fas ${icon}"></i> ${key} <span class="count-badge">${list.length}只</span>
+        </div><div class="panda-list">`;
+        list.sort((a,b)=> a.name.localeCompare(b.name));
+        list.forEach(p => {
+          const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
+          const tag = p.gender ? (p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')) : '';
+          const displayName = getDisplayName(p);
+          const dotClass = p.isComplete ? 'complete' : 'incomplete';
+          html += `<span class="panda-link" data-id="${p.id}">
+            <span class="status-dot ${dotClass}"></span>
+            ${displayName}
+            ${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}
+          </span>`;
+        });
+        html += '</div></div>';
+      }
+
+      if (pandastarList.length) {
+        const dates = pandastarList.filter(p => p.passingDate).map(p => p.passingDate);
+        let display = '';
+        if (dates.length) {
+          const sorted = dates.slice().sort();
+          display = '🕊️ ' + sorted[0] + ' 〜 ' + sorted[sorted.length-1];
+        }
+        html += `<div class="org-section"><div class="org-title">
+          <i class="fas fa-star" style="color:#d4a373;"></i> 潘达星 ✨ <span class="count-badge">${pandastarList.length}只</span>
+          ${display ? `<span class="passing-date">${display}</span>` : ''}
+        </div><div class="panda-list">`;
+        pandastarList.sort((a,b)=> a.name.localeCompare(b.name));
+        pandastarList.forEach(p => {
+          const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
+          const tag = p.gender ? (p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')) : '';
+          const displayName = getDisplayName(p);
+          const dotClass = p.isComplete ? 'complete' : 'incomplete';
+          html += `<span class="panda-link pandastar" data-id="${p.id}">
+            <span class="status-dot ${dotClass}"></span>
+            ${displayName}
+            ${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}
+          </span>`;
+        });
+        html += '</div></div>';
+      }
     }
 
     if (!html) {
@@ -1494,6 +1479,7 @@
     currentGroupMode = mode;
     groupByOrgBtn.classList.toggle('active', mode === 'org');
     groupByLocationBtn.classList.toggle('active', mode === 'location');
+    groupByAgeBtn.classList.toggle('active', mode === 'age');
     if (searchInput.value.trim()) searchInput.value = '';
     renderBrowse();
   }
@@ -1581,271 +1567,109 @@
   }
 
   // ================================================================
-  // 族谱
+  // 亲缘关系查询
   // ================================================================
-  function buildFamilyTree(panda, visited = new Set()) {
-    if (!panda) return null;
-    if (visited.has(panda.id)) {
-      return { ...panda, _cycle: true };
-    }
-    const newVisited = new Set(visited);
-    newVisited.add(panda.id);
+  function findAncestors(panda, maxDepth = 5) {
+    if (!panda) return [];
+    const results = [];
 
-    let mother = null, father = null;
-    if (panda.motherId) {
-      const m = getPandaById(panda.motherId);
-      if (m) mother = buildFamilyTree(m, newVisited);
-    }
-    if (!mother && panda.mother && !isWild(panda.mother)) {
-      const m = findPandaByName(panda.mother);
-      if (m) mother = buildFamilyTree(m, newVisited);
-    }
-    if (!mother && panda.mother && isWild(panda.mother)) {
-      mother = { id: 'wild_mother_' + panda.id, name: '🌿 野外', isWild: true, _isWild: true };
-    }
-
-    if (panda.fatherId) {
-      const f = getPandaById(panda.fatherId);
-      if (f) father = buildFamilyTree(f, newVisited);
-    }
-    if (!father && panda.father && !isWild(panda.father)) {
-      const f = findPandaByName(panda.father);
-      if (f) father = buildFamilyTree(f, newVisited);
-    }
-    if (!father && panda.father && isWild(panda.father)) {
-      father = { id: 'wild_father_' + panda.id, name: '🌿 野外', isWild: true, _isWild: true };
+    function traverse(current, path, depth) {
+      if (depth > maxDepth) return;
+      if (!current) return;
+      const newPath = [...path, current.id];
+      results.push({
+        ids: newPath,
+        names: newPath.map(id => {
+          const p = getPandaById(id);
+          return p ? { id: p.id, name: p.name, gender: p.gender || '未知' } : null;
+        }).filter(Boolean),
+        lastId: current.id,
+        depth: depth
+      });
+      const mother = current.motherId ? getPandaById(current.motherId) : null;
+      const father = current.fatherId ? getPandaById(current.fatherId) : null;
+      if (mother && !isWild(mother.name)) {
+        traverse(mother, newPath, depth + 1);
+      }
+      if (father && !isWild(father.name)) {
+        traverse(father, newPath, depth + 1);
+      }
     }
 
-    return { ...panda, mother, father, _cycle: false };
+    traverse(panda, [], 0);
+    return results;
   }
 
-  function renderTreeNode(node, depth = 0) {
-    if (!node) return '';
-    if (node._isWild) {
-      return `
-        <div class="tree-node">
-          <div class="node-card wild-card">
-            <div class="node-name wild-text">${node.name}</div>
-          </div>
-        </div>
-      `;
-    }
-    if (node._cycle) {
-      return `
-        <div class="tree-node">
-          <div class="node-card" style="border-color:#d4a373;background:#faf0e8;">
-            <div class="node-name">🔄 ${node.name}</div>
-            <div class="node-gender">循环引用</div>
-          </div>
-        </div>
-      `;
-    }
+  function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
+    if (!pandaA || !pandaB || pandaA.id === pandaB.id) return [];
 
-    const hasMother = node.mother !== null && node.mother !== undefined;
-    const hasFather = node.father !== null && node.father !== undefined;
-    const hasChildren = hasMother || hasFather;
+    const ancestorsA = findAncestors(pandaA, maxDepth);
+    const ancestorsB = findAncestors(pandaB, maxDepth);
 
-    let genderDisplay = node.gender || '未知';
-    let genderIcon = genderDisplay === '雌性' ? '♀' : (genderDisplay === '雄性' ? '♂' : '');
-    let aliasDisplay = node.alias ? '（' + node.alias + '）' : '';
-
-    let cardClass = 'node-card';
-    if (depth === 0) cardClass += ' tree-root-card';
-
-    let html = `
-      <div class="tree-node">
-        <div class="${cardClass}" data-id="${node.id}" data-wild="false">
-          <div class="node-name">${node.name}<span class="node-alias">${aliasDisplay}</span></div>
-          <div class="node-gender">${genderIcon} ${genderDisplay}</div>
-        </div>
-    `;
-
-    if (hasChildren) {
-      html += `
-        <div class="tree-connector">
-          <div class="line-down"></div>
-          <div class="line-branch">
-            <div class="branch-left"></div>
-            <div class="branch-center"></div>
-            <div class="branch-right"></div>
-          </div>
-        </div>
-        <div class="tree-children">
-      `;
-      if (hasMother) {
-        html += `<div class="tree-child-wrapper">${renderTreeNode(node.mother, depth + 1)}</div>`;
+    const aPathMap = new Map();
+    ancestorsA.forEach(path => {
+      const lastId = path.lastId;
+      if (!aPathMap.has(lastId) || path.depth < aPathMap.get(lastId).depth) {
+        aPathMap.set(lastId, path);
       }
-      if (hasFather) {
-        html += `<div class="tree-child-wrapper">${renderTreeNode(node.father, depth + 1)}</div>`;
+    });
+
+    const bPathMap = new Map();
+    ancestorsB.forEach(path => {
+      const lastId = path.lastId;
+      if (!bPathMap.has(lastId) || path.depth < bPathMap.get(lastId).depth) {
+        bPathMap.set(lastId, path);
       }
-      html += `</div>`;
-    }
+    });
 
-    html += `</div>`;
-    return html;
-  }
+    const commonIds = [];
+    aPathMap.forEach((path, id) => {
+      if (bPathMap.has(id)) {
+        commonIds.push(id);
+      }
+    });
 
-  function openTree(pandaId) {
-    const p = getPandaById(pandaId);
-    if (!p) return;
-    const displayName = getDisplayName(p);
-    treeTitle.textContent = '🌳 ' + displayName + ' 的族谱';
+    if (commonIds.length === 0) return [];
 
-    const tree = buildFamilyTree(p);
-    if (!tree) {
-      treeBody.innerHTML = '<div class="empty-state">无法构建族谱</div>';
-      showPage('pageTree');
-      return;
-    }
-
-    let html = `<div class="tree-container"><div class="tree-root">`;
-    html += renderTreeNode(tree);
-    html += `</div></div>`;
-
-    html += `
-      <div style="margin-top:12px;padding-top:10px;border-top:1px solid #f0ede8;font-size:0.7rem;color:#8a9a86;display:flex;flex-wrap:wrap;gap:10px;">
-        <span>🌿 野外（终止节点）</span>
-        <span>🔄 循环引用</span>
-        <span style="display:inline-flex;align-items:center;gap:4px;"><span style="display:inline-block;width:14px;height:14px;border-radius:4px;background:#e8e0d4;border:2px solid #b9ae9a;"></span> 当前熊猫</span>
-        <span>⬇️ 长辈在上</span>
-      </div>
-    `;
-
-    treeBody.innerHTML = html;
-
-    treeBody.querySelectorAll('.node-card:not(.wild-card)').forEach(el => {
-      el.addEventListener('click', function() {
-        const id = this.dataset.id;
-        if (id && !id.startsWith('wild_')) {
-          const target = getPandaById(id);
-          if (target) {
-            openDetail(target.id);
-          }
+    // 过滤冗余共同祖先
+    const filteredIds = commonIds.filter(id => {
+      const pathA = aPathMap.get(id);
+      const pathB = bPathMap.get(id);
+      const pathToCheck = pathA.ids.length <= pathB.ids.length ? pathA.ids : pathB.ids;
+      const otherCommonIds = commonIds.filter(otherId => otherId !== id);
+      for (let otherId of otherCommonIds) {
+        if (pathToCheck.includes(otherId)) {
+          return false;
         }
-      });
-    });
-
-    showPage('pageTree');
-    window.scrollTo(0, 0);
-  }
-
-  // ================================================================
-  // 亲缘关系查询（5代以内，只返回最近共同祖先）
-  // ================================================================
-  // ================================================================
-// 亲缘关系查询（5代以内，过滤冗余共同祖先）
-// ================================================================
-function findAncestors(panda, maxDepth = 5) {
-  if (!panda) return [];
-  const results = [];
-
-  function traverse(current, path, depth) {
-    if (depth > maxDepth) return;
-    if (!current) return;
-    const newPath = [...path, current.id];
-    results.push({
-      ids: newPath,
-      names: newPath.map(id => {
-        const p = getPandaById(id);
-        return p ? { id: p.id, name: p.name, gender: p.gender || '未知' } : null;
-      }).filter(Boolean),
-      lastId: current.id,
-      depth: depth
-    });
-    const mother = current.motherId ? getPandaById(current.motherId) : null;
-    const father = current.fatherId ? getPandaById(current.fatherId) : null;
-    if (mother && !isWild(mother.name)) {
-      traverse(mother, newPath, depth + 1);
-    }
-    if (father && !isWild(father.name)) {
-      traverse(father, newPath, depth + 1);
-    }
-  }
-
-  traverse(panda, [], 0);
-  return results;
-}
-
-// ===== 核心修复：过滤冗余共同祖先 =====
-function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
-  if (!pandaA || !pandaB || pandaA.id === pandaB.id) return [];
-
-  const ancestorsA = findAncestors(pandaA, maxDepth);
-  const ancestorsB = findAncestors(pandaB, maxDepth);
-
-  // 构建 A 的祖先 ID -> 最短路径
-  const aPathMap = new Map();
-  ancestorsA.forEach(path => {
-    const lastId = path.lastId;
-    if (!aPathMap.has(lastId) || path.depth < aPathMap.get(lastId).depth) {
-      aPathMap.set(lastId, path);
-    }
-  });
-
-  // 构建 B 的祖先 ID -> 最短路径
-  const bPathMap = new Map();
-  ancestorsB.forEach(path => {
-    const lastId = path.lastId;
-    if (!bPathMap.has(lastId) || path.depth < bPathMap.get(lastId).depth) {
-      bPathMap.set(lastId, path);
-    }
-  });
-
-  // 找到所有共同祖先
-  const commonIds = [];
-  aPathMap.forEach((path, id) => {
-    if (bPathMap.has(id)) {
-      commonIds.push(id);
-    }
-  });
-
-  if (commonIds.length === 0) return [];
-
-  // ===== 过滤冗余共同祖先 =====
-  // 规则：如果某个共同祖先出现在另一个共同祖先的路径中，则舍弃（保留更近的那个）
-  const filteredIds = commonIds.filter(id => {
-    // 检查是否有另一个共同祖先出现在 id 的路径中（且不是 id 本身）
-    const pathA = aPathMap.get(id);
-    const pathB = bPathMap.get(id);
-    // 取两条路径中较短的那条来检查
-    const pathToCheck = pathA.ids.length <= pathB.ids.length ? pathA.ids : pathB.ids;
-    // 排除 id 本身
-    const otherCommonIds = commonIds.filter(otherId => otherId !== id);
-    for (let otherId of otherCommonIds) {
-      // 检查 otherId 是否出现在 pathToCheck 中
-      if (pathToCheck.includes(otherId)) {
-        return false; // 有更近的共同祖先，当前这个被过滤掉
       }
-    }
-    return true;
-  });
+      return true;
+    });
 
-  // 按深度排序（小的在前）
-  filteredIds.sort((a, b) => {
-    const depthA = aPathMap.get(a).depth;
-    const depthB = aPathMap.get(b).depth;
-    return depthA - depthB;
-  });
+    filteredIds.sort((a, b) => {
+      const depthA = aPathMap.get(a).depth;
+      const depthB = aPathMap.get(b).depth;
+      return depthA - depthB;
+    });
 
-  const result = [];
-  filteredIds.forEach(id => {
-    const pathA = aPathMap.get(id);
-    const pathB = bPathMap.get(id);
-    if (pathA && pathB) {
-      result.push({
-        ancestorId: id,
-        ancestorName: getPandaById(id)?.name || '未知',
-        ancestorGender: getPandaById(id)?.gender || '未知',
-        pathA: pathA.names.map(n => ({ id: n.id, name: n.name, gender: n.gender })),
-        pathB: pathB.names.map(n => ({ id: n.id, name: n.name, gender: n.gender })),
-        depthA: pathA.depth,
-        depthB: pathB.depth,
-      });
-    }
-  });
+    const result = [];
+    filteredIds.forEach(id => {
+      const pathA = aPathMap.get(id);
+      const pathB = bPathMap.get(id);
+      if (pathA && pathB) {
+        result.push({
+          ancestorId: id,
+          ancestorName: getPandaById(id)?.name || '未知',
+          ancestorGender: getPandaById(id)?.gender || '未知',
+          pathA: pathA.names.map(n => ({ id: n.id, name: n.name, gender: n.gender })),
+          pathB: pathB.names.map(n => ({ id: n.id, name: n.name, gender: n.gender })),
+          depthA: pathA.depth,
+          depthB: pathB.depth,
+        });
+      }
+    });
 
-  return result;
-}
+    return result;
+  }
 
   function formatPathForDisplay(path, targetName) {
     if (!path || path.length === 0) return '';
@@ -1905,10 +1729,11 @@ function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
         </div>
 
         <div class="relation-search-row">
-          <span class="search-label">🐼 ${pA_display} ${pA_genderIcon}  ↔ </span>
+          <span class="search-label">
+            🐼 <span class="panda-name-display">${pA_display}</span> ${pA_genderIcon}  ↔
+          </span>
           <div id="relationTargetContainer" style="flex:1;min-width:120px;"></div>
           <button class="btn btn-primary" id="relationQueryBtn"><i class="fas fa-search"></i> 查询</button>
-          <span class="search-hint">输入熊猫名字搜索</span>
         </div>
 
         <div id="relationResultContainer">
@@ -1921,7 +1746,7 @@ function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
 
     const targetContainer = document.getElementById('relationTargetContainer');
     const allPandas = getAllPandaOptions().filter(o => o.id !== pA.id);
-    const targetInput = createRelationSuggestInput(targetContainer, allPandas, 'relationTarget', '', '输入第二只熊猫...');
+    const targetInput = createRelationSuggestInput(targetContainer, allPandas, 'relationTarget', '', '');
 
     document.getElementById('relationQueryBtn').addEventListener('click', function() {
       const val = targetInput.value.trim();
@@ -1929,7 +1754,25 @@ function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
         alert('请输入第二只熊猫的名字');
         return;
       }
-      const matched = findPandaByName(val);
+      // 精确匹配：先按显示名匹配（名字+别名），再按名字匹配
+      let matched = null;
+      const allOptions = getAllPandaOptions();
+      // 先尝试精确匹配显示名
+      matched = allOptions.find(o => o.display === val);
+      if (!matched) {
+        // 尝试按名字匹配
+        matched = allOptions.find(o => o.name === val);
+      }
+      if (!matched) {
+        // 尝试模糊匹配
+        const candidates = allOptions.filter(o => o.display.includes(val) || o.name.includes(val));
+        if (candidates.length === 1) {
+          matched = candidates[0];
+        } else if (candidates.length > 1) {
+          alert('找到多个匹配的熊猫：' + candidates.map(c => c.display).join('、') + '，请输入更精确的名字');
+          return;
+        }
+      }
       if (!matched) {
         alert('未找到名为 "' + val + '" 的熊猫');
         return;
@@ -1938,8 +1781,10 @@ function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
         alert('不能选择自己');
         return;
       }
-      relationPandaB = matched;
-      performRelationQuery(pA, matched);
+      relationPandaB = getPandaById(matched.id);
+      if (relationPandaB) {
+        performRelationQuery(pA, relationPandaB);
+      }
     });
 
     targetInput.addEventListener('keydown', function(e) {
@@ -1954,7 +1799,7 @@ function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
     const wrapper = document.createElement('div');
     wrapper.className = 'custom-suggest';
     wrapper.innerHTML = `
-      <input type="text" id="${inputId}" value="${initialValue||''}" placeholder="${placeholder||'输入或选择'}" autocomplete="off" />
+      <input type="text" id="${inputId}" value="${initialValue||''}" placeholder="${placeholder||'输入熊猫名字...'}" autocomplete="off" />
       <div class="suggest-dropdown" id="${inputId}_dropdown"></div>
     `;
     container.appendChild(wrapper);
@@ -2031,10 +1876,7 @@ function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
 
     let html = `<div class="relation-result">`;
 
-    // 修改标题：不再显示"有X个共同祖先"
-    html += `<div style="font-size:0.85rem;color:#5a6a56;margin-bottom:12px;">
-      🐼${pA_display} 与 🐼${pB_display} 的亲缘关系是：
-    </div>`;
+    html += `<div class="result-headline">🐼${pA_display} 与 🐼${pB_display} 的亲缘关系是：</div>`;
 
     results.forEach((r, idx) => {
       const ancestor = getPandaById(r.ancestorId);
@@ -2049,7 +1891,6 @@ function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
         <div class="ancestor-group">
           <div class="ancestor-title">
             ${idx+1}、 ${ancestorDisplay} ${genderIcon}
-            <span class="badge">第 ${Math.min(r.depthA, r.depthB)} 代</span>
           </div>
           <div class="path-item" data-path='${JSON.stringify(r.pathA)}'>
             ${pathA_str}
@@ -2110,6 +1951,121 @@ function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
   }
 
   // ================================================================
+  // 导出（JSON / CSV）
+  // ================================================================
+  function exportData(format) {
+    if (format === 'csv') {
+      exportCSV();
+    } else {
+      exportJSON();
+    }
+    exportDropdown.classList.remove('show');
+  }
+
+  function exportJSON() {
+    const blob = new Blob([JSON.stringify(pandas, null, 2)], { type:'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'pandas_' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function exportCSV() {
+    // 定义 CSV 列（不包含 lifeEvents）
+    const headers = ['id', 'name', 'alias', 'gender', 'birthday', 'org', 'location', 'mother', 'father', 'motherId', 'fatherId', 'pedigree', 'passingDate', 'isComplete'];
+    let csv = headers.join(',') + '\n';
+    pandas.forEach(p => {
+      const row = headers.map(h => {
+        let val = p[h] !== undefined ? p[h] : '';
+        if (typeof val === 'string') {
+          // 处理包含逗号或换行的字段
+          if (val.includes(',') || val.includes('"') || val.includes('\n')) {
+            val = '"' + val.replace(/"/g, '""') + '"';
+          }
+        } else if (typeof val === 'boolean') {
+          val = val ? 'true' : 'false';
+        }
+        return val;
+      });
+      csv += row.join(',') + '\n';
+    });
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' }); // 加BOM支持Excel
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'pandas_' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // 导出下拉菜单
+  exportBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    exportDropdown.classList.toggle('show');
+  });
+  exportDropdown.querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', function() {
+      exportData(this.dataset.format);
+    });
+  });
+  document.addEventListener('click', function() {
+    exportDropdown.classList.remove('show');
+  });
+
+  // ================================================================
+  // 导入
+  // ================================================================
+  function importData(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const imported = JSON.parse(e.target.result);
+        if (!Array.isArray(imported) || !imported.length || !imported[0].name) {
+          alert('数据格式无效，请检查JSON文件');
+          return;
+        }
+        imported.forEach(p => {
+          migrateAlias(p);
+          if (p.isComplete === undefined) p.isComplete = false;
+          if (p.motherId === undefined) p.motherId = '';
+          if (p.fatherId === undefined) p.fatherId = '';
+          if (p.lifeEvents === undefined) p.lifeEvents = [];
+        });
+
+        const overwrite = confirm('将导入 ' + imported.length + ' 条数据，是否覆盖当前所有数据？\n点击"确定"覆盖，"取消"则追加合并。');
+        if (overwrite) {
+          pandas = imported;
+        } else {
+          const existing = new Set(pandas.map(p => p.name));
+          let added = 0;
+          imported.forEach(p => {
+            if (!existing.has(p.name)) {
+              pandas.push(p);
+              existing.add(p.name);
+              added++;
+            }
+          });
+          if (added === 0) { alert('所有数据已存在，没有新增'); return; }
+        }
+        const ids = pandas.map(p => { const n = parseInt(String(p.id).replace('p','')); return isNaN(n)?0:n; });
+        nextId = (ids.length ? Math.max(...ids) : 0) + 1;
+        saveData();
+        alert('导入成功！当前共 ' + pandas.length + ' 条数据');
+        searchInput.value = '';
+        detailHistory = [];
+        renderBrowse();
+      } catch(err) {
+        alert('解析失败: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  importInput.addEventListener('change', function(e) {
+    if (e.target.files.length) { importData(e.target.files[0]); e.target.value = ''; }
+  });
+
+  // ================================================================
   // 详情页
   // ================================================================
   function goBackDetail() {
@@ -2147,7 +2103,9 @@ function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
     detailTitle.textContent = '';
 
     let ageStr = '';
-    if (p.location && p.location.trim() !== '潘达星') {
+    // 所在地为潘达星时不显示年龄，但所在地为空时可以显示
+    const isPandastar = p.location && p.location.trim() === '潘达星';
+    if (!isPandastar) {
       const age = calcAge(p.birthday);
       if (age) ageStr = age;
     }
@@ -2258,7 +2216,6 @@ function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
       <div class="detail-actions">
         <button class="btn btn-outline btn-left" id="detailExitBtn"><i class="fas fa-arrow-left"></i> 返回</button>
         <button class="btn btn-danger" id="detailDeleteBtn"><i class="fas fa-trash-alt"></i> 删除</button>
-        <button class="btn btn-warning" id="detailTreeBtn"><i class="fas fa-sitemap"></i> 族谱</button>
         <button class="btn btn-primary" id="detailEditBtn"><i class="fas fa-edit"></i> 编辑</button>
       </div>
     `;
@@ -2286,10 +2243,6 @@ function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
       }
     });
 
-    document.getElementById('detailTreeBtn').addEventListener('click', function() {
-      openTree(p.id);
-    });
-
     document.getElementById('detailEditBtn').addEventListener('click', function() {
       openEdit(p.id);
     });
@@ -2306,7 +2259,7 @@ function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
   }
 
   // ================================================================
-  // 编辑页（精简保留）
+  // 编辑页（精简版，保留核心功能）
   // ================================================================
   function createSuggestInputWithWildcard(containerId, options, inputId, initialValue, placeholder) {
     const container = document.getElementById(containerId);
@@ -2834,61 +2787,6 @@ function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
     window.scrollTo(0, 0);
   }
 
-  function exportData() {
-    const blob = new Blob([JSON.stringify(pandas, null, 2)], { type:'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'pandas_' + new Date().toISOString().slice(0,10) + '.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
-
-  function importData(file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        const imported = JSON.parse(e.target.result);
-        if (!Array.isArray(imported) || !imported.length || !imported[0].name) {
-          alert('数据格式无效，请检查JSON文件');
-          return;
-        }
-        imported.forEach(p => {
-          migrateAlias(p);
-          if (p.isComplete === undefined) p.isComplete = false;
-          if (p.motherId === undefined) p.motherId = '';
-          if (p.fatherId === undefined) p.fatherId = '';
-          if (p.lifeEvents === undefined) p.lifeEvents = [];
-        });
-
-        const overwrite = confirm('将导入 ' + imported.length + ' 条数据，是否覆盖当前所有数据？\n点击"确定"覆盖，"取消"则追加合并。');
-        if (overwrite) {
-          pandas = imported;
-        } else {
-          const existing = new Set(pandas.map(p => p.name));
-          let added = 0;
-          imported.forEach(p => {
-            if (!existing.has(p.name)) {
-              pandas.push(p);
-              existing.add(p.name);
-              added++;
-            }
-          });
-          if (added === 0) { alert('所有数据已存在，没有新增'); return; }
-        }
-        const ids = pandas.map(p => { const n = parseInt(String(p.id).replace('p','')); return isNaN(n)?0:n; });
-        nextId = (ids.length ? Math.max(...ids) : 0) + 1;
-        saveData();
-        alert('导入成功！当前共 ' + pandas.length + ' 条数据');
-        searchInput.value = '';
-        detailHistory = [];
-        renderBrowse();
-      } catch(err) {
-        alert('解析失败: ' + err.message);
-      }
-    };
-    reader.readAsText(file);
-  }
-
   // ================================================================
   // 事件绑定
   // ================================================================
@@ -2906,14 +2804,11 @@ function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
   searchInput.addEventListener('blur', function() { setTimeout(() => searchSuggestions.classList.remove('show'), 200); });
   searchInput.addEventListener('focus', function() { if (this.value) updateSuggestions(this.value); });
 
-  exportBtn.addEventListener('click', exportData);
-  importInput.addEventListener('change', function(e) {
-    if (e.target.files.length) { importData(e.target.files[0]); e.target.value = ''; }
-  });
   addNewBtn.addEventListener('click', addNewPanda);
 
   groupByOrgBtn.addEventListener('click', function() { setGroupMode('org'); });
   groupByLocationBtn.addEventListener('click', function() { setGroupMode('location'); });
+  groupByAgeBtn.addEventListener('click', function() { setGroupMode('age'); });
 
   filterAllBtn.addEventListener('click', function() { setFilter('all'); });
   filterCompleteBtn.addEventListener('click', function() { setFilter('complete'); });
@@ -2926,14 +2821,6 @@ function findCommonAncestors(pandaA, pandaB, maxDepth = 5) {
       showPage('pageHome');
     } else if (editPandaId) {
       openDetail(editPandaId);
-    } else {
-      showPage('pageHome');
-    }
-  });
-
-  treeBackBtn.addEventListener('click', function() {
-    if (currentPandaId) {
-      openDetail(currentPandaId);
     } else {
       showPage('pageHome');
     }
