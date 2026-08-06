@@ -149,12 +149,30 @@
     }
     .filter-group .btn i { margin-right: 4px; }
 
+    /* 分组标题（可点击折叠） */
     .org-section {
       margin-bottom: 22px; border-bottom: 1px dashed #d6cec0; padding-bottom: 12px;
     }
     .org-title {
       font-weight: 700; color: #2d462b; font-size: 1.2rem; margin-bottom: 10px;
       display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      cursor: pointer;
+      user-select: none;
+      padding: 4px 0;
+      border-radius: 12px;
+      transition: background 0.1s;
+    }
+    .org-title:hover {
+      background: #f5f2ec;
+    }
+    .org-title .toggle-icon {
+      font-size: 0.8rem;
+      color: #8a9a86;
+      transition: transform 0.2s;
+      display: inline-block;
+    }
+    .org-title .toggle-icon.collapsed {
+      transform: rotate(-90deg);
     }
     .org-title i { color: #5f825c; }
     .org-title .count-badge {
@@ -165,7 +183,22 @@
       font-size: 0.85rem; font-weight: 400; color: #8a7a6a;
       background: #f3efe9; padding: 2px 14px; border-radius: 40px;
     }
-    .panda-list { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+    .panda-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      overflow: hidden;
+      transition: max-height 0.3s ease, opacity 0.25s ease, margin 0.25s ease;
+      max-height: 2000px;
+      opacity: 1;
+      margin-top: 0;
+    }
+    .panda-list.collapsed {
+      max-height: 0;
+      opacity: 0;
+      margin-top: 0;
+      pointer-events: none;
+    }
 
     .panda-link {
       cursor: pointer; color: #1f3a1f; background: #f3efe9; padding: 5px 16px;
@@ -183,6 +216,11 @@
     }
     .panda-link .status-dot.complete { background: #2d8a4e; }
     .panda-link .status-dot.incomplete { background: #d4a030; }
+    .panda-link .seen-icon {
+      font-size: 0.8rem;
+      color: #e8a030;
+      margin-left: 2px;
+    }
     .panda-link .gender-tag {
       font-size: 0.65rem; font-weight: 600; padding: 0 6px; border-radius: 20px;
       background: #d9d0c0; color: #4a5a48;
@@ -215,6 +253,11 @@
     .result-card .status-dot.incomplete { background: #d4a030; }
     .result-card .name {
       font-weight: 700; font-size: 1.2rem; color: #1f3a1f;
+    }
+    .result-card .seen-icon {
+      font-size: 0.9rem;
+      color: #e8a030;
+      margin-left: 2px;
     }
     .result-card .alias-text {
       font-size: 0.85rem;
@@ -377,6 +420,15 @@
       background: #f5edd4;
       color: #8a7020;
     }
+    .detail-info-item .value .seen-badge {
+      display: inline-block;
+      padding: 0 12px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      background: #f0e8d8;
+      color: #b08030;
+    }
 
     .life-events-section .section-title {
       font-weight: 600;
@@ -473,7 +525,6 @@
       margin-right: auto;
     }
 
-    /* 编辑页样式 */
     .edit-form .form-row {
       display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-bottom: 10px;
     }
@@ -632,7 +683,32 @@
     .toggle-status-text.complete { color: #2d8a4e; font-weight: 500; }
     .toggle-status-text.incomplete { color: #d4a030; font-weight: 500; }
 
-    /* custom-suggest */
+    /* 见过开关 */
+    .seen-toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 0 4px 0;
+      border-top: 1px solid #f0ede8;
+      margin-top: 4px;
+    }
+    .seen-toggle-row .toggle-label {
+      font-weight: 500;
+      color: #2f402d;
+      font-size: 0.9rem;
+    }
+    .seen-toggle-row .seen-status-text {
+      font-size: 0.85rem;
+      color: #5a6a56;
+    }
+    .seen-toggle-row .seen-status-text.seen {
+      color: #b08030;
+      font-weight: 500;
+    }
+    .seen-toggle-row .seen-status-text.not-seen {
+      color: #8a9a86;
+    }
+
     .custom-suggest {
       position: relative;
       flex: 1;
@@ -692,7 +768,7 @@
       justify-content: flex-end;
     }
 
-    /* 导出格式选择 */
+    /* 导出下拉 */
     .export-dropdown {
       position: relative;
       display: inline-block;
@@ -909,6 +985,7 @@
         <div class="stat-item">✅ <span class="num" id="completeCount">0</span><span class="label">已完善</span></div>
         <div class="stat-item">🟡 <span class="num" id="incompleteCount">0</span><span class="label">待补充</span></div>
         <div class="stat-item">🎂 <span class="num" id="birthdayCount">0</span><span class="label">今天生日</span></div>
+        <div class="stat-item">👀 <span class="num" id="seenCount">0</span><span class="label">见过</span></div>
       </div>
 
       <div class="browse-toolbar" style="margin-bottom:10px;">
@@ -947,6 +1024,8 @@
           <button class="btn" id="filterCompleteBtn">✅ 已完善</button>
           <button class="btn" id="filterIncompleteBtn">🟡 待补充</button>
           <button class="btn" id="filterBirthdayBtn">🎂 今天生日</button>
+          <button class="btn" id="filterSeenBtn">👀 见过</button>
+          <button class="btn" id="filterNotSeenBtn">🙈 未见过</button>
         </div>
       </div>
 
@@ -1019,17 +1098,18 @@
             if (p.motherId === undefined) p.motherId = '';
             if (p.fatherId === undefined) p.fatherId = '';
             if (p.lifeEvents === undefined) p.lifeEvents = [];
+            if (p.hasSeen === undefined) p.hasSeen = false;
           });
           return data;
         }
       } catch (e) {}
     }
     return [
-      { id: 'p1', name: '花花', gender: '雌性', birthday: '2020-07-04', org: '成都大熊猫繁育研究基地', location: '', mother: '成功', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [] },
-      { id: 'p2', name: '和叶', gender: '雌性', birthday: '2020-07-04', org: '成都大熊猫繁育研究基地', location: '', mother: '成功', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [] },
-      { id: 'p3', name: '萌兰', gender: '雄性', birthday: '2015-07-04', org: '北京动物园', location: '北京', mother: '萌萌', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [] },
-      { id: 'p4', name: '美兰', gender: '雄性', birthday: '2006-09-06', org: '成都大熊猫繁育研究基地', location: '', mother: '伦伦', father: '洋洋', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [] },
-      { id: 'p5', name: '成功', gender: '雌性', birthday: '2000-08-01', org: '成都大熊猫繁育研究基地', location: '潘达星', mother: '成成', father: '安安', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [] },
+      { id: 'p1', name: '花花', gender: '雌性', birthday: '2020-07-04', org: '成都大熊猫繁育研究基地', location: '', mother: '成功', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [], hasSeen: false },
+      { id: 'p2', name: '和叶', gender: '雌性', birthday: '2020-07-04', org: '成都大熊猫繁育研究基地', location: '', mother: '成功', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [], hasSeen: false },
+      { id: 'p3', name: '萌兰', gender: '雄性', birthday: '2015-07-04', org: '北京动物园', location: '北京', mother: '萌萌', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [], hasSeen: false },
+      { id: 'p4', name: '美兰', gender: '雄性', birthday: '2006-09-06', org: '成都大熊猫繁育研究基地', location: '', mother: '伦伦', father: '洋洋', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [], hasSeen: false },
+      { id: 'p5', name: '成功', gender: '雌性', birthday: '2000-08-01', org: '成都大熊猫繁育研究基地', location: '潘达星', mother: '成成', father: '安安', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [], hasSeen: false },
     ];
   }
 
@@ -1071,6 +1151,8 @@
   const filterCompleteBtn = document.getElementById('filterCompleteBtn');
   const filterIncompleteBtn = document.getElementById('filterIncompleteBtn');
   const filterBirthdayBtn = document.getElementById('filterBirthdayBtn');
+  const filterSeenBtn = document.getElementById('filterSeenBtn');
+  const filterNotSeenBtn = document.getElementById('filterNotSeenBtn');
 
   const detailTitle = document.getElementById('detailTitle');
   const detailBody = document.getElementById('detailBody');
@@ -1088,6 +1170,7 @@
   const completeCount = document.getElementById('completeCount');
   const incompleteCount = document.getElementById('incompleteCount');
   const birthdayCount = document.getElementById('birthdayCount');
+  const seenCount = document.getElementById('seenCount');
 
   // ================================================================
   // 核心函数
@@ -1131,16 +1214,14 @@
     } catch { return dateStr; }
   }
 
-  // 计算年龄（潘达星不计算，但所在地为空时可以计算）
   function calcAge(birthdayStr) {
     if (!birthdayStr || birthdayStr.trim() === '') return null;
     const isStandard = /^\d{4}[-\/]\d{1,2}[-\/]\d{1,2}/.test(birthdayStr);
     if (!isStandard) {
-      // 只有年份，按当年9月1日计算
       const yearMatch = birthdayStr.match(/^(\d{4})/);
       if (yearMatch) {
         const year = parseInt(yearMatch[1]);
-        const birth = new Date(year, 8, 1); // 9月1日（月份从0开始，8=9月）
+        const birth = new Date(year, 8, 1);
         if (isNaN(birth.getTime())) return null;
         const now = new Date();
         let years = now.getFullYear() - birth.getFullYear();
@@ -1181,7 +1262,6 @@
     return parts.join('') || (years + '岁');
   }
 
-  // 获取年龄分组（5岁一组）
   function getAgeGroup(birthdayStr) {
     if (!birthdayStr) return null;
     const isStandard = /^\d{4}[-\/]\d{1,2}[-\/]\d{1,2}/.test(birthdayStr);
@@ -1197,7 +1277,7 @@
       const yearMatch = birthdayStr.match(/^(\d{4})/);
       if (yearMatch) {
         year = parseInt(yearMatch[1]);
-        month = 8; // 9月1日
+        month = 8;
         day = 1;
       }
     }
@@ -1325,6 +1405,7 @@
     const complete = pandas.filter(p => p.isComplete === true).length;
     const incomplete = total - complete;
     const birthday = pandas.filter(p => isTodayBirthday(p.birthday)).length;
+    const seen = pandas.filter(p => p.hasSeen === true).length;
     totalCount.textContent = total;
     maleCount.textContent = male;
     femaleCount.textContent = female;
@@ -1332,12 +1413,40 @@
     completeCount.textContent = complete;
     incompleteCount.textContent = incomplete;
     birthdayCount.textContent = birthday;
+    seenCount.textContent = seen;
   }
 
   function showPage(pageId) {
     document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
     window.scrollTo(0, 0);
+  }
+
+  // ================================================================
+  // 折叠状态管理
+  // ================================================================
+  // 存储每个分类的折叠状态：key 为分类名称，true=收起，false=展开
+  let collapseState = {};
+
+  function toggleSection(titleEl) {
+    const section = titleEl.closest('.org-section');
+    const list = section.querySelector('.panda-list');
+    const icon = titleEl.querySelector('.toggle-icon');
+    if (!list) return;
+    const isCollapsed = list.classList.contains('collapsed');
+    // 切换状态
+    if (isCollapsed) {
+      list.classList.remove('collapsed');
+      if (icon) icon.classList.remove('collapsed');
+      // 更新状态记录
+      const key = titleEl.dataset.key || titleEl.textContent.trim();
+      collapseState[key] = false;
+    } else {
+      list.classList.add('collapsed');
+      if (icon) icon.classList.add('collapsed');
+      const key = titleEl.dataset.key || titleEl.textContent.trim();
+      collapseState[key] = true;
+    }
   }
 
   // ================================================================
@@ -1355,10 +1464,13 @@
       filteredPandas = pandas.filter(p => p.isComplete !== true);
     } else if (currentFilter === 'birthday') {
       filteredPandas = pandas.filter(p => isTodayBirthday(p.birthday));
+    } else if (currentFilter === 'seen') {
+      filteredPandas = pandas.filter(p => p.hasSeen === true);
+    } else if (currentFilter === 'notseen') {
+      filteredPandas = pandas.filter(p => p.hasSeen !== true);
     }
 
     if (currentGroupMode === 'age') {
-      // 年龄分组：排除潘达星
       filteredPandas.forEach(p => {
         if (p.location && p.location.trim() === '潘达星') return;
         const ageGroup = getAgeGroup(p.birthday);
@@ -1390,18 +1502,24 @@
         const list = ageMap.get(key) || [];
         if (list.length === 0) continue;
         const icon = 'fa-clock';
-        html += `<div class="org-section"><div class="org-title">
+        // 默认：数量 > 10 时收起
+        const shouldCollapse = list.length > 10;
+        const isCollapsed = collapseState[key] !== undefined ? collapseState[key] : shouldCollapse;
+        html += `<div class="org-section"><div class="org-title" data-key="${key}" onclick="window.toggleSection && toggleSection(this)">
           <i class="fas ${icon}"></i> ${key} <span class="count-badge">${list.length}只</span>
-        </div><div class="panda-list">`;
+          <span class="toggle-icon ${isCollapsed ? 'collapsed' : ''}"><i class="fas fa-chevron-down"></i></span>
+        </div><div class="panda-list ${isCollapsed ? 'collapsed' : ''}">`;
         list.sort((a,b)=> a.name.localeCompare(b.name));
         list.forEach(p => {
           const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
           const tag = p.gender ? (p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')) : '';
           const displayName = getDisplayName(p);
           const dotClass = p.isComplete ? 'complete' : 'incomplete';
+          const seenIcon = p.hasSeen ? '<span class="seen-icon">👀</span>' : '';
           html += `<span class="panda-link" data-id="${p.id}">
             <span class="status-dot ${dotClass}"></span>
             ${displayName}
+            ${seenIcon}
             ${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}
           </span>`;
         });
@@ -1412,18 +1530,24 @@
       for (let key of sortedKeys) {
         const list = normalMap.get(key);
         const icon = currentGroupMode === 'org' ? 'fa-building' : 'fa-map-pin';
-        html += `<div class="org-section"><div class="org-title">
+        // 默认：数量 > 10 时收起
+        const shouldCollapse = list.length > 10;
+        const isCollapsed = collapseState[key] !== undefined ? collapseState[key] : shouldCollapse;
+        html += `<div class="org-section"><div class="org-title" data-key="${key}" onclick="window.toggleSection && toggleSection(this)">
           <i class="fas ${icon}"></i> ${key} <span class="count-badge">${list.length}只</span>
-        </div><div class="panda-list">`;
+          <span class="toggle-icon ${isCollapsed ? 'collapsed' : ''}"><i class="fas fa-chevron-down"></i></span>
+        </div><div class="panda-list ${isCollapsed ? 'collapsed' : ''}">`;
         list.sort((a,b)=> a.name.localeCompare(b.name));
         list.forEach(p => {
           const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
           const tag = p.gender ? (p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')) : '';
           const displayName = getDisplayName(p);
           const dotClass = p.isComplete ? 'complete' : 'incomplete';
+          const seenIcon = p.hasSeen ? '<span class="seen-icon">👀</span>' : '';
           html += `<span class="panda-link" data-id="${p.id}">
             <span class="status-dot ${dotClass}"></span>
             ${displayName}
+            ${seenIcon}
             ${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}
           </span>`;
         });
@@ -1431,25 +1555,31 @@
       }
 
       if (pandastarList.length) {
+        const key = '潘达星 ✨';
+        const shouldCollapse = pandastarList.length > 10;
+        const isCollapsed = collapseState[key] !== undefined ? collapseState[key] : shouldCollapse;
         const dates = pandastarList.filter(p => p.passingDate).map(p => p.passingDate);
         let display = '';
         if (dates.length) {
           const sorted = dates.slice().sort();
           display = '🕊️ ' + sorted[0] + ' 〜 ' + sorted[sorted.length-1];
         }
-        html += `<div class="org-section"><div class="org-title">
+        html += `<div class="org-section"><div class="org-title" data-key="${key}" onclick="window.toggleSection && toggleSection(this)">
           <i class="fas fa-star" style="color:#d4a373;"></i> 潘达星 ✨ <span class="count-badge">${pandastarList.length}只</span>
           ${display ? `<span class="passing-date">${display}</span>` : ''}
-        </div><div class="panda-list">`;
+          <span class="toggle-icon ${isCollapsed ? 'collapsed' : ''}"><i class="fas fa-chevron-down"></i></span>
+        </div><div class="panda-list ${isCollapsed ? 'collapsed' : ''}">`;
         pandastarList.sort((a,b)=> a.name.localeCompare(b.name));
         pandastarList.forEach(p => {
           const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
           const tag = p.gender ? (p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')) : '';
           const displayName = getDisplayName(p);
           const dotClass = p.isComplete ? 'complete' : 'incomplete';
+          const seenIcon = p.hasSeen ? '<span class="seen-icon">👀</span>' : '';
           html += `<span class="panda-link pandastar" data-id="${p.id}">
             <span class="status-dot ${dotClass}"></span>
             ${displayName}
+            ${seenIcon}
             ${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}
           </span>`;
         });
@@ -1462,6 +1592,8 @@
       if (currentFilter === 'complete') msg = '没有已完善的熊猫';
       else if (currentFilter === 'incomplete') msg = '没有待补充的熊猫';
       else if (currentFilter === 'birthday') msg = '🎂 今天没有熊猫过生日';
+      else if (currentFilter === 'seen') msg = '没有标记为见过的熊猫';
+      else if (currentFilter === 'notseen') msg = '所有熊猫都已标记为见过';
       html = '<div class="empty-state">' + msg + '</div>';
     }
     browseContainer.innerHTML = html;
@@ -1471,6 +1603,8 @@
         if (p) openDetail(p.id);
       });
     });
+    // 挂载 toggleSection 到 window，供 onclick 调用
+    window.toggleSection = toggleSection;
     updateStats();
     saveData();
   }
@@ -1480,6 +1614,8 @@
     groupByOrgBtn.classList.toggle('active', mode === 'org');
     groupByLocationBtn.classList.toggle('active', mode === 'location');
     groupByAgeBtn.classList.toggle('active', mode === 'age');
+    // 切换分组时重置折叠状态
+    collapseState = {};
     if (searchInput.value.trim()) searchInput.value = '';
     renderBrowse();
   }
@@ -1490,6 +1626,10 @@
     filterCompleteBtn.classList.toggle('active', filter === 'complete');
     filterIncompleteBtn.classList.toggle('active', filter === 'incomplete');
     filterBirthdayBtn.classList.toggle('active', filter === 'birthday');
+    filterSeenBtn.classList.toggle('active', filter === 'seen');
+    filterNotSeenBtn.classList.toggle('active', filter === 'notseen');
+    // 切换筛选时重置折叠状态
+    collapseState = {};
     if (searchInput.value.trim()) searchInput.value = '';
     renderBrowse();
   }
@@ -1512,8 +1652,9 @@
     results.forEach(p => {
       const displayName = getDisplayName(p);
       const dotClass = p.isComplete ? 'complete' : 'incomplete';
+      const seenIcon = p.hasSeen ? ' 👀' : '';
       html += `<div class="suggestion-item" data-id="${p.id}">
-        <span class="s-name"><span class="status-dot ${dotClass}" style="display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;"></span>${displayName}</span>
+        <span class="s-name"><span class="status-dot ${dotClass}" style="display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;"></span>${displayName}${seenIcon}</span>
         <span class="s-sub">${p.org||'—'} · ${p.location||'—'}</span>
       </div>`;
     });
@@ -1548,10 +1689,11 @@
       const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
       const displayName = getDisplayName(p);
       const dotClass = p.isComplete ? 'complete' : 'incomplete';
+      const seenIcon = p.hasSeen ? ' <span class="seen-icon">👀</span>' : '';
       html += `<div class="result-card" data-id="${p.id}">
         <span class="status-dot ${dotClass}"></span>
         <div>
-          <div class="name">${displayName} <span class="gender-badge ${cls}">${p.gender||'未知'}</span></div>
+          <div class="name">${displayName}${seenIcon} <span class="gender-badge ${cls}">${p.gender||'未知'}</span></div>
           <div class="sub">${p.org||'—'} · ${p.location||'—'}</div>
         </div>
       </div>`;
@@ -1754,17 +1896,13 @@
         alert('请输入第二只熊猫的名字');
         return;
       }
-      // 精确匹配：先按显示名匹配（名字+别名），再按名字匹配
       let matched = null;
       const allOptions = getAllPandaOptions();
-      // 先尝试精确匹配显示名
       matched = allOptions.find(o => o.display === val);
       if (!matched) {
-        // 尝试按名字匹配
         matched = allOptions.find(o => o.name === val);
       }
       if (!matched) {
-        // 尝试模糊匹配
         const candidates = allOptions.filter(o => o.display.includes(val) || o.name.includes(val));
         if (candidates.length === 1) {
           matched = candidates[0];
@@ -1972,14 +2110,12 @@
   }
 
   function exportCSV() {
-    // 定义 CSV 列（不包含 lifeEvents）
-    const headers = ['id', 'name', 'alias', 'gender', 'birthday', 'org', 'location', 'mother', 'father', 'motherId', 'fatherId', 'pedigree', 'passingDate', 'isComplete'];
+    const headers = ['id', 'name', 'alias', 'gender', 'birthday', 'org', 'location', 'mother', 'father', 'motherId', 'fatherId', 'pedigree', 'passingDate', 'isComplete', 'hasSeen'];
     let csv = headers.join(',') + '\n';
     pandas.forEach(p => {
       const row = headers.map(h => {
         let val = p[h] !== undefined ? p[h] : '';
         if (typeof val === 'string') {
-          // 处理包含逗号或换行的字段
           if (val.includes(',') || val.includes('"') || val.includes('\n')) {
             val = '"' + val.replace(/"/g, '""') + '"';
           }
@@ -1990,7 +2126,7 @@
       });
       csv += row.join(',') + '\n';
     });
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' }); // 加BOM支持Excel
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = 'pandas_' + new Date().toISOString().slice(0,10) + '.csv';
@@ -1998,7 +2134,6 @@
     URL.revokeObjectURL(a.href);
   }
 
-  // 导出下拉菜单
   exportBtn.addEventListener('click', function(e) {
     e.stopPropagation();
     exportDropdown.classList.toggle('show');
@@ -2030,6 +2165,7 @@
           if (p.motherId === undefined) p.motherId = '';
           if (p.fatherId === undefined) p.fatherId = '';
           if (p.lifeEvents === undefined) p.lifeEvents = [];
+          if (p.hasSeen === undefined) p.hasSeen = false;
         });
 
         const overwrite = confirm('将导入 ' + imported.length + ' 条数据，是否覆盖当前所有数据？\n点击"确定"覆盖，"取消"则追加合并。');
@@ -2053,6 +2189,7 @@
         alert('导入成功！当前共 ' + pandas.length + ' 条数据');
         searchInput.value = '';
         detailHistory = [];
+        collapseState = {};
         renderBrowse();
       } catch(err) {
         alert('解析失败: ' + err.message);
@@ -2103,7 +2240,6 @@
     detailTitle.textContent = '';
 
     let ageStr = '';
-    // 所在地为潘达星时不显示年龄，但所在地为空时可以显示
     const isPandastar = p.location && p.location.trim() === '潘达星';
     if (!isPandastar) {
       const age = calcAge(p.birthday);
@@ -2112,6 +2248,8 @@
     const aliasDisplay = p.alias ? '（' + p.alias + '）' : '';
     const statusClass = p.isComplete ? 'complete' : 'incomplete';
     const statusLabel = p.isComplete ? '✅ 已完善' : '🟡 待补充';
+    const seenLabel = p.hasSeen ? '👀 已见过' : '🙈 未见过';
+    const seenClass = p.hasSeen ? 'seen-badge' : '';
 
     let headerHtml = `
       <div class="detail-header">
@@ -2145,6 +2283,20 @@
     }
     infoHtml += `
         <div class="detail-info-item"><span class="label">状态</span><span class="value"><span class="status-badge ${statusClass}">${statusLabel}</span></span></div>
+        <div class="detail-info-item"><span class="label">见过</span><span class="value"><span class="${seenClass}" style="display:inline-block;padding:0 12px;border-radius:40px;font-size:0.8rem;font-weight:500;background:${p.hasSeen ? '#f0e8d8' : '#f0ede8'};color:${p.hasSeen ? '#b08030' : '#8a9a86'};">${seenLabel}</span></span></div>
+      </div>
+    `;
+
+    // 见过切换按钮
+    const seenToggleHtml = `
+      <div class="seen-toggle-row">
+        <span class="toggle-label">👀 标记为见过</span>
+        <div class="toggle-switch ${p.hasSeen ? 'active' : ''}" id="seenToggle">
+          <div class="toggle-knob"></div>
+        </div>
+        <span class="seen-status-text ${p.hasSeen ? 'seen' : 'not-seen'}" id="seenStatusText">
+          ${p.hasSeen ? '✅ 已见过' : '⬜ 未见过'}
+        </span>
       </div>
     `;
 
@@ -2220,7 +2372,7 @@
       </div>
     `;
 
-    detailBody.innerHTML = headerHtml + infoHtml + eventsHtml + relHtml + actionsHtml;
+    detailBody.innerHTML = headerHtml + infoHtml + seenToggleHtml + eventsHtml + relHtml + actionsHtml;
 
     document.getElementById('detailRelationBtn').addEventListener('click', function() {
       openRelation(p.id);
@@ -2237,6 +2389,7 @@
           alert('已删除 "' + p.name + '"');
           detailHistory = [];
           showPage('pageHome');
+          collapseState = {};
           renderBrowse();
           doSearch();
         }
@@ -2245,6 +2398,18 @@
 
     document.getElementById('detailEditBtn').addEventListener('click', function() {
       openEdit(p.id);
+    });
+
+    // 见过切换
+    document.getElementById('seenToggle').addEventListener('click', function() {
+      const newVal = !p.hasSeen;
+      p.hasSeen = newVal;
+      saveData();
+      // 刷新当前详情页
+      renderDetail(p);
+      // 刷新列表
+      renderBrowse();
+      doSearch();
     });
 
     document.querySelectorAll('.detail-relation-chip:not(.wild):not(.unlinked)').forEach(el => {
@@ -2259,7 +2424,7 @@
   }
 
   // ================================================================
-  // 编辑页（精简版，保留核心功能）
+  // 编辑页（精简版）
   // ================================================================
   function createSuggestInputWithWildcard(containerId, options, inputId, initialValue, placeholder) {
     const container = document.getElementById(containerId);
@@ -2429,6 +2594,7 @@
     const pedigreeVal = p.pedigree || '';
     const showPassing = !isNew && (p.location && p.location.trim() === '潘达星');
     const isComplete = p.isComplete || false;
+    const hasSeen = p.hasSeen || false;
     const events = p.lifeEvents || [];
 
     let motherDisplay = '';
@@ -2537,6 +2703,16 @@
           </span>
         </div>
 
+        <div class="seen-toggle-row">
+          <span class="toggle-label">👀 见过</span>
+          <div class="toggle-switch ${hasSeen ? 'active' : ''}" id="seenToggleEdit">
+            <div class="toggle-knob"></div>
+          </div>
+          <span class="seen-status-text ${hasSeen ? 'seen' : 'not-seen'}" id="seenStatusTextEdit">
+            ${hasSeen ? '✅ 已见过' : '⬜ 未见过'}
+          </span>
+        </div>
+
         <div class="life-events-edit">
           <div class="events-title">📜 熊生大事</div>
           <div id="eventsListContainer">
@@ -2634,6 +2810,7 @@
       });
     });
 
+    // 信息完善开关
     const toggle = document.getElementById('completeToggle');
     const statusText = document.getElementById('completeStatusText');
     let currentComplete = isComplete;
@@ -2647,6 +2824,23 @@
       } else {
         statusText.textContent = '🟡 待补充';
         statusText.className = 'toggle-status-text incomplete';
+      }
+    });
+
+    // 见过开关
+    const seenToggleEdit = document.getElementById('seenToggleEdit');
+    const seenStatusTextEdit = document.getElementById('seenStatusTextEdit');
+    let currentSeen = hasSeen;
+
+    seenToggleEdit.addEventListener('click', function() {
+      currentSeen = !currentSeen;
+      this.classList.toggle('active', currentSeen);
+      if (currentSeen) {
+        seenStatusTextEdit.textContent = '✅ 已见过';
+        seenStatusTextEdit.className = 'seen-status-text seen';
+      } else {
+        seenStatusTextEdit.textContent = '⬜ 未见过';
+        seenStatusTextEdit.className = 'seen-status-text not-seen';
       }
     });
 
@@ -2687,11 +2881,11 @@
       const motherName = isMotherWild ? '野外' : (motherId ? (getPandaById(motherId)?.name || motherVal) : motherVal);
       const fatherName = isFatherWild ? '野外' : (fatherId ? (getPandaById(fatherId)?.name || fatherVal) : fatherVal);
 
-      handleEditSave(p, isNew, orgInput, locInput, motherId, fatherId, motherName, fatherName, currentComplete);
+      handleEditSave(p, isNew, orgInput, locInput, motherId, fatherId, motherName, fatherName, currentComplete, currentSeen);
     });
   }
 
-  function handleEditSave(p, isNew, orgInput, locInput, motherId, fatherId, motherName, fatherName, isComplete) {
+  function handleEditSave(p, isNew, orgInput, locInput, motherId, fatherId, motherName, fatherName, isComplete, hasSeen) {
     const name = document.getElementById('editName').value.trim();
     if (!name) { alert('请填写熊猫名字'); return; }
     const alias = document.getElementById('editAlias').value.trim();
@@ -2745,12 +2939,14 @@
         pedigree,
         passingDate: passingDate || '',
         isComplete: isComplete || false,
+        hasSeen: hasSeen || false,
         lifeEvents: lifeEvents
       };
       pandas.push(newPanda);
       saveData();
       alert('新增 "' + name + (alias ? '（' + alias + '）' : '') + '" 成功');
       detailHistory = [];
+      collapseState = {};
       showPage('pageHome');
       renderBrowse();
       doSearch();
@@ -2767,10 +2963,12 @@
       p.motherId = motherId;
       p.fatherId = fatherId;
       p.isComplete = isComplete || false;
+      p.hasSeen = hasSeen || false;
       p.lifeEvents = lifeEvents;
       if (passingDate !== undefined) p.passingDate = passingDate;
       saveData();
       alert('已更新 "' + name + (alias ? '（' + alias + '）' : '') + '" 的信息');
+      collapseState = {};
       renderDetail(p);
       showPage('pageDetail');
       renderBrowse();
@@ -2779,7 +2977,7 @@
   }
 
   function addNewPanda() {
-    const tempPanda = { id: 'temp_new', name: '', alias: '', gender: '雌性', birthday: '', org: '', location: '', mother: '', father: '', motherId: '', fatherId: '', passingDate: '', pedigree: '', isComplete: false, lifeEvents: [] };
+    const tempPanda = { id: 'temp_new', name: '', alias: '', gender: '雌性', birthday: '', org: '', location: '', mother: '', father: '', motherId: '', fatherId: '', passingDate: '', pedigree: '', isComplete: false, hasSeen: false, lifeEvents: [] };
     editPandaId = 'temp_new';
     editTitle.textContent = '📝 录入新熊猫';
     renderEditForm(tempPanda, true);
@@ -2792,6 +2990,7 @@
   // ================================================================
   homeTitle.addEventListener('click', function() {
     detailHistory = [];
+    collapseState = {};
     showPage('pageHome');
     renderBrowse();
   });
@@ -2814,10 +3013,13 @@
   filterCompleteBtn.addEventListener('click', function() { setFilter('complete'); });
   filterIncompleteBtn.addEventListener('click', function() { setFilter('incomplete'); });
   filterBirthdayBtn.addEventListener('click', function() { setFilter('birthday'); });
+  filterSeenBtn.addEventListener('click', function() { setFilter('seen'); });
+  filterNotSeenBtn.addEventListener('click', function() { setFilter('notseen'); });
 
   editBackBtn.addEventListener('click', function() {
     if (editPandaId === 'temp_new') {
       detailHistory = [];
+      collapseState = {};
       showPage('pageHome');
     } else if (editPandaId) {
       openDetail(editPandaId);
