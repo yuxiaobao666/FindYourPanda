@@ -277,8 +277,8 @@
     .import-label input[type="file"] { display: none; }
 
     .page-view .page-header {
-      display: flex; align-items: center; padding: 4px 0 6px 0;
-      border-bottom: 1px solid #f0ede8; margin-bottom: 6px; gap: 12px;
+      display: flex; align-items: center; padding: 4px 0 16px 0;
+      border-bottom: 1px solid #f0ede8; margin-bottom: 16px; gap: 12px;
     }
     .page-view .page-header .back-btn {
       background: none; border: none; font-size: 1.1rem; color: #5a6a56;
@@ -291,14 +291,14 @@
       flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
-    /* ===== 详情页顶部：头像 + 名字 + 见过开关（手机端优化） ===== */
+    /* ===== 详情页顶部：头像 + 名字 + 见过开关 ===== */
     .detail-top {
       display: flex;
       gap: 14px;
       align-items: center;
-      padding: 2px 0 8px 0;
+      padding: 4px 0 12px 0;
       border-bottom: 1px solid #f0ede8;
-      margin-bottom: 10px;
+      margin-bottom: 14px;
       flex-wrap: wrap;
     }
     .detail-avatar {
@@ -331,7 +331,6 @@
       font-size: 3rem;
       color: #d6cec0;
     }
-    /* 见过角标：放在头像右下角，更小巧 */
     .detail-avatar .seen-badge-overlay {
       position: absolute;
       bottom: 2px;
@@ -490,6 +489,21 @@
       padding: 0 12px;
       border-radius: 40px;
       font-size: 0.8rem;
+    }
+    .detail-info-item .value .status-badge {
+      display: inline-block;
+      padding: 0 12px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .detail-info-item .value .status-badge.complete {
+      background: #d4e8d4;
+      color: #1a5a2a;
+    }
+    .detail-info-item .value .status-badge.incomplete {
+      background: #f5edd4;
+      color: #8a7020;
     }
 
     .life-events-section .section-title {
@@ -877,6 +891,22 @@
       padding: 6px 18px;
       font-size: 0.85rem;
     }
+    /* 查询深度选择器 */
+    .relation-search-row .depth-select {
+      padding: 6px 14px;
+      border-radius: 40px;
+      border: 1px solid #cdc0ae;
+      background: white;
+      font-size: 0.85rem;
+      outline: none;
+      cursor: pointer;
+      color: #2a3a28;
+      font-family: inherit;
+    }
+    .relation-search-row .depth-select:focus {
+      outline: 2px solid #5f825c;
+      border-color: transparent;
+    }
 
     .relation-result {
       margin-top: 12px;
@@ -979,7 +1009,6 @@
       font-size: 2.5rem;
       color: #d6cec0;
       flex-shrink: 0;
-      cursor: pointer;
     }
     .edit-avatar-preview .avatar-preview-box img {
       width: 100%;
@@ -1000,9 +1029,6 @@
       padding: 4px 16px;
     }
 
-    /* ================================================================
-       手机端响应式优化
-       ================================================================ */
     @media (max-width: 600px) {
       #app { padding: 14px; border-radius: 24px; }
       .nav-tab { padding: 8px 14px; font-size: 0.8rem; }
@@ -1013,58 +1039,17 @@
       .filter-toolbar { gap: 10px; padding: 4px 0 10px 0; }
       .filter-group .btn { font-size: 0.7rem; padding: 3px 10px; }
       .filter-group .label { font-size: 0.75rem; }
-
-      /* 详情页顶部：更紧凑的手机布局 */
-      .detail-top {
-        flex-wrap: nowrap;
-        gap: 10px;
-        padding: 2px 0 10px 0;
-        margin-bottom: 12px;
-      }
-      .detail-avatar {
-        width: 68px;
-        height: 68px;
-        border-radius: 16px;
-        font-size: 2rem;
-      }
-      .detail-avatar .seen-badge-overlay {
-        font-size: 0.5rem;
-        padding: 0 6px;
-        bottom: 1px;
-        right: 1px;
-        line-height: 1.5;
-      }
-      .detail-avatar .avatar-placeholder {
-        font-size: 2.2rem;
-      }
-      .detail-name-area .panda-name {
-        font-size: 1.2rem;
-      }
-      .detail-name-area .panda-alias {
-        font-size: 0.75rem;
-        margin-left: 3px;
-      }
-      .detail-name-area .panda-age {
-        font-size: 0.7rem;
-        margin-top: 0;
-      }
-      .detail-name-area .panda-tags {
-        gap: 3px 4px;
-        margin-top: 2px;
-      }
-      .detail-name-area .panda-tags .tag {
-        font-size: 0.6rem;
-        padding: 0 8px;
-      }
-      .detail-top-actions {
-        margin-left: 0;
-        flex-shrink: 1;
-      }
-      .detail-top-actions .relation-btn {
-        font-size: 0.65rem;
-        padding: 3px 10px;
-      }
-
+      .detail-top { flex-wrap: nowrap; gap: 10px; padding: 2px 0 10px 0; margin-bottom: 12px; }
+      .detail-avatar { width: 68px; height: 68px; border-radius: 16px; font-size: 2rem; }
+      .detail-avatar .seen-badge-overlay { font-size: 0.5rem; padding: 0 6px; bottom: 1px; right: 1px; line-height: 1.5; }
+      .detail-avatar .avatar-placeholder { font-size: 2.2rem; }
+      .detail-name-area .panda-name { font-size: 1.2rem; }
+      .detail-name-area .panda-alias { font-size: 0.75rem; margin-left: 3px; }
+      .detail-name-area .panda-age { font-size: 0.7rem; margin-top: 0; }
+      .detail-name-area .panda-tags { gap: 3px 4px; margin-top: 2px; }
+      .detail-name-area .panda-tags .tag { font-size: 0.6rem; padding: 0 8px; }
+      .detail-top-actions { margin-left: 0; flex-shrink: 1; }
+      .detail-top-actions .relation-btn { font-size: 0.65rem; padding: 3px 10px; }
       .detail-info-item { font-size: 0.85rem; }
       .detail-info-item .label { min-width: 60px; }
       .detail-actions .btn { min-width: 50px; padding: 6px 10px; font-size: 0.7rem; }
@@ -1092,43 +1077,16 @@
       .edit-avatar-preview { flex-wrap: wrap; gap: 10px; }
       .edit-avatar-preview .avatar-preview-box { width: 64px; height: 64px; font-size: 2rem; border-radius: 16px; }
       .edit-avatar-preview .avatar-actions .btn { font-size: 0.7rem; padding: 3px 12px; }
-  #pageDetail {
-    margin-top: -20px;
-  }
-}
     }
 
     @media (max-width: 400px) {
-      .detail-avatar {
-        width: 56px;
-        height: 56px;
-        border-radius: 12px;
-        font-size: 1.6rem;
-      }
-      .detail-avatar .seen-badge-overlay {
-        font-size: 0.4rem;
-        padding: 0 4px;
-        bottom: 0px;
-        right: 0px;
-      }
-      .detail-name-area .panda-name {
-        font-size: 1rem;
-      }
-      .detail-name-area .panda-alias {
-        font-size: 0.65rem;
-      }
-      .detail-name-area .panda-tags .tag {
-        font-size: 0.5rem;
-        padding: 0 6px;
-      }
-      .detail-top-actions .relation-btn {
-        font-size: 0.55rem;
-        padding: 2px 8px;
-      }
-      .detail-top {
-        gap: 6px;
-        padding: 0 0 8px 0;
-      }
+      .detail-avatar { width: 56px; height: 56px; border-radius: 12px; font-size: 1.6rem; }
+      .detail-avatar .seen-badge-overlay { font-size: 0.4rem; padding: 0 4px; bottom: 0px; right: 0px; }
+      .detail-name-area .panda-name { font-size: 1rem; }
+      .detail-name-area .panda-alias { font-size: 0.65rem; }
+      .detail-name-area .panda-tags .tag { font-size: 0.5rem; padding: 0 6px; }
+      .detail-top-actions .relation-btn { font-size: 0.55rem; padding: 2px 8px; }
+      .detail-top { gap: 6px; padding: 0 0 8px 0; }
     }
   </style>
 </head>
@@ -2012,13 +1970,15 @@
 
   function generateCopyText(pandaA, pandaB, results) {
     if (!results || results.length === 0) {
-      return `🐼${pandaA.name}与🐼${pandaB.name}在5代以内没有找到共同祖先。`;
+      return `🐼${pandaA.name}与🐼${pandaB.name}在指定代数内没有找到共同祖先。`;
     }
 
     let text = `🐼${pandaA.name}与🐼${pandaB.name}的亲缘关系是：\n\n`;
     results.forEach((r, idx) => {
-      const pathA = formatPathForDisplay(r.pathA);
-      const pathB = formatPathForDisplay(r.pathB);
+      const reversedPathA = [...r.pathA].reverse();
+      const reversedPathB = [...r.pathB].reverse();
+      const pathA = formatPathForDisplay(reversedPathA);
+      const pathB = formatPathForDisplay(reversedPathB);
       text += `${idx+1}、 ${r.ancestorName}${r.ancestorGender === '雌性' ? '♀' : (r.ancestorGender === '雄性' ? '♂' : '')}\n`;
       text += `${pathA}\n`;
       text += `${pathB}\n\n`;
@@ -2056,7 +2016,7 @@
     let html = `
       <div class="relation-container">
         <div class="relation-info-banner">
-          <i class="fas fa-info-circle"></i> 查询范围为 5 代以内的血缘关系
+          <i class="fas fa-info-circle"></i> 查询范围为指定代数内的血缘关系
         </div>
 
         <div class="relation-search-row">
@@ -2064,6 +2024,11 @@
             🐼 <span class="panda-name-display">${pA_display}</span> ${pA_genderIcon}  ↔
           </span>
           <div id="relationTargetContainer" style="flex:1;min-width:120px;"></div>
+          <select class="depth-select" id="relationDepthSelect">
+            <option value="5" selected>5代以内</option>
+            <option value="10">10代以内</option>
+            <option value="999">所有已知代数</option>
+          </select>
           <button class="btn btn-primary" id="relationQueryBtn"><i class="fas fa-search"></i> 查询</button>
         </div>
 
@@ -2078,6 +2043,7 @@
     const targetContainer = document.getElementById('relationTargetContainer');
     const allPandas = getAllPandaOptions().filter(o => o.id !== pA.id);
     const targetInput = createRelationSuggestInput(targetContainer, allPandas, 'relationTarget', '', '');
+    const depthSelect = document.getElementById('relationDepthSelect');
 
     document.getElementById('relationQueryBtn').addEventListener('click', function() {
       const val = targetInput.value.trim();
@@ -2110,7 +2076,8 @@
       }
       relationPandaB = getPandaById(matched.id);
       if (relationPandaB) {
-        performRelationQuery(pA, relationPandaB);
+        const maxDepth = parseInt(depthSelect.value) || 5;
+        performRelationQuery(pA, relationPandaB, maxDepth);
       }
     });
 
@@ -2118,6 +2085,14 @@
       if (e.key === 'Enter') {
         e.preventDefault();
         document.getElementById('relationQueryBtn').click();
+      }
+    });
+
+    depthSelect.addEventListener('change', function() {
+      // 如果已经有查询结果，自动用新深度重新查询
+      if (relationPandaB) {
+        const maxDepth = parseInt(this.value) || 5;
+        performRelationQuery(pA, relationPandaB, maxDepth);
       }
     });
   }
@@ -2185,9 +2160,10 @@
     return input;
   }
 
-  function performRelationQuery(pA, pB) {
+  function performRelationQuery(pA, pB, maxDepth) {
     const container = document.getElementById('relationResultContainer');
-    const results = findCommonAncestors(pA, pB, 5);
+    if (!maxDepth) maxDepth = 5;
+    const results = findCommonAncestors(pA, pB, maxDepth);
 
     const pA_display = getDisplayName(pA);
     const pB_display = getDisplayName(pB);
@@ -2195,7 +2171,7 @@
     if (results.length === 0) {
       container.innerHTML = `
         <div class="relation-result">
-          <div class="no-result">🐼${pA_display} 与 🐼${pB_display} 没有找到 5 代以内的共同祖先</div>
+          <div class="no-result">🐼${pA_display} 与 🐼${pB_display} 没有找到 ${maxDepth >= 999 ? '所有已知代数' : maxDepth + ' 代以内'} 的共同祖先</div>
         </div>
       `;
       return;
@@ -2211,18 +2187,22 @@
       const ancestorGender = r.ancestorGender || '未知';
       const genderIcon = ancestorGender === '雌性' ? '♀' : (ancestorGender === '雄性' ? '♂' : '');
 
-      const pathA_str = r.pathA.map(p => `${p.name}${p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')}`).join('-');
-      const pathB_str = r.pathB.map(p => `${p.name}${p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')}`).join('-');
+      // 反转路径显示顺序：从共同祖先 → 待查熊猫
+      const reversedPathA = [...r.pathA].reverse();
+      const reversedPathB = [...r.pathB].reverse();
+
+      const pathA_str = reversedPathA.map(p => `${p.name}${p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')}`).join('-');
+      const pathB_str = reversedPathB.map(p => `${p.name}${p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')}`).join('-');
 
       html += `
         <div class="ancestor-group">
           <div class="ancestor-title">
             ${idx+1}、 ${ancestorDisplay} ${genderIcon}
           </div>
-          <div class="path-item" data-path='${JSON.stringify(r.pathA)}'>
+          <div class="path-item" data-path='${JSON.stringify(reversedPathA)}'>
             ${pathA_str}
           </div>
-          <div class="path-item" data-path='${JSON.stringify(r.pathB)}'>
+          <div class="path-item" data-path='${JSON.stringify(reversedPathB)}'>
             ${pathB_str}
           </div>
         </div>
@@ -2243,6 +2223,7 @@
         try {
           const pathData = JSON.parse(this.dataset.path);
           if (pathData && pathData.length > 0) {
+            // 反转后，pathData[0] 是共同祖先，需要跳转到路径中第一个非 A 非 B 的熊猫
             for (let p of pathData) {
               if (p.id !== pA.id && p.id !== pB.id) {
                 const target = getPandaById(p.id);
@@ -2564,8 +2545,6 @@
     `;
 
     detailBody.innerHTML = topHtml + infoHtml + eventsHtml + relHtml + actionsHtml;
-
-    // ---- 事件绑定 ----
 
     document.getElementById('detailAvatar').addEventListener('click', function() {
       const input = document.createElement('input');
