@@ -1191,11 +1191,21 @@
   // 数据层
   // ================================================================
   const STORAGE_KEY = 'pandaAppData';
+  const CACHE_KEY = 'pandaAppData_cloud_cache';
+  // 同域 Pages Functions，无需修改
+  const CLOUD_API_URL = '/api/data';
+  const CLOUD_ENABLED = true;
+
   let currentGroupMode = 'org';
   let currentFilter = 'all';
   let currentPandaId = null;
   let editPandaId = null;
   let detailHistory = [];
+
+  function setStatus(text) {
+    const el = document.getElementById('storageStatus');
+    if (el) el.textContent = text;
+  }
 
   function migrateAlias(panda) {
     if (!panda) return;
@@ -1209,25 +1219,17 @@
     }
   }
 
-  function loadData() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        if (Array.isArray(data) && data.length > 0) {
-          data.forEach(p => {
-            migrateAlias(p);
-            if (p.isComplete === undefined) p.isComplete = false;
-            if (p.motherId === undefined) p.motherId = '';
-            if (p.fatherId === undefined) p.fatherId = '';
-            if (p.lifeEvents === undefined) p.lifeEvents = [];
-            if (p.hasSeen === undefined) p.hasSeen = false;
-            if (p.photo === undefined) p.photo = '';
-          });
-          return data;
-        }
-      } catch (e) {}
-    }
+  function normalizePanda(p) {
+    migrateAlias(p);
+    if (p.isComplete === undefined) p.isComplete = false;
+    if (p.motherId === undefined) p.motherId = '';
+    if (p.fatherId === undefined) p.fatherId = '';
+    if (p.lifeEvents === undefined) p.lifeEvents = [];
+    if (p.hasSeen === undefined) p.hasSeen = false;
+    if (p.photo === undefined) p.photo = '';
+  }
+
+  function defaultPandas() {
     return [
       { id: 'p1', name: '花花', gender: '雌性', birthday: '2020-07-04', org: '成都大熊猫繁育研究基地', location: '', mother: '成功', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [], hasSeen: false, photo: '' },
       { id: 'p2', name: '和叶', gender: '雌性', birthday: '2020-07-04', org: '成都大熊猫繁育研究基地', location: '', mother: '成功', father: '美兰', motherId: '', fatherId: '', pedigree: '', alias: '', isComplete: false, lifeEvents: [], hasSeen: false, photo: '' },
@@ -1237,17 +1239,103 @@
     ];
   }
 
-  let pandas = loadData();
-  let nextId = 100;
-  const ids = pandas.map(p => { const n = parseInt(String(p.id).replace('p','')); return isNaN(n)?0:n; });
-  nextId = (ids.length ? Math.max(...ids) : 0) + 1;
+  function loadLocalData() {
+    const stored = localStorage.getItem(CACHE_KEY) || localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        const data = JSON.parse(stored);
+        if (Array.isArray(data) && data.length > 0) {
+          data.forEach(normalizePanda);
+          return data;
+        }
+      } catch (e) {}
+    }
+    return defaultPandas();
+  }
 
-  function saveData() {
+  async function fetchCloudData() {
+    if (!CLOUD_ENABLED) return null;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(pandas));
-      document.getElementById('storageStatus').textContent = `💾 ${pandas.length} 条数据已保存`;
+      const res = await fetch(CLOUD_API_URL, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        data.forEach(normalizePanda);
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch (e) {}
+        return data;
+      }
+      return [];
     } catch (e) {
-      document.getElementById('storageStatus').textContent = '⚠️ 保存失败';
+      console.warn('[cloud] fetch failed:', e);
+      return null;
+    }
+  }
+
+  async function pushCloudData(token) {
+    if (!CLOUD_ENABLED) return { skipped: true };
+    const res = await fetch(CLOUD_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Write-Token': token },
+      body: JSON.stringify(pandas)
+    });
+    if (res.status === 401) { const e = new Error('密码错误'); e.code = 401; throw e; }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  }
+
+  let pandas = [];
+  let nextId = 100;
+  function recalcNextId() {
+    const ids = pandas.map(p => { const n = parseInt(String(p.id).replace('p','')); return isNaN(n)?0:n; });
+    nextId = (ids.length ? Math.max(...ids) : 0) + 1;
+  }
+
+  async function bootstrap() {
+    setStatus('⏳ 正在连接云端...');
+    const cloud = await fetchCloudData();
+    if (cloud && cloud.length > 0) {
+      pandas = cloud;
+      recalcNextId();
+      setStatus('☁️ ' + pandas.length + ' 条已同步云端');
+    } else if (cloud && cloud.length === 0) {
+      pandas = loadLocalData();
+      recalcNextId();
+      setStatus('📴 云端为空，使用本地 ' + pandas.length + ' 条');
+    } else {
+      pandas = loadLocalData();
+      recalcNextId();
+      setStatus('📴 无法连接云端，本地 ' + pandas.length + ' 条');
+    }
+    setGroupMode('org');
+  }
+
+  async function saveData() {
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify(pandas)); } catch (e) {}
+    setStatus('💾 本地已保存，正在同步云端...');
+    if (!CLOUD_ENABLED) {
+      setStatus('💾 ' + pandas.length + ' 条已保存（未配置云端）');
+      return;
+    }
+    let token = sessionStorage.getItem('panda_write_token');
+    if (!token) {
+      token = prompt('请输入编辑密码（用于同步到云端）：');
+      if (!token) {
+        setStatus('💾 已保存到本地（未输入密码，未上云）');
+        return;
+      }
+      sessionStorage.setItem('panda_write_token', token);
+    }
+    try {
+      await pushCloudData(token);
+      setStatus('☁️ ' + pandas.length + ' 条已同步到云端');
+    } catch (e) {
+      if (e.code === 401) {
+        sessionStorage.removeItem('panda_write_token');
+        setStatus('❌ 密码错误，仅本地保存');
+        alert('编辑密码错误，数据已保存到本地但未同步云端。请重新操作。');
+      } else {
+        setStatus('📴 网络异常，已保存到本地');
+      }
     }
   }
 
@@ -3317,7 +3405,7 @@
   // ================================================================
   // 初始化
   // ================================================================
-  setGroupMode('org');
+  bootstrap();
 })();
 </script>
 </body>
