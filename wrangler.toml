@@ -1,0 +1,5 @@
+name = "findyourpanda"
+compatibility_date = "2024-09-20"
+
+[assets]
+directory = "./"
