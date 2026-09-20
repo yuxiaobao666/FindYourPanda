@@ -1,5 +1,9 @@
 name = "findyourpanda"
 compatibility_date = "2024-09-20"
 
+[[kv_namespaces]]
+binding = "PANDA_KV"
+id = "d6b5975c97f8465aa0619b4298055895"
+
 [assets]
 directory = "./"
