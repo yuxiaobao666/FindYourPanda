@@ -1311,19 +1311,14 @@
 
   async function saveData() {
     try { localStorage.setItem(CACHE_KEY, JSON.stringify(pandas)); } catch (e) {}
-    setStatus('💾 本地已保存，正在同步云端...');
     if (!CLOUD_ENABLED) {
-      setStatus('💾 ' + pandas.length + ' 条已保存（未配置云端）');
+      setStatus('💾 ' + pandas.length + ' 条已保存');
       return;
     }
-    let token = sessionStorage.getItem('panda_write_token');
+    const token = sessionStorage.getItem('panda_write_token');
     if (!token) {
-      token = prompt('请输入编辑密码（用于同步到云端）：');
-      if (!token) {
-        setStatus('💾 已保存到本地（未输入密码，未上云）');
-        return;
-      }
-      sessionStorage.setItem('panda_write_token', token);
+      setStatus('💾 本地已保存（下次编辑时同步云端）');
+      return;
     }
     try {
       await pushCloudData(token);
@@ -1332,7 +1327,6 @@
       if (e.code === 401) {
         sessionStorage.removeItem('panda_write_token');
         setStatus('❌ 密码错误，仅本地保存');
-        alert('编辑密码错误，数据已保存到本地但未同步云端。请重新操作。');
       } else {
         setStatus('📴 网络异常，已保存到本地');
       }
@@ -3249,6 +3243,12 @@
   }
 
   function handleEditSave(p, isNew, orgInput, locInput, motherId, fatherId, motherName, fatherName, isComplete, hasSeen) {
+    // 编辑保存时才要求输入密码
+    if (CLOUD_ENABLED && !sessionStorage.getItem('panda_write_token')) {
+      const token = prompt('请输入编辑密码（用于同步到云端）：');
+      if (!token) { setStatus('💾 已取消保存'); return; }
+      sessionStorage.setItem('panda_write_token', token);
+    }
     const name = document.getElementById('editName').value.trim();
     if (!name) { alert('请填写熊猫名字'); return; }
     const alias = document.getElementById('editAlias').value.trim();
