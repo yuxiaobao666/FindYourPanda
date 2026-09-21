@@ -1354,8 +1354,7 @@
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
-          const dataUrl = canvas.toDataURL('image/webp', quality);
-          resolve(dataUrl);
+          resolve(canvas.toDataURL('image/webp', quality));
         };
         img.onerror = reject;
         img.src = e.target.result;
@@ -1364,6 +1363,7 @@
       reader.readAsDataURL(file);
     });
   }
+
 
   // ================================================================
   // DOM 引用
@@ -1623,6 +1623,13 @@
       if (pChildren.some(c => myChildrenIds.includes(c.id))) spouse.push(p);
     });
 
+    const sortByAge = (arr) => arr.sort((a, b) => {
+      const ya = a.birthday ? parseInt(a.birthday.match(/\d{4}/)) : 9999;
+      const yb = b.birthday ? parseInt(b.birthday.match(/\d{4}/)) : 9999;
+      return ya - yb;
+    });
+    sortByAge(children); sortByAge(spouse); sortByAge(siblingsSameParents);
+    sortByAge(siblingsSameMother); sortByAge(siblingsSameFather);
     return { parents, siblingsSameParents, siblingsSameMother, siblingsSameFather, children, spouse };
   }
 
@@ -2979,24 +2986,25 @@
           <div id="editFatherContainer" style="flex:1;min-width:100px;"></div>
         </div>
 
-        <div class="complete-toggle-row">
-          <span class="toggle-label">信息已完善</span>
-          <div class="toggle-switch ${isComplete ? 'active' : ''}" id="completeToggle">
-            <div class="toggle-knob"></div>
+        <div class="complete-toggle-row" style="justify-content: space-between;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="toggle-label">信息已完善</span>
+            <div class="toggle-switch ${isComplete ? 'active' : ''}" id="completeToggle">
+              <div class="toggle-knob"></div>
+            </div>
+            <span class="toggle-status-text ${isComplete ? 'complete' : 'incomplete'}" id="completeStatusText">
+              ${isComplete ? '✅ 已完善' : '🟡 待补充'}
+            </span>
           </div>
-          <span class="toggle-status-text ${isComplete ? 'complete' : 'incomplete'}" id="completeStatusText">
-            ${isComplete ? '✅ 已完善' : '🟡 待补充'}
-          </span>
-        </div>
-
-        <div class="seen-toggle-row">
-          <span class="toggle-label">👀 见过</span>
-          <div class="toggle-switch ${hasSeen ? 'active' : ''}" id="seenToggleEdit">
-            <div class="toggle-knob"></div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="toggle-label">👀 见过</span>
+            <div class="toggle-switch ${hasSeen ? 'active' : ''}" id="seenToggleEdit">
+              <div class="toggle-knob"></div>
+            </div>
+            <span class="toggle-status-text ${hasSeen ? 'complete' : 'incomplete'}" id="seenStatusTextEdit">
+              ${hasSeen ? '✅ 已见过' : '⬜ 未见过'}
+            </span>
           </div>
-          <span class="seen-status-text ${hasSeen ? 'seen' : 'not-seen'}" id="seenStatusTextEdit">
-            ${hasSeen ? '✅ 已见过' : '⬜ 未见过'}
-          </span>
         </div>
 
         <div class="life-events-edit">
@@ -3058,13 +3066,13 @@
     }
 
     function handlePhotoUpload(file) {
-      compressImage(file, 600, 0.85).then(dataUrl => {
-        p.photo = dataUrl;
-        updatePhotoPreview(dataUrl);
-        saveData();
-      }).catch(err => {
-        alert('图片处理失败：' + err.message);
-      });
+        compressImage(file, 600, 0.85).then(dataUrl => {
+          p.photo = dataUrl;
+          updatePhotoPreview(url);
+          saveData();
+        }).catch(err => {
+          alert('图片处理失败：' + err.message);
+        });
     }
 
     avatarPreview.addEventListener('click', function() {
