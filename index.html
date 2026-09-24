@@ -1088,7 +1088,59 @@
       .detail-top-actions .relation-btn { font-size: 0.55rem; padding: 2px 8px; }
       .detail-top { gap: 6px; padding: 0 0 8px 0; }
     }
-  </style>
+  
+    /* ===== 底部导航 ===== */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: white; border-top: 1px solid var(--border);
+      display: flex; z-index: 100;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+    .bottom-nav .nav-item {
+      flex: 1; padding: 10px 0; text-align: center;
+      cursor: pointer; color: var(--text-muted); font-size: 14px;
+      transition: all 0.2s;
+    }
+    .bottom-nav .nav-item.active { color: var(--primary); font-weight: 600; }
+    .bottom-nav .nav-item i { display: block; font-size: 18px; margin-bottom: 2px; }
+    .page-container { padding-bottom: 60px; }
+
+    /* ===== 时光机页 ===== */
+    .time-machine-section {
+      background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px;
+      box-shadow: var(--shadow);
+    }
+    .time-machine-section h3 {
+      margin: 0 0 12px 0; font-size: 16px; color: var(--text);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .birthday-panda-card {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px; background: #fff8e1; border-radius: 10px; margin-bottom: 8px;
+    }
+    .birthday-panda-card .avatar {
+      width: 48px; height: 48px; border-radius: 50%; background: var(--primary-light);
+      display: flex; align-items: center; justify-content: center; font-size: 24px;
+    }
+    .birthday-panda-card .info { flex: 1; }
+    .birthday-panda-card .name { font-weight: 600; color: var(--text); }
+    .birthday-panda-card .age { font-size: 13px; color: var(--text-muted); }
+    .history-event {
+      padding: 12px; border-left: 3px solid var(--primary);
+      background: var(--bg); border-radius: 0 8px 8px 0; margin-bottom: 8px;
+    }
+    .history-event .year {
+      font-size: 12px; color: var(--primary); font-weight: 600; margin-bottom: 4px;
+    }
+    .history-event .panda-name {
+      font-weight: 600; color: var(--text); margin-right: 6px;
+    }
+    .history-event .event-text { color: var(--text); font-size: 14px; }
+    .no-event {
+      text-align: center; color: var(--text-muted); padding: 20px;
+      font-size: 14px;
+    }
+</style>
 </head>
 <body>
 <div id="app">
@@ -1182,9 +1234,29 @@
         <button class="btn btn-outline" id="relationBackBtn"><i class="fas fa-arrow-left"></i> 返回</button>
       </div>
     </div>
+
+    <!-- 时光机页 -->
+    <div id="pageTimeMachine" class="page-view">
+      <div class="page-header">
+        <span class="page-title">⏳ 某年今日</span>
+      </div>
+      <div style="padding: 12px;">
+        <div id="timeMachineContent"></div>
+      </div>
+    </div>
   </div>
 </div>
 
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+      <div class="nav-item active" id="navHome" onclick="switchTab('home')">
+        <i class="fas fa-paw"></i> 熊猫档案
+      </div>
+      <div class="nav-item" id="navTime" onclick="switchTab('time')">
+        <i class="fas fa-clock-rotate-left"></i> 某年今日
+      </div>
+    </div>
 <script>
 (function(){
   // ================================================================
@@ -1665,6 +1737,99 @@
     document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
     window.scrollTo(0, 0);
+  }
+
+  // ================================================================
+  //  底部导航切换
+  // ================================================================
+  window.switchTab = function(tab) {
+    if (tab === 'home') {
+      showPage('pageHome');
+      document.getElementById('navHome').classList.add('active');
+      document.getElementById('navTime').classList.remove('active');
+    } else if (tab === 'time') {
+      showPage('pageTimeMachine');
+      document.getElementById('navTime').classList.add('active');
+      document.getElementById('navHome').classList.remove('active');
+      renderTimeMachine();
+    }
+  }
+
+  // ================================================================
+  //  时光机：某年今日
+  // ================================================================
+  function renderTimeMachine() {
+    const now = new Date();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const todayMMDD = mm + '-' + dd;
+    const year = now.getFullYear();
+
+    // 1) 今天生日的熊猫
+    const birthdayPandas = pandas.filter(p => {
+      if (!p.birthday) return false;
+      return p.birthday.slice(5) === todayMMDD;
+    }).map(p => {
+      const birthYear = parseInt(p.birthday.slice(0, 4));
+      const age = year - birthYear;
+      return { name: p.name, age: age, birthday: p.birthday, id: p.id };
+    });
+
+    // 2) 历史上的今天（从 lifeEvents 提取）
+    const historyEvents = [];
+    pandas.forEach(p => {
+      const events = p.lifeEvents || [];
+      events.forEach(ev => {
+        if (!ev.date) return;
+        if (ev.date.slice(5) === todayMMDD) {
+          const evYear = parseInt(ev.date.slice(0, 4));
+          historyEvents.push({
+            year: evYear,
+            ago: year - evYear,
+            pandaName: p.name,
+            text: ev.event,
+            date: ev.date
+          });
+        }
+      });
+    });
+    historyEvents.sort((a, b) => b.year - a.year);
+
+    // 渲染
+    let html = "";
+
+    // 生日部分
+    html += '<div class="time-machine-section"><h3>🎂 今天生日</h3>';
+    if (birthdayPandas.length === 0) {
+      html += '<div class="no-event">今天没有熊猫过生日 🐼</div>';
+    } else {
+      birthdayPandas.forEach(p => {
+        html += '<div class="birthday-panda-card" style="cursor:pointer;" onclick="openDetail(\'' + p.id + '\')">' +
+          '<div class="avatar">🎂</div>' +
+          '<div class="info">' +
+            '<div class="name">' + p.name + '</div>' +
+            '<div class="age">今天 ' + p.age + ' 岁啦！</div>' +
+          '</div>' +
+        '</div>';
+      });
+    }
+    html += '</div>';
+
+    // 历史事件部分
+    html += '<div class="time-machine-section"><h3>📅 历史上的今天</h3>';
+    if (historyEvents.length === 0) {
+      html += '<div class="no-event">今天没有熊生大事记录<br><small style="font-size:12px;">可以去熊猫详情页的「熊生大事」里添加记录哦</small></div>';
+    } else {
+      historyEvents.forEach(ev => {
+        html += '<div class="history-event">' +
+          '<div class="year">' + ev.year + ' 年 · 已过去 ' + ev.ago + ' 年</div>' +
+          '<div><span class="panda-name">' + ev.pandaName + '</span>' + ev.text + '</div>' +
+        '</div>';
+      });
+    }
+    html += '</div>';
+
+    document.getElementById('timeMachineContent').innerHTML = html;
   }
 
   // ================================================================
