@@ -1766,13 +1766,20 @@
     const year = now.getFullYear();
 
     // 1) 今天生日的熊猫
-    const birthdayPandas = pandas.filter(p => {
-      if (!p.birthday) return false;
-      return p.birthday.slice(5) === todayMMDD;
-    }).map(p => {
-      const birthYear = parseInt(p.birthday.slice(0, 4));
-      const age = year - birthYear;
-      return { name: p.name, age: age, birthday: p.birthday, id: p.id };
+    const birthdayPandas = [];
+    pandas.forEach(p => {
+      if (!p.birthday) return;
+      // 兼容各种日期格式：2020-07-04 / 2020/7/4 / 2020.7.4
+      const bStr = String(p.birthday).replace(/[/.]/g, '-');
+      const parts = bStr.split('-');
+      if (parts.length < 2) return;
+      const bMonth = parseInt(parts[1]);
+      const bDay = parseInt(parts[2]);
+      if (bMonth === now.getMonth() + 1 && bDay === now.getDate()) {
+        const birthYear = parseInt(parts[0]);
+        const age = birthYear ? year - birthYear : null;
+        birthdayPandas.push({ name: p.name, age: age, birthday: p.birthday, id: p.id });
+      }
     });
 
     // 2) 历史上的今天（从 lifeEvents 提取）
