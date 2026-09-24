@@ -1769,6 +1769,8 @@
     const birthdayPandas = [];
     pandas.forEach(p => {
       if (!p.birthday) return;
+      // 排除已经离世的（所在地为潘达星）
+      if (p.location && p.location.includes('潘达星')) return;
       // 兼容各种日期格式：2020-07-04 / 2020/7/4 / 2020.7.4
       const bStr = String(p.birthday).replace(/[/.]/g, '-');
       const parts = bStr.split('-');
