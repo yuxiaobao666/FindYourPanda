@@ -1804,6 +1804,29 @@
     });
     historyEvents.sort((a, b) => b.year - a.year);
 
+    // 3) 潘达星熊猫的生日（作为历史事件）
+    pandas.forEach(p => {
+      if (!p.birthday) return;
+      if (!p.location || !p.location.includes('潘达星')) return;
+      const bStr = String(p.birthday).replace(/[/.]/g, '-');
+      const parts = bStr.split('-');
+      if (parts.length < 3) return;
+      const bMonth = parseInt(parts[1]);
+      const bDay = parseInt(parts[2]);
+      if (bMonth === now.getMonth() + 1 && bDay === now.getDate()) {
+        const birthYear = parseInt(parts[0]);
+        historyEvents.push({
+          year: birthYear,
+          ago: year - birthYear,
+          pandaName: p.name,
+          text: '出生了 🐼✨',
+          date: p.birthday,
+          isBirthday: true
+        });
+      }
+    });
+    historyEvents.sort((a, b) => b.year - a.year);
+
     // 渲染
     let html = "";
 
