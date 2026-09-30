@@ -1695,10 +1695,22 @@
       if (pChildren.some(c => myChildrenIds.includes(c.id))) spouse.push(p);
     });
 
+    // 按生日从早到晚排序；生日相同则谱系号小的在前；无生日/无谱系号的排最后
+    const dateVal = (d) => {
+      if (!d) return 99999999;
+      const s = String(d).replace(/[/.]/g, '-');
+      const parts = s.split('-').map(x => parseInt(x) || 0);
+      if (parts.length < 3 || !parts[0]) return 99999999;
+      return parts[0] * 10000 + (parts[1] || 0) * 100 + (parts[2] || 0);
+    };
+    const pedVal = (p) => {
+      const n = parseInt(p.pedigree);
+      return isNaN(n) ? 999999999 : n;
+    };
     const sortByAge = (arr) => arr.sort((a, b) => {
-      const ya = a.birthday ? parseInt(a.birthday.match(/\d{4}/)) : 9999;
-      const yb = b.birthday ? parseInt(b.birthday.match(/\d{4}/)) : 9999;
-      return ya - yb;
+      const va = dateVal(a.birthday), vb = dateVal(b.birthday);
+      if (va !== vb) return va - vb;
+      return pedVal(a) - pedVal(b);
     });
     sortByAge(children); sortByAge(spouse); sortByAge(siblingsSameParents);
     sortByAge(siblingsSameMother); sortByAge(siblingsSameFather);
