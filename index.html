@@ -458,6 +458,14 @@
       cursor: default; font-style: italic; box-shadow: none;
     }
     .detail-relation-chip.unlinked:hover { background: #f5f0ea; border-color: #e0d6c8; transform: none; box-shadow: none; }
+    .detail-relation-chip.pandastar {
+      background: linear-gradient(135deg, #fff5e6, #fce6c8);
+      color: #8a5a2a; border-color: #e8c99a;
+    }
+    .detail-relation-chip.pandastar:hover {
+      background: linear-gradient(135deg, #fce9d4, #f5d4ad);
+      border-color: #d4a870; box-shadow: 0 4px 12px rgba(212,168,112,0.3);
+    }
 
     .detail-actions {
       display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px;
@@ -2494,7 +2502,9 @@
           parentsHtml += `<span class="detail-relation-chip unlinked">${par.name}</span>`;
         } else {
           const parDisplay = getDisplayName(par);
-          parentsHtml += `<span class="detail-relation-chip" data-id="${par.id}"><i class="fas fa-paw"></i> ${parDisplay}</span>`;
+          const parIsPandastar = par.location && par.location.trim() === '潘达星';
+          const extraCls = parIsPandastar ? ' pandastar' : '';
+          parentsHtml += `<span class="detail-relation-chip${extraCls}" data-id="${par.id}"><i class="fas fa-paw"></i> ${parDisplay}</span>`;
         }
       });
       parentsHtml += `</div></div>`;
@@ -2517,7 +2527,9 @@
         relHtml += `<div class="detail-relation-group"><div class="group-title">${g.label}</div><div class="detail-relation-list">`;
         g.list.forEach(p2 => {
           const p2Display = getDisplayName(p2);
-          relHtml += `<span class="detail-relation-chip" data-id="${p2.id}"><i class="fas fa-paw"></i> ${p2Display}</span>`;
+          const p2IsPandastar = p2.location && p2.location.trim() === '潘达星';
+          const extraCls = p2IsPandastar ? ' pandastar' : '';
+          relHtml += `<span class="detail-relation-chip${extraCls}" data-id="${p2.id}"><i class="fas fa-paw"></i> ${p2Display}</span>`;
         });
         relHtml += `</div></div>`;
       }
