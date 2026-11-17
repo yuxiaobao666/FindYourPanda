@@ -887,22 +887,34 @@
         </div>
       </div>
 
-      <div class="filter-toolbar">
+      <div class="filter-toolbar show">
         <div class="filter-group">
-          <span class="label">🏢 分组：</span>
-          <button class="btn active" id="groupByOrgBtn"><i class="fas fa-building"></i> 机构</button>
-          <button class="btn" id="groupByLocationBtn"><i class="fas fa-map-pin"></i> 所在地</button>
-          <button class="btn" id="groupByAgeBtn"><i class="fas fa-clock"></i> 年龄</button>
+          <span class="label">📋 状态：</span>
+          <button class="btn" data-filter="complete">✅ 已完善</button>
+          <button class="btn" data-filter="incomplete">🟡 待补充</button>
+          <button class="btn" data-filter="birthday">🎂 今天生日</button>
+          <button class="btn" data-filter="seen">👀 见过</button>
+          <button class="btn" data-filter="notseen">🙈 未见过</button>
+          <button class="btn" data-filter="pandastar">🕊️ 潘达星</button>
         </div>
-        <div class="filter-group">
-          <span class="label">📋 筛选：</span>
-          <button class="btn active" id="filterAllBtn">全部</button>
-          <button class="btn" id="filterCompleteBtn">✅ 已完善</button>
-          <button class="btn" id="filterIncompleteBtn">🟡 待补充</button>
-          <button class="btn" id="filterBirthdayBtn">🎂 今天生日</button>
-          <button class="btn" id="filterSeenBtn">👀 见过</button>
-          <button class="btn" id="filterNotSeenBtn">🙈 未见过</button>
+        <div class="filter-group" id="ageFilterGroup">
+          <span class="label">🎂 年龄：</span>
+          <button class="btn active" data-age="">全部年龄</button>
+          <button class="btn" data-age="0-1">0-1岁</button>
+          <button class="btn" data-age="1-5">1-5岁</button>
+          <button class="btn" data-age="5-10">5-10岁</button>
+          <button class="btn" data-age="10-20">10-20岁</button>
+          <button class="btn" data-age="20-30">20-30岁</button>
+          <button class="btn" data-age="30+">30岁+</button>
         </div>
+        <div class="filter-group" id="genderFilterGroup">
+          <span class="label">⚧ 性别：</span>
+          <button class="btn active" data-gender="">全部</button>
+          <button class="btn" data-gender="雌性">♀ 雌</button>
+          <button class="btn" data-gender="雄性">♂ 雄</button>
+          <button class="btn" data-gender="unknown">未登记</button>
+        </div>
+        <div class="filter-group" id="filterCountInfo" style="margin-left:auto;font-size:0.82rem;color:var(--text-muted);font-weight:500;"></div>
       </div>
 
       <div id="browseContainer"></div>
@@ -969,8 +981,17 @@
   const CLOUD_API_URL = '/api/data';
   const CLOUD_ENABLED = true;
 
-  let currentGroupMode = 'org';
-  let currentFilter = 'all';
+  // 多条件筛选状态：状态类可多选叠加（AND 关系），年龄可多选叠加（OR 关系），性别单选互斥
+  const filterState = {
+    complete: false,
+    incomplete: false,
+    birthday: false,
+    seen: false,
+    notseen: false,
+    pandastar: false,
+    ageRanges: new Set(),   // 年龄多选，Set 存储，空=全部年龄
+    gender: ''              // 空=全部性别
+  };
   let currentPandaId = null;
   let editPandaId = null;
   let detailHistory = [];
@@ -1079,7 +1100,7 @@
       recalcNextId();
       setStatus('📴 无法连接云端，本地 ' + pandas.length + ' 条');
     }
-    setGroupMode('org');
+    renderBrowse();
   }
 
   async function saveData() {
@@ -1155,15 +1176,110 @@
   const exportDropdown = document.getElementById('exportDropdown');
   const importInput = document.getElementById('importInput');
   const addNewBtn = document.getElementById('addNewBtn');
-  const groupByOrgBtn = document.getElementById('groupByOrgBtn');
-  const groupByLocationBtn = document.getElementById('groupByLocationBtn');
-  const groupByAgeBtn = document.getElementById('groupByAgeBtn');
-  const filterAllBtn = document.getElementById('filterAllBtn');
-  const filterCompleteBtn = document.getElementById('filterCompleteBtn');
-  const filterIncompleteBtn = document.getElementById('filterIncompleteBtn');
-  const filterBirthdayBtn = document.getElementById('filterBirthdayBtn');
-  const filterSeenBtn = document.getElementById('filterSeenBtn');
-  const filterNotSeenBtn = document.getElementById('filterNotSeenBtn');
+
+  // ===== 多条件筛选系统初始化 =====
+  const ageFilterGroup = document.getElementById('ageFilterGroup');
+  const genderFilterGroup = document.getElementById('genderFilterGroup');
+  const filterCountInfo = document.getElementById('filterCountInfo');
+
+  // 根据生日算年龄（岁，按生日未过生日算）
+  function getAgeYears(birthdayStr) {
+    if (!birthdayStr) return null;
+    const isStandard = /^\d{4}[-\/]\d{1,2}[-\/]\d{1,2}/.test(birthdayStr);
+    let year = null, month = 5, day = 30;
+    if (isStandard) {
+      const cleaned = birthdayStr.replace(/\s+/g, '');
+      let match = cleaned.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+      if (match) { year = parseInt(match[1]); month = parseInt(match[2]) - 1; day = parseInt(match[3]); }
+      if (!match) {
+        try { const d = new Date(birthdayStr);
+          if (!isNaN(d.getTime())) { year = d.getFullYear(); month = d.getMonth(); day = d.getDate(); } } catch(e) {} }
+    } else {
+      const yearMatch = birthdayStr.match(/^(\d{4})/);
+      if (yearMatch) {
+        year = parseInt(yearMatch[1]); month = 8; day = 1;
+      }
+    }
+    if (year === null || isNaN(year)) return null;
+    const birthDate = new Date(year, month, day);
+    if (isNaN(birthDate.getTime())) return null;
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const hasBirthdayPassed = (today.getMonth() > birthDate.getMonth()) ||
+      (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
+    if (!hasBirthdayPassed) age--;
+    return Math.max(0, age);
+  }
+
+  function setAgeRange(range) {
+    // 点击"全部年龄"按钮 → 清空所有年龄选择
+    if (range === '') {
+      filterState.ageRanges.clear();
+      ageFilterGroup.querySelectorAll('[data-age]').forEach(b => {
+        b.classList.remove('active');
+        if (b.dataset.age === '') b.classList.add('active');
+      });
+    } else {
+      // 点击具体年龄段 → toggle
+      if (filterState.ageRanges.has(range)) {
+        filterState.ageRanges.delete(range);
+      } else {
+        filterState.ageRanges.add(range);
+      }
+      // 更新按钮 active 状态
+      ageFilterGroup.querySelectorAll('[data-age]').forEach(b => {
+        if (b.dataset.age === '') {
+          b.classList.toggle('active', filterState.ageRanges.size === 0);
+        } else {
+          b.classList.toggle('active', filterState.ageRanges.has(b.dataset.age));
+        }
+      });
+    }
+    collapseState = {};
+    renderBrowse();
+  }
+
+  function setGenderFilter(gender) {
+    filterState.gender = gender;
+    genderFilterGroup.querySelectorAll('[data-gender]').forEach(b => {
+      b.classList.toggle('active', b.dataset.gender === gender);
+    });
+    collapseState = {};
+    renderBrowse();
+  }
+
+  // 切换状态类筛选（多选叠加）
+  function toggleStatusFilter(key, btn) {
+    filterState[key] = !filterState[key];
+    btn.classList.toggle('active', filterState[key]);
+    collapseState = {};
+    renderBrowse();
+  }
+
+  function clearAllFilters() {
+    Object.keys(filterState).forEach(k => {
+      if (k === 'ageRanges') filterState[k].clear();
+      else if (k === 'gender') filterState[k] = '';
+      else filterState[k] = false;
+    });
+    // 清空搜索框
+    searchInput.value = '';
+    // 重置年龄按钮
+    ageFilterGroup.querySelectorAll('[data-age]').forEach(b => {
+      b.classList.toggle('active', b.dataset.age === '');
+    });
+    // 重置性别按钮
+    genderFilterGroup.querySelectorAll('[data-gender]').forEach(b => {
+      b.classList.toggle('active', b.dataset.gender === '');
+    });
+    // 重置状态按钮
+    document.querySelectorAll('.filter-group .btn[data-filter]').forEach(b => {
+      b.classList.remove('active');
+    });
+    collapseState = {};
+    renderBrowse();
+  }
+  window.clearAllFilters = clearAllFilters;
 
   const detailTitle = document.getElementById('detailTitle');
   const detailBody = document.getElementById('detailBody');
@@ -1396,13 +1512,20 @@
       if (pChildren.some(c => myChildrenIds.includes(c.id))) spouse.push(p);
     });
 
-    // 按生日从早到晚排序；生日相同则谱系号小的在前；无生日/无谱系号的排最后
+    // 按生日从早到晚排序；生日相同则谱系号小的在前；无生日排最后
+    // 生日补全规则：只有年份→9月1日，只有年月→当月1日，都没有→排最后
     const dateVal = (d) => {
       if (!d) return 99999999;
       const s = String(d).replace(/[/.]/g, '-');
       const parts = s.split('-').map(x => parseInt(x) || 0);
-      if (parts.length < 3 || !parts[0]) return 99999999;
-      return parts[0] * 10000 + (parts[1] || 0) * 100 + (parts[2] || 0);
+      if (!parts[0]) return 99999999;        // 年都没有 → 排最后
+      if (parts.length === 1) {
+        return parts[0] * 10000 + 9 * 100 + 1; // 只有年份 → 9月1日
+      } else if (!parts[2]) {
+        return parts[0] * 10000 + (parts[1] || 1) * 100 + 1; // 只有年月 → 当月1日
+      } else {
+        return parts[0] * 10000 + parts[1] * 100 + parts[2]; // 完整日期
+      }
     };
     const pedVal = (p) => {
       const n = parseInt(p.pedigree);
@@ -1605,147 +1728,119 @@
   // 主页
   // ================================================================
   function renderBrowse() {
-    const pandastarList = [];
-    const normalMap = new Map();
-    const ageMap = new Map();
+    // === 搜索词（从搜索框叠加进来） ===
+    const keyword = searchInput.value.trim().toLowerCase();
 
-    let filteredPandas = pandas;
-    if (currentFilter === 'complete') {
-      filteredPandas = pandas.filter(p => p.isComplete === true);
-    } else if (currentFilter === 'incomplete') {
-      filteredPandas = pandas.filter(p => p.isComplete !== true);
-    } else if (currentFilter === 'birthday') {
-      filteredPandas = pandas.filter(p => isTodayBirthday(p.birthday));
-    } else if (currentFilter === 'seen') {
-      filteredPandas = pandas.filter(p => p.hasSeen === true);
-    } else if (currentFilter === 'notseen') {
-      filteredPandas = pandas.filter(p => p.hasSeen !== true);
-    }
+    let filtered = pandas.filter(p => {
+      // 搜索词 AND 叠加
+      if (keyword) {
+        const nameMatch = p.name.toLowerCase().includes(keyword);
+        const aliasMatch = p.alias && p.alias.toLowerCase().includes(keyword);
+        const orgMatch = p.org && p.org.toLowerCase().includes(keyword);
+        const locMatch = p.location && p.location.toLowerCase().includes(keyword);
+        if (!nameMatch && !aliasMatch && !orgMatch && !locMatch) return false;
+      }
 
-    if (currentGroupMode === 'age') {
-      filteredPandas.forEach(p => {
-        if (p.location && p.location.trim() === '潘达星') return;
-        const ageGroup = getAgeGroup(p.birthday);
-        if (ageGroup) {
-          if (!ageMap.has(ageGroup)) ageMap.set(ageGroup, []);
-          ageMap.get(ageGroup).push(p);
+      const isPandastar = p.location && p.location.trim() === '潘达星';
+
+      // 状态类筛选（多选叠加，任一勾选即生效）
+      if (filterState.complete && p.isComplete !== true) return false;
+      if (filterState.incomplete && p.isComplete === true) return false;
+      if (filterState.birthday && !isTodayBirthday(p.birthday)) return false;
+      if (filterState.seen && p.hasSeen !== true) return false;
+      if (filterState.notseen && p.hasSeen !== true) return false;
+      if (filterState.pandastar && !isPandastar) return false;
+
+      // 年龄筛选（多选 OR：命中任一选中档即可通过）
+      if (filterState.ageRanges.size > 0) {
+        const age = getAgeYears(p.birthday);
+        if (age === null) return false;  // 生日缺失 → 不符合任何年龄段
+        const inRange = (r) => {
+          if (r === '0-1') return age >= 0 && age < 1;
+          if (r === '1-5') return age >= 1 && age < 5;
+          if (r === '5-10') return age >= 5 && age < 10;
+          if (r === '10-20') return age >= 10 && age < 20;
+          if (r === '20-30') return age >= 20 && age < 30;
+          if (r === '30+') return age >= 30;
+          return false;
+        };
+        let hit = false;
+        for (const r of filterState.ageRanges) { if (inRange(r)) { hit = true; break; } }
+        if (!hit) return false;
+      }
+
+      // 性别筛选
+      if (filterState.gender) {
+        if (filterState.gender === 'unknown') {
+          if (p.gender === '雌性' || p.gender === '雄性') return false;
         } else {
-          if (!ageMap.has('年龄未知')) ageMap.set('年龄未知', []);
-          ageMap.get('年龄未知').push(p);
+          if (p.gender !== filterState.gender) return false;
         }
-      });
-    } else {
-      filteredPandas.forEach(p => {
-        if (p.location && p.location.trim() === '潘达星') {
-          pandastarList.push(p);
-        } else {
-          const key = currentGroupMode === 'org' ? (p.org || '未归类') : (p.location || '未知所在地');
-          if (!normalMap.has(key)) normalMap.set(key, []);
-          normalMap.get(key).push(p);
-        }
-      });
-    }
+      }
+      return true;
+    });
 
+    // === 排序：潘达星排后面，其他按生日从早到晚（年长在前），同名后按谱系号 ===
+    const dateVal2 = (d) => {
+      if (!d) return 99999999;
+      const s = String(d).replace(/[/.]/g, '-');
+      const parts = s.split('-').map(x => parseInt(x) || 0);
+      if (!parts[0]) return 99999999;
+      if (parts.length === 1) return parts[0] * 10000 + 9 * 100 + 1;
+      if (!parts[2]) return parts[0] * 10000 + (parts[1] || 1) * 100 + 1;
+      return parts[0] * 10000 + parts[1] * 100 + parts[2];
+    };
+    const pedVal2 = (p) => {
+      const n = parseInt(p.pedigree);
+      return isNaN(n) ? 999999999 : n;
+    };
+    filtered.sort((a, b) => {
+      const aPs = a.location && a.location.trim() === '潘达星';
+      const bPs = b.location && b.location.trim() === '潘达星';
+      if (aPs !== bPs) return aPs ? 1 : -1;  // 潘达星排后面
+      const va = dateVal2(a.birthday), vb = dateVal2(b.birthday);
+      if (va !== vb) return va - vb;
+      return pedVal2(a) - pedVal2(b);
+    });
+
+    // === 渲染平铺卡片网格 ===
     let html = '';
-
-    if (currentGroupMode === 'age') {
-      const ageGroups = ['0-5岁', '5-10岁', '10-15岁', '15-20岁', '20-25岁', '25-30岁', '30岁以上', '年龄未知'];
-      for (let key of ageGroups) {
-        const list = ageMap.get(key) || [];
-        if (list.length === 0) continue;
-        const icon = 'fa-clock';
-        const shouldCollapse = list.length > 10;
-        const isCollapsed = collapseState[key] !== undefined ? collapseState[key] : shouldCollapse;
-        html += `<div class="org-section"><div class="org-title" data-key="${key}" onclick="window.toggleSection && toggleSection(this)">
-          <i class="fas ${icon}"></i> ${key} <span class="count-badge">${list.length}只</span>
-          <span class="toggle-icon ${isCollapsed ? 'collapsed' : ''}"><i class="fas fa-chevron-down"></i></span>
-        </div><div class="panda-list ${isCollapsed ? 'collapsed' : ''}">`;
-        list.sort((a,b)=> a.name.localeCompare(b.name));
-        list.forEach(p => {
-          const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
-          const tag = p.gender ? (p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')) : '';
-          const displayName = getDisplayName(p);
-          const dotClass = p.isComplete ? 'complete' : 'incomplete';
-          const seenIcon = p.hasSeen ? '<span class="seen-icon">👀</span>' : '';
-          html += `<span class="panda-link" data-id="${p.id}">
-            <span class="status-dot ${dotClass}"></span>
-            ${displayName}
-            ${seenIcon}
-            ${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}
-          </span>`;
-        });
-        html += '</div></div>';
+    if (filtered.length) {
+      // 潘达星标记，用于底部提示
+      const pandastarCount = filtered.filter(p => p.location && p.location.trim() === '潘达星').length;
+      if (pandastarCount > 0 && pandastarCount < filtered.length) {
+        html += `<div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:10px;padding:6px 14px;background:var(--surface-warm);border-radius:var(--radius-md);border:1px solid var(--border);">
+          🐼 共 ${filtered.length} 只 · 其中 🕊️ 潘达星 ${pandastarCount} 只（已排末尾）
+          <button onclick="clearAllFilters()" style="float:right;background:none;border:none;color:var(--primary-light);cursor:pointer;font-size:0.78rem;text-decoration:underline;">清除筛选</button>
+        </div>`;
+      } else {
+        html += `<div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:10px;padding:6px 14px;background:var(--surface-warm);border-radius:var(--radius-md);border:1px solid var(--border);">
+          🐼 共 ${filtered.length} 只
+          <button onclick="clearAllFilters()" style="float:right;background:none;border:none;color:var(--primary-light);cursor:pointer;font-size:0.78rem;text-decoration:underline;">清除筛选</button>
+        </div>`;
       }
+
+      html += '<div class="panda-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;">';
+      filtered.forEach(p => {
+        const isPandastar = p.location && p.location.trim() === '潘达星';
+        const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
+        const tag = p.gender ? (p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')) : '';
+        const displayName = getDisplayName(p);
+        const dotClass = p.isComplete ? 'complete' : 'incomplete';
+        const seenIcon = p.hasSeen ? '<span class="seen-icon">👀</span>' : '';
+        const extraCls = isPandastar ? ' pandastar' : '';
+        html += `<span class="panda-link${extraCls}" data-id="${p.id}">
+          <span class="status-dot ${dotClass}"></span>
+          ${displayName}
+          ${seenIcon}
+          ${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}
+        </span>`;
+      });
+      html += '</div>';
     } else {
-      const sortedKeys = Array.from(normalMap.keys()).sort();
-      for (let key of sortedKeys) {
-        const list = normalMap.get(key);
-        const icon = currentGroupMode === 'org' ? 'fa-building' : 'fa-map-pin';
-        const shouldCollapse = list.length > 10;
-        const isCollapsed = collapseState[key] !== undefined ? collapseState[key] : shouldCollapse;
-        html += `<div class="org-section"><div class="org-title" data-key="${key}" onclick="window.toggleSection && toggleSection(this)">
-          <i class="fas ${icon}"></i> ${key} <span class="count-badge">${list.length}只</span>
-          <span class="toggle-icon ${isCollapsed ? 'collapsed' : ''}"><i class="fas fa-chevron-down"></i></span>
-        </div><div class="panda-list ${isCollapsed ? 'collapsed' : ''}">`;
-        list.sort((a,b)=> a.name.localeCompare(b.name));
-        list.forEach(p => {
-          const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
-          const tag = p.gender ? (p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')) : '';
-          const displayName = getDisplayName(p);
-          const dotClass = p.isComplete ? 'complete' : 'incomplete';
-          const seenIcon = p.hasSeen ? '<span class="seen-icon">👀</span>' : '';
-          html += `<span class="panda-link" data-id="${p.id}">
-            <span class="status-dot ${dotClass}"></span>
-            ${displayName}
-            ${seenIcon}
-            ${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}
-          </span>`;
-        });
-        html += '</div></div>';
-      }
-
-      if (pandastarList.length) {
-        const key = '潘达星 ✨';
-        const shouldCollapse = pandastarList.length > 10;
-        const isCollapsed = collapseState[key] !== undefined ? collapseState[key] : shouldCollapse;
-        const dates = pandastarList.filter(p => p.passingDate).map(p => p.passingDate);
-        let display = '';
-        if (dates.length) {
-          const sorted = dates.slice().sort();
-          display = '🕊️ ' + sorted[0] + ' 〜 ' + sorted[sorted.length-1];
-        }
-        html += `<div class="org-section"><div class="org-title" data-key="${key}" onclick="window.toggleSection && toggleSection(this)">
-          <i class="fas fa-star" style="color:#d4a373;"></i> 潘达星 ✨ <span class="count-badge">${pandastarList.length}只</span>
-          ${display ? `<span class="passing-date">${display}</span>` : ''}
-          <span class="toggle-icon ${isCollapsed ? 'collapsed' : ''}"><i class="fas fa-chevron-down"></i></span>
-        </div><div class="panda-list ${isCollapsed ? 'collapsed' : ''}">`;
-        pandastarList.sort((a,b)=> a.name.localeCompare(b.name));
-        pandastarList.forEach(p => {
-          const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
-          const tag = p.gender ? (p.gender === '雌性' ? '♀' : (p.gender === '雄性' ? '♂' : '')) : '';
-          const displayName = getDisplayName(p);
-          const dotClass = p.isComplete ? 'complete' : 'incomplete';
-          const seenIcon = p.hasSeen ? '<span class="seen-icon">👀</span>' : '';
-          html += `<span class="panda-link pandastar" data-id="${p.id}">
-            <span class="status-dot ${dotClass}"></span>
-            ${displayName}
-            ${seenIcon}
-            ${tag ? `<span class="gender-tag ${cls}">${tag}</span>` : ''}
-          </span>`;
-        });
-        html += '</div></div>';
-      }
+      html = '<div class="empty-state">没有符合筛选条件的熊猫，试试清除筛选～</div>';
     }
 
-    if (!html) {
-      let msg = '暂无熊猫数据';
-      if (currentFilter === 'complete') msg = '没有已完善的熊猫';
-      else if (currentFilter === 'incomplete') msg = '没有待补充的熊猫';
-      else if (currentFilter === 'birthday') msg = '🎂 今天没有熊猫过生日';
-      else if (currentFilter === 'seen') msg = '没有标记为见过的熊猫';
-      else if (currentFilter === 'notseen') msg = '所有熊猫都已标记为见过';
-      html = '<div class="empty-state">' + msg + '</div>';
-    }
     browseContainer.innerHTML = html;
     document.querySelectorAll('.panda-link[data-id]').forEach(el => {
       el.addEventListener('click', function() {
@@ -1758,28 +1853,8 @@
     saveData();
   }
 
-  function setGroupMode(mode) {
-    currentGroupMode = mode;
-    groupByOrgBtn.classList.toggle('active', mode === 'org');
-    groupByLocationBtn.classList.toggle('active', mode === 'location');
-    groupByAgeBtn.classList.toggle('active', mode === 'age');
-    collapseState = {};
-    if (searchInput.value.trim()) searchInput.value = '';
-    renderBrowse();
-  }
-
-  function setFilter(filter) {
-    currentFilter = filter;
-    filterAllBtn.classList.toggle('active', filter === 'all');
-    filterCompleteBtn.classList.toggle('active', filter === 'complete');
-    filterIncompleteBtn.classList.toggle('active', filter === 'incomplete');
-    filterBirthdayBtn.classList.toggle('active', filter === 'birthday');
-    filterSeenBtn.classList.toggle('active', filter === 'seen');
-    filterNotSeenBtn.classList.toggle('active', filter === 'notseen');
-    collapseState = {};
-    if (searchInput.value.trim()) searchInput.value = '';
-    renderBrowse();
-  }
+  function setGroupMode(mode) { /* deprecated, kept for compatibility */ }
+  function setFilter(filter) { /* deprecated */ }
 
   // ================================================================
   // 搜索
@@ -1816,43 +1891,9 @@
   }
 
   function doSearch() {
-    const keyword = searchInput.value.trim();
     searchSuggestions.classList.remove('show');
-    if (!keyword) { renderBrowse(); return; }
-    const kw = keyword.toLowerCase();
-    const results = pandas.filter(p => {
-      const nameMatch = p.name.toLowerCase().includes(kw);
-      const aliasMatch = p.alias && p.alias.toLowerCase().includes(kw);
-      const orgMatch = p.org && p.org.toLowerCase().includes(kw);
-      const locMatch = p.location && p.location.toLowerCase().includes(kw);
-      return nameMatch || aliasMatch || orgMatch || locMatch;
-    });
-    if (results.length === 0) {
-      browseContainer.innerHTML = '<div class="empty-state" style="padding:30px 8px;">未找到 “' + keyword + '”</div>';
-      return;
-    }
-    let html = '<div class="result-grid">';
-    results.forEach(p => {
-      const cls = p.gender === '雌性' ? 'female' : (p.gender === '雄性' ? 'male' : '');
-      const displayName = getDisplayName(p);
-      const dotClass = p.isComplete ? 'complete' : 'incomplete';
-      const seenIcon = p.hasSeen ? ' <span class="seen-icon">👀</span>' : '';
-      html += `<div class="result-card" data-id="${p.id}">
-        <span class="status-dot ${dotClass}"></span>
-        <div>
-          <div class="name">${displayName}${seenIcon} <span class="gender-badge ${cls}">${p.gender||'未知'}</span></div>
-          <div class="sub">${p.org||'—'} · ${p.location||'—'}</div>
-        </div>
-      </div>`;
-    });
-    html += '</div>';
-    browseContainer.innerHTML = html;
-    document.querySelectorAll('.result-card[data-id]').forEach(el => {
-      el.addEventListener('click', function() {
-        const p = getPandaById(this.dataset.id);
-        if (p) openDetail(p.id);
-      });
-    });
+    // 实际筛选已纳入 renderBrowse，直接调用即可（它会自己读 searchInput.value）
+    renderBrowse();
   }
 
   // ================================================================
@@ -3287,6 +3328,8 @@
   searchInput.addEventListener('keyup', function(e) {
     if (e.key === 'Enter') { doSearch(); return; }
     updateSuggestions(e.target.value);
+    // 实时联动筛选体系
+    renderBrowse();
   });
   searchInput.addEventListener('blur', function() { setTimeout(() => searchSuggestions.classList.remove('show'), 200); });
   searchInput.addEventListener('focus', function() { if (this.value) updateSuggestions(this.value); });
@@ -3303,16 +3346,25 @@
     });
   }
 
-  groupByOrgBtn.addEventListener('click', function() { setGroupMode('org'); });
-  groupByLocationBtn.addEventListener('click', function() { setGroupMode('location'); });
-  groupByAgeBtn.addEventListener('click', function() { setGroupMode('age'); });
+  // ===== 多条件筛选事件绑定 =====
 
-  filterAllBtn.addEventListener('click', function() { setFilter('all'); });
-  filterCompleteBtn.addEventListener('click', function() { setFilter('complete'); });
-  filterIncompleteBtn.addEventListener('click', function() { setFilter('incomplete'); });
-  filterBirthdayBtn.addEventListener('click', function() { setFilter('birthday'); });
-  filterSeenBtn.addEventListener('click', function() { setFilter('seen'); });
-  filterNotSeenBtn.addEventListener('click', function() { setFilter('notseen'); });
+  // 状态类筛选按钮（多选叠加）
+  document.querySelectorAll('.filter-group .btn[data-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.filter;
+      toggleStatusFilter(key, btn);
+    });
+  });
+
+  // 年龄筛选按钮（单选）
+  document.getElementById('ageFilterGroup').querySelectorAll('[data-age]').forEach(btn => {
+    btn.addEventListener('click', () => setAgeRange(btn.dataset.age));
+  });
+
+  // 性别筛选按钮（单选）
+  document.getElementById('genderFilterGroup').querySelectorAll('[data-gender]').forEach(btn => {
+    btn.addEventListener('click', () => setGenderFilter(btn.dataset.gender));
+  });
 
   editBackBtn.addEventListener('click', function() {
     if (editPandaId === 'temp_new') {
