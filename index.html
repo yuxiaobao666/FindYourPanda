@@ -3785,7 +3785,7 @@ body { background: linear-gradient(160deg, rgb(245, 240, 230) 0%, rgb(232, 239, 
 
   <div class="page-container">
     <!-- 主页 -->
-    <div id="pageHome" class="page-view">
+    <div id="pageHome" class="page-view active">
       <div class="stats-row" id="statsRow">
         <div class="stat-item"><span class="num" id="totalCount">794</span><span class="label">只</span></div>
         <div class="stat-item">🐻 <span class="num" id="maleCount">337</span><span class="label">雄</span></div>
@@ -7828,52 +7828,11 @@ body { background: linear-gradient(160deg, rgb(245, 240, 230) 0%, rgb(232, 239, 
     </div>
 
     <!-- 详情页 -->
-    <div id="pageDetail" class="page-view active">
+    <div id="pageDetail" class="page-view">
       <div class="page-header">
-        <span class="page-title" id="detailTitle"></span>
+        <span class="page-title" id="detailTitle">🐼 熊猫</span>
       </div>
-      <div id="detailBody">
-      <div class="detail-top">
-        <div class="detail-avatar" id="detailAvatar">
-          <span class="avatar-placeholder">🐼</span>
-          <span class="seen-badge-overlay not-seen" id="detailSeenBadge">
-            👀 未见过
-          </span>
-        </div>
-        <div class="detail-name-area">
-          <div>
-            <span class="panda-name">龙龙</span>
-            <span class="panda-alias"></span>
-          </div>
-          <div class="panda-age">34岁2个月</div>
-          <div class="panda-tags">
-            <span class="tag male">雄性</span>
-            <span class="tag complete">✅ 已完善</span>
-            
-          </div>
-        </div>
-        <div class="detail-top-actions">
-          <button class="relation-btn" id="detailFamilyTreeBtn"><i class="fas fa-tree"></i> 家族树</button>
-          <button class="relation-btn" id="detailRelationBtn"><i class="fas fa-sitemap"></i> 查亲缘</button>
-        </div>
-      </div>
-    
-      <div class="detail-info-list">
-        <div class="detail-info-item"><span class="label">生日</span><span class="value">1992</span></div>
-        <div class="detail-info-item"><span class="label">谱系号</span><span class="value">831</span></div>
-        <div class="detail-info-item"><span class="label">机构</span><span class="value">成都大熊猫繁育研究基地</span></div>
-        <div class="detail-info-item"><span class="label">所在地</span><span class="value">—</span></div>
-    </div><div class="detail-relations">
-        <div class="detail-relation-group">
-          <div class="group-title">👪 父母</div>
-          <div class="detail-relation-list">
-      <span class="detail-relation-chip wild">🌿 野外</span><span class="detail-relation-chip wild">🌿 野外</span></div></div><div class="detail-relation-group"><div class="group-title">🐣 子女</div><div class="detail-relation-list"><span class="detail-relation-chip" data-id="p843"><i class="fas fa-paw"></i> 晶奥</span><span class="detail-relation-chip" data-id="p844"><i class="fas fa-paw"></i> 晶运</span></div></div><div class="detail-relation-group"><div class="group-title">💕 配偶</div><div class="detail-relation-list"><span class="detail-relation-chip" data-id="p737"><i class="fas fa-paw"></i> 晶晶</span></div></div></div>
-      <div class="detail-actions">
-        <button class="btn btn-outline btn-left" id="detailExitBtn"><i class="fas fa-arrow-left"></i> 返回</button>
-        <button class="btn btn-danger" id="detailDeleteBtn"><i class="fas fa-trash-alt"></i> 删除</button>
-        <button class="btn btn-primary" id="detailEditBtn"><i class="fas fa-edit"></i> 编辑</button>
-      </div>
-    </div>
+      <div id="detailBody"></div>
     </div>
 
     <!-- 编辑页 -->
@@ -7900,13 +7859,9 @@ body { background: linear-gradient(160deg, rgb(245, 240, 230) 0%, rgb(232, 239, 
     <div id="pageFamilyTree" class="page-view">
       <div class="page-header">
         <button class="back-btn" id="familyTreeBackBtn"><i class="fas fa-arrow-left"></i> 返回</button>
-        <span class="page-title" id="familyTreeTitle">🌳 龙龙 的家族树</span>
+        <span class="page-title" id="familyTreeTitle">🌳 家族树</span>
       </div>
-      <div class="family-tree-body" id="familyTreeBody"><div style="text-align:center;color:var(--text-muted);padding:40px 20px;">
-        <div style="font-size:2rem;margin-bottom:12px;">🌱</div>
-        <div style="font-weight:600;margin-bottom:4px;">龙龙的家族关系不多</div>
-        <div style="font-size:0.85rem;">还没有录入父母信息，或父母来自野外</div>
-      </div></div>
+      <div class="family-tree-body" id="familyTreeBody"></div>
       <div class="tree-legend">
         <div class="tree-legend-item"><div class="tree-legend-line marriage"></div> 婚配</div>
         <div class="tree-legend-item"><div class="tree-legend-line"></div> 亲子</div>
@@ -8066,6 +8021,18 @@ body { background: linear-gradient(160deg, rgb(245, 240, 230) 0%, rgb(232, 239, 
       recalcNextId();
       setStatus('📴 无法连接云端，本地 ' + pandas.length + ' 条');
     }
+    resetToHome();
+  }
+
+  // 每次打开都从首页开始，避免残留上一次的详情页状态
+  function resetToHome() {
+    detailHistory = [];
+    currentPandaId = null;
+    collapseState = {};
+    document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
+    document.getElementById('pageHome').classList.add('active');
+    document.getElementById('navHome').classList.add('active');
+    document.getElementById('navTime').classList.remove('active');
     renderBrowse();
   }
 
@@ -8437,23 +8404,51 @@ body { background: linear-gradient(160deg, rgb(245, 240, 230) 0%, rgb(232, 239, 
     }
     const maxDepth = getNodeDepth(rootPandaId, new Set());
 
-    // ===== 子树宽度：对称布局的基础，保证同层节点不重叠 =====
-    function measureWidth(key, seen) {
-      if (seen.has(key)) return NODE_W;
+    // ===== 紧凑布局 =====
+    // 父母两棵子树紧邻排列（不再按较宽一侧做对称），
+    // 亲子连线落在婚配线 1/8、1/4、3/8、1/2、5/8、3/4、7/8 处，依然保持垂直
+    const T_LIST = [1/8, 1/4, 3/8, 1/2, 5/8, 3/4, 7/8];
+    const half = NODE_W / 2;
+    const extents = {};   // key -> { L, R }：相对节点中心的左右边界
+    const offsets = {};   // key -> { u, v }：父母相对孩子中心的偏移
+
+    function measure(key, seen) {
+      if (extents[key]) return extents[key];
+      if (seen.has(key)) return { L: half, R: half };
       seen.add(key);
       const rel = relations[key];
-      if (!rel || (!rel.motherKey && !rel.fatherKey)) return NODE_W;
-      const mW = rel.motherKey ? measureWidth(rel.motherKey, new Set(seen)) : 0;
-      const fW = rel.fatherKey ? measureWidth(rel.fatherKey, new Set(seen)) : 0;
-      if (rel.motherKey && rel.fatherKey) {
-        const sideW = Math.max(mW, fW, NODE_W);
-        return Math.max(NODE_W, 2 * sideW + COUPLE_GAP);
+      if (!rel || (!rel.motherKey && !rel.fatherKey)) {
+        extents[key] = { L: half, R: half };
+        return extents[key];
       }
-      return Math.max(NODE_W, mW, fW);
+      if (rel.motherKey && rel.fatherKey) {
+        const M = measure(rel.motherKey, new Set(seen));
+        const F = measure(rel.fatherKey, new Set(seen));
+        const D = COUPLE_GAP + M.R + F.L;   // 父母中心距：两块紧邻
+        const d = D - NODE_W;
+        const span = D + M.L + F.R;         // 本家庭总宽
+        // 让孩子尽量居中，再吸附到允许的档位
+        const tIdeal = (span / 2 - M.L - half) / d;
+        let t = T_LIST[0], best = Infinity;
+        T_LIST.forEach(cand => {
+          const diff = Math.abs(cand - tIdeal);
+          if (diff < best) { best = diff; t = cand; }
+        });
+        const u = -half - t * d;            // 母亲相对孩子
+        const v = u + D;                    // 父亲相对孩子
+        offsets[key] = { u, v };
+        extents[key] = { L: M.L - u, R: v + F.R };
+        return extents[key];
+      }
+      // 单亲：父母直接对齐在孩子正上方
+      const P = measure(rel.motherKey || rel.fatherKey, new Set(seen));
+      extents[key] = { L: P.L, R: P.R };
+      return extents[key];
     }
 
-    // ===== 对称布局：孩子居中，父母以等距分居两侧 =====
-    // 因为两侧对称，婚配中点恒等于孩子的 x，所有亲子连线保持垂直
+    measure(rootPandaId, new Set());
+    const rootExt = extents[rootPandaId];
+
     const positions = {};
     const placed = new Set();
     function place(key, centerX, level) {
@@ -8462,13 +8457,10 @@ body { background: linear-gradient(160deg, rgb(245, 240, 230) 0%, rgb(232, 239, 
       positions[key] = { x: centerX, y: level * (NODE_H + V_GAP), level };
       const rel = relations[key];
       if (!rel) return;
-      if (rel.motherKey && rel.fatherKey) {
-        const mW = measureWidth(rel.motherKey, new Set());
-        const fW = measureWidth(rel.fatherKey, new Set());
-        const sideW = Math.max(mW, fW, NODE_W);
-        const offset = (sideW + COUPLE_GAP) / 2;
-        place(rel.motherKey, centerX - offset, level - 1);
-        place(rel.fatherKey, centerX + offset, level - 1);
+      if (rel.motherKey && rel.fatherKey && offsets[key]) {
+        const off = offsets[key];
+        place(rel.motherKey, centerX + off.u, level - 1);
+        place(rel.fatherKey, centerX + off.v, level - 1);
       } else if (rel.motherKey) {
         place(rel.motherKey, centerX, level - 1);
       } else if (rel.fatherKey) {
@@ -8478,13 +8470,9 @@ body { background: linear-gradient(160deg, rgb(245, 240, 230) 0%, rgb(232, 239, 
     place(rootPandaId, 0, maxDepth);
 
     // ===== 归一化：整体平移到正坐标 =====
-    let minX = Infinity, maxX = -Infinity;
-    Object.values(positions).forEach(p => {
-      minX = Math.min(minX, p.x - NODE_W / 2);
-      maxX = Math.max(maxX, p.x + NODE_W / 2);
-    });
     const PAD = 24;
-    Object.values(positions).forEach(p => { p.x = p.x - minX + PAD; });
+    const shift = PAD + rootExt.L;
+    Object.values(positions).forEach(p => { p.x += shift; });
 
     // ===== 生成连线 =====
     const lines = [];
@@ -8502,7 +8490,7 @@ body { background: linear-gradient(160deg, rgb(245, 240, 230) 0%, rgb(232, 239, 
           x2: fPos.x - NODE_W / 2, y2: marriageY,
           type: 'marriage'
         });
-        // 亲子垂线：对称布局保证婚配中点 === 孩子 x
+        // 亲子垂线：连线落在婚配线的指定档位，保持垂直
         lines.push({
           x1: child.x, y1: marriageY,
           x2: child.x, y2: child.y,
@@ -8520,7 +8508,7 @@ body { background: linear-gradient(160deg, rgb(245, 240, 230) 0%, rgb(232, 239, 
     });
 
     // ===== 渲染 =====
-    const totalWidth = (maxX - minX) + PAD * 2;
+    const totalWidth = rootExt.L + rootExt.R + PAD * 2;
     const totalHeight = (maxDepth + 1) * (NODE_H + V_GAP);
 
     let html = `<div class="tree-canvas" style="width:${totalWidth}px;height:${totalHeight}px;">`;
@@ -10634,6 +10622,11 @@ body { background: linear-gradient(160deg, rgb(245, 240, 230) 0%, rgb(232, 239, 
   // 初始化
   // ================================================================
   bootstrap();
+
+  // 从浏览器缓存恢复页面时，同样回到首页
+  window.addEventListener('pageshow', function(e) {
+    if (e.persisted) resetToHome();
+  });
 })();
 </script>
 
