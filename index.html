@@ -840,6 +840,166 @@
       text-align: center; color: var(--text-muted); padding: 20px;
       font-size: 14px;
     }
+
+    /* ========== 家族树模态框 ========== */
+    .tree-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(60,75,55,0.45);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: treeFadeIn 0.2s ease;
+    }
+    .tree-modal-overlay.active { display: flex; }
+    @keyframes treeFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .tree-modal {
+      background: var(--surface);
+      border-radius: 16px;
+      width: 92%;
+      max-width: 960px;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+      animation: treeSlideUp 0.25s ease;
+    }
+    @keyframes treeSlideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .tree-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .tree-modal-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--primary);
+    }
+    .tree-modal-close {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .tree-modal-close:hover { background: #f0eeea; color: var(--text); }
+    .tree-modal-body {
+      flex: 1;
+      overflow-x: auto;
+      overflow-y: auto;
+      padding: 24px 20px;
+    }
+    .tree-legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 12px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .tree-legend-item { display: flex; align-items: center; gap: 6px; }
+    .tree-legend-line { width: 22px; height: 0; border-top: 2px solid var(--primary-light); }
+    .tree-legend-line.marriage { border-top: 2px dashed #d4a870; }
+
+    /* 树画布 */
+    .tree-canvas {
+      position: relative;
+      margin: 0 auto;
+    }
+    .tree-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+    .tree-svg line.marriage { stroke: #d4a870; stroke-width: 1.5; stroke-dasharray: 3,2; }
+    .tree-svg line.parent-child { stroke: var(--primary-light); stroke-width: 1.5; }
+
+    .tree-node {
+      position: absolute;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 7px 12px;
+      min-width: 64px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(107,142,90,0.06);
+      font-size: 0.82rem;
+      font-weight: 500;
+      white-space: nowrap;
+      transform: translateX(-50%);
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .tree-node:hover {
+      border-color: var(--primary);
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: 0 4px 12px rgba(107,142,90,0.12);
+      z-index: 10;
+    }
+    .tree-node.current {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border-color: var(--primary);
+      font-weight: 700;
+    }
+    .tree-node.pandastar {
+      background: linear-gradient(135deg, #fff5e6, #fce6c8);
+      color: #8a5a2a;
+      border-color: #e8c99a;
+    }
+    .tree-node.wild {
+      background: #f0f5ea;
+      color: #7a8578;
+      border-color: #c8d8c0;
+      font-style: italic;
+      cursor: default;
+    }
+    .tree-node.wild:hover {
+      transform: translateX(-50%);
+      border-color: #c8d8c0;
+      box-shadow: 0 2px 6px rgba(107,142,90,0.06);
+    }
+    .tree-node .gender { font-size: 0.68rem; margin-left: 3px; opacity: 0.85; }
+    .tree-node .seen { margin-right: 2px; }
+
+    /* 家族树按钮 */
+    .family-tree-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(107,142,90,0.25);
+      transition: all 0.2s;
+      margin-left: auto;
+    }
+    .family-tree-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(107,142,90,0.35);
+    }
 </style>
 </head>
 <body>
@@ -970,6 +1130,22 @@
         <i class="fas fa-clock-rotate-left"></i> 某年今日
       </div>
     </div>
+
+    <!-- 家族树模态框 -->
+    <div class="tree-modal-overlay" id="familyTreeModal">
+      <div class="tree-modal">
+        <div class="tree-modal-header">
+          <span class="tree-modal-title">🌳 家族树</span>
+          <button class="tree-modal-close" id="treeModalClose">✕</button>
+        </div>
+        <div class="tree-modal-body" id="treeModalBody"></div>
+        <div class="tree-legend">
+          <div class="tree-legend-item"><div class="tree-legend-line marriage"></div> 婚配</div>
+          <div class="tree-legend-item"><div class="tree-legend-line"></div> 亲子</div>
+        </div>
+      </div>
+    </div>
+
 <script>
 (function(){
   // ================================================================
@@ -1340,6 +1516,294 @@
       return new Date(dateStr).toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric' });
     } catch { return dateStr; }
   }
+
+  // ================================================================
+  // 家族树功能（垂直版 · 叶子槽位法）
+  // ================================================================
+
+  // 递归追溯祖先关系
+  // 返回 { relations: { childId: { motherId, fatherId } }, nodes: Map }
+  // 停止条件：无父母记录、父母来自野外、或循环引用
+  function buildAncestryData(rootPandaId) {
+    const relations = {};     // childKey -> { motherKey, fatherKey }
+    const nodes = new Map();  // key -> { key, name, gender, location, pandastar, seen, isWild }
+    const visited = new Set(); // 防止循环
+
+    // key 可以是 pandaId，也可以是 wild_mother / wild_father
+    function resolveMotherKey(p) {
+      if (p.motherId) return p.motherId;
+      if (p.mother && p.mother.trim()) return 'name:' + p.mother.trim();
+      return null;
+    }
+    function resolveFatherKey(p) {
+      if (p.fatherId) return p.fatherId;
+      if (p.father && p.father.trim()) return 'name:' + p.father.trim();
+      return null;
+    }
+
+    function keyToPanda(key) {
+      if (!key) return null;
+      if (key.startsWith('name:')) {
+        const name = key.slice(5);
+        return pandas.find(p => p.name === name) || null;
+      }
+      return getPandaById(key);
+    }
+
+    function trace(key) {
+      if (!key || visited.has(key)) return;
+      visited.add(key);
+
+      let p = keyToPanda(key);
+      let isWild = false;
+
+      if (!p) {
+        // 未在数据库中找到（可能是未关联的名字引用）
+        // 创建一个虚拟节点
+        let name = key.startsWith('name:') ? key.slice(5) : key;
+        nodes.set(key, {
+          key, name, gender: '未知',
+          location: '', pandastar: false, seen: false, isWild: false, isVirtual: true
+        });
+        return;
+      }
+
+      const location = p.location || '';
+      nodes.set(key, {
+        key,
+        name: p.name,
+        gender: p.gender || '未知',
+        location,
+        pandastar: location.trim() === '潘达星',
+        seen: p.hasSeen === true,
+        isWild: false,
+        isVirtual: false,
+        panda: p
+      });
+
+      const mKey = resolveMotherKey(p);
+      const fKey = resolveFatherKey(p);
+
+      // 检查是否来自野外
+      const isMotherWild = mKey === 'wild_mother' || (p.mother && p.mother.includes('野外'));
+      const isFatherWild = fKey === 'wild_father' || (p.father && p.father.includes('野外'));
+
+      if (mKey && !isMotherWild) trace(mKey);
+      if (fKey && !isFatherWild) trace(fKey);
+
+      // 如果是野外，不创建虚拟节点（野外节点不加入树）
+      if (mKey || fKey || isMotherWild || isFatherWild) {
+        relations[key] = {
+          motherKey: isMotherWild ? null : mKey,
+          fatherKey: isFatherWild ? null : fKey,
+          motherWild: isMotherWild,
+          fatherWild: isFatherWild
+        };
+      }
+    }
+
+    trace(rootPandaId);
+
+    return { relations, nodes };
+  }
+
+  // 渲染家族树到模态框
+  function openFamilyTree(rootPandaId) {
+    const modal = document.getElementById('familyTreeModal');
+    const body = document.getElementById('treeModalBody');
+
+    const { relations, nodes } = buildAncestryData(rootPandaId);
+    const rootPanda = getPandaById(rootPandaId);
+    const rootName = rootPanda ? rootPanda.name : '熊猫';
+
+    if (nodes.size <= 1) {
+      body.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:40px 20px;">
+        <div style="font-size:2rem;margin-bottom:12px;">🌱</div>
+        <div style="font-weight:600;margin-bottom:4px;">${rootName}的家族关系不多</div>
+        <div style="font-size:0.85rem;">还没有录入父母信息，或父母来自野外</div>
+      </div>`;
+      modal.classList.add('active');
+      return;
+    }
+
+    // ===== 布局参数 =====
+    const SLOT_W = 110;
+    const NODE_W = 76;
+    const NODE_H = 34;
+    const V_GAP = 68;
+
+    // ===== 计算深度 =====
+    function getNodeDepth(key, visited) {
+      if (visited.has(key)) return 0;
+      visited.add(key);
+      const rel = relations[key];
+      if (!rel || (!rel.motherKey && !rel.fatherKey)) return 0;
+      let d = 0;
+      if (rel.motherKey) d = Math.max(d, getNodeDepth(rel.motherKey, new Set(visited)));
+      if (rel.fatherKey) d = Math.max(d, getNodeDepth(rel.fatherKey, new Set(visited)));
+      return d + 1;
+    }
+    const maxDepth = getNodeDepth(rootPandaId, new Set());
+
+    // ===== 叶子槽位分配 =====
+    let leafCounter = 0;
+    const slots = {};
+    function assignSlots(key) {
+      if (slots[key] !== undefined) return slots[key];
+      const rel = relations[key];
+      if (!rel || (!rel.motherKey && !rel.fatherKey)) {
+        slots[key] = leafCounter++;
+        return slots[key];
+      }
+      let mSlot = null, fSlot = null;
+      if (rel.motherKey) mSlot = assignSlots(rel.motherKey);
+      if (rel.fatherKey) fSlot = assignSlots(rel.fatherKey);
+      if (mSlot !== null && fSlot !== null) {
+        slots[key] = (mSlot + fSlot) / 2;
+      } else if (mSlot !== null) {
+        slots[key] = mSlot;
+      } else if (fSlot !== null) {
+        slots[key] = fSlot;
+      } else {
+        slots[key] = leafCounter++;
+      }
+      return slots[key];
+    }
+    assignSlots(rootPandaId);
+
+    // ===== 收集节点位置 =====
+    const positions = {};
+    function collect(key, level) {
+      if (positions[key] !== undefined) return;
+      if (!nodes.has(key)) return;
+      const slot = slots[key];
+      positions[key] = {
+        x: slot * SLOT_W + SLOT_W / 2,
+        y: level * (NODE_H + V_GAP),
+        level
+      };
+      const rel = relations[key];
+      if (rel) {
+        if (rel.motherKey) collect(rel.motherKey, level - 1);
+        if (rel.fatherKey) collect(rel.fatherKey, level - 1);
+      }
+    }
+    collect(rootPandaId, maxDepth);
+
+    // ===== 生成连线 =====
+    const lines = [];
+    Object.keys(relations).forEach(childKey => {
+      const child = positions[childKey];
+      if (!child) return;
+      const rel = relations[childKey];
+      if (rel.motherKey) {
+        const mPos = positions[rel.motherKey];
+        if (mPos) {
+          const marriageY = mPos.y + NODE_H / 2;
+          // 母亲到婚配中点（水平）
+          if (rel.fatherKey && positions[rel.fatherKey]) {
+            const fPos = positions[rel.fatherKey];
+            const fMarriageY = fPos.y + NODE_H / 2;
+            // 婚配虚线
+            if (Math.abs(marriageY - fMarriageY) < 2) {
+              lines.push({
+                x1: mPos.x + NODE_W / 2, y1: marriageY,
+                x2: fPos.x - NODE_W / 2, y2: marriageY,
+                type: 'marriage'
+              });
+            }
+            // 亲子垂线
+            const midX = (mPos.x + fPos.x) / 2;
+            lines.push({
+              x1: midX, y1: marriageY,
+              x2: child.x, y2: child.y,
+              type: 'parent-child'
+            });
+          } else {
+            // 只有母亲，直接竖线连下来
+            lines.push({
+              x1: mPos.x, y1: marriageY,
+              x2: child.x, y2: child.y,
+              type: 'parent-child'
+            });
+          }
+        }
+      } else if (rel.fatherKey) {
+        // 只有父亲
+        const fPos = positions[rel.fatherKey];
+        if (fPos) {
+          const fMarriageY = fPos.y + NODE_H / 2;
+          lines.push({
+            x1: fPos.x, y1: fMarriageY,
+            x2: child.x, y2: child.y,
+            type: 'parent-child'
+          });
+        }
+      }
+    });
+
+    // ===== 渲染 =====
+    const totalWidth = Math.max(leafCounter * SLOT_W, 300);
+    const totalHeight = (maxDepth + 1) * (NODE_H + V_GAP) + 20;
+
+    let html = `<div class="tree-canvas" id="familyTreeCanvas" style="width:${totalWidth}px;height:${totalHeight}px;">`;
+    html += `<svg class="tree-svg" width="${totalWidth}" height="${totalHeight}">`;
+    lines.forEach(l => {
+      html += `<line x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}" class="${l.type}"/>`;
+    });
+    html += `</svg>`;
+
+    nodes.forEach((node, key) => {
+      if (!positions[key]) return;
+      const pos = positions[key];
+      const genderIcon = node.gender === '雌' || node.gender === '雌性' ? '♀' :
+                         node.gender === '雄' || node.gender === '雄性' ? '♂' : '';
+      const seenIcon = node.seen ? '<span class="seen">👀</span>' : '';
+      const cls = [
+        'tree-node',
+        key === rootPandaId ? 'current' : '',
+        node.pandastar ? 'pandastar' : '',
+        node.isVirtual ? 'virtual' : ''
+      ].filter(Boolean).join(' ');
+
+      const clickAttr = node.panda ? `data-panda-id="${node.panda.id}"` : '';
+      const cursor = node.panda ? '' : 'style="cursor:default;"';
+
+      html += `<div class="${cls}" style="left:${pos.x}px;top:${pos.y}px;" ${clickAttr} ${cursor}>
+        ${seenIcon}${node.name}${genderIcon ? `<span class="gender">${genderIcon}</span>` : ''}
+      </div>`;
+    });
+
+    html += `</div>`;
+    body.innerHTML = html;
+
+    // ===== 节点点击事件 =====
+    body.querySelectorAll('.tree-node[data-panda-id]').forEach(el => {
+      el.addEventListener('click', function() {
+        const pid = this.dataset.pandaId;
+        closeFamilyTree();
+        openDetail(pid);
+      });
+    });
+
+    modal.classList.add('active');
+  }
+
+  function closeFamilyTree() {
+    document.getElementById('familyTreeModal').classList.remove('active');
+  }
+
+  // 家族树模态框事件绑定（脚本在 body 尾部，直接绑）
+  (function initFamilyTreeModal() {
+    const modal = document.getElementById('familyTreeModal');
+    if (modal) {
+      const closeBtn = document.getElementById('treeModalClose');
+      if (closeBtn) closeBtn.addEventListener('click', closeFamilyTree);
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeFamilyTree();
+      });
+    }
+  })();
 
   function calcAge(birthdayStr) {
     if (!birthdayStr || birthdayStr.trim() === '') return null;
@@ -2486,6 +2950,7 @@
           </div>
         </div>
         <div class="detail-top-actions">
+          <button class="relation-btn" id="detailFamilyTreeBtn"><i class="fas fa-tree"></i> 🌳 家族树</button>
           <button class="relation-btn" id="detailRelationBtn"><i class="fas fa-sitemap"></i> 查亲缘</button>
         </div>
       </div>
@@ -2616,6 +3081,10 @@
       saveData();
       renderDetail(p);
       renderBrowse();
+    });
+
+    document.getElementById('detailFamilyTreeBtn').addEventListener('click', function() {
+      openFamilyTree(p.id);
     });
 
     document.getElementById('detailRelationBtn').addEventListener('click', function() {
