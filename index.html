@@ -841,73 +841,18 @@
       font-size: 14px;
     }
 
-    /* ========== 家族树模态框 ========== */
-    .tree-modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(60,75,55,0.45);
-      backdrop-filter: blur(4px);
-      z-index: 1000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      animation: treeFadeIn 0.2s ease;
-    }
-    .tree-modal-overlay.active { display: flex; }
-    @keyframes treeFadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    .tree-modal {
-      background: var(--surface);
-      border-radius: 16px;
-      width: 92%;
-      max-width: 960px;
-      max-height: 88vh;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-      border: 1px solid var(--border);
-      animation: treeSlideUp 0.25s ease;
-    }
-    @keyframes treeSlideUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    .tree-modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    .tree-modal-title {
-      font-weight: 700;
-      font-size: 1.05rem;
-      color: var(--primary);
-    }
-    .tree-modal-close {
-      background: none;
-      border: none;
-      font-size: 1.3rem;
-      cursor: pointer;
-      color: var(--text-muted);
-      padding: 4px 8px;
-      border-radius: 6px;
-      transition: all 0.15s;
-    }
-    .tree-modal-close:hover { background: #f0eeea; color: var(--text); }
-    .tree-modal-body {
-      flex: 1;
+    /* ========== 家族树页面 ========== */
+    .family-tree-body {
       overflow-x: auto;
-      overflow-y: auto;
-      padding: 24px 20px;
+      overflow-y: hidden;
+      padding: 24px 4px 12px;
+      -webkit-overflow-scrolling: touch;
     }
     .tree-legend {
       display: flex;
       justify-content: center;
       gap: 20px;
-      padding: 12px 20px;
+      padding: 10px 0 4px;
       border-top: 1px solid var(--border);
       font-size: 0.78rem;
       color: var(--text-muted);
@@ -937,6 +882,9 @@
       border-radius: 10px;
       padding: 7px 12px;
       min-width: 64px;
+      max-width: 92px;
+      overflow: hidden;
+      text-overflow: ellipsis;
       text-align: center;
       box-shadow: 0 2px 6px rgba(107,142,90,0.06);
       font-size: 0.82rem;
@@ -964,42 +912,9 @@
       color: #8a5a2a;
       border-color: #e8c99a;
     }
-    .tree-node.wild {
-      background: #f0f5ea;
-      color: #7a8578;
-      border-color: #c8d8c0;
-      font-style: italic;
-      cursor: default;
-    }
-    .tree-node.wild:hover {
-      transform: translateX(-50%);
-      border-color: #c8d8c0;
-      box-shadow: 0 2px 6px rgba(107,142,90,0.06);
-    }
     .tree-node .gender { font-size: 0.68rem; margin-left: 3px; opacity: 0.85; }
     .tree-node .seen { margin-right: 2px; }
 
-    /* 家族树按钮 */
-    .family-tree-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(107,142,90,0.25);
-      transition: all 0.2s;
-      margin-left: auto;
-    }
-    .family-tree-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(107,142,90,0.35);
-    }
 </style>
 </head>
 <body>
@@ -1108,6 +1023,19 @@
       </div>
     </div>
 
+    <!-- 家族树页 -->
+    <div id="pageFamilyTree" class="page-view">
+      <div class="page-header">
+        <button class="back-btn" id="familyTreeBackBtn"><i class="fas fa-arrow-left"></i> 返回</button>
+        <span class="page-title" id="familyTreeTitle">🌳 家族树</span>
+      </div>
+      <div class="family-tree-body" id="familyTreeBody"></div>
+      <div class="tree-legend">
+        <div class="tree-legend-item"><div class="tree-legend-line marriage"></div> 婚配</div>
+        <div class="tree-legend-item"><div class="tree-legend-line"></div> 亲子</div>
+      </div>
+    </div>
+
     <!-- 时光机页 -->
     <div id="pageTimeMachine" class="page-view">
       <div class="page-header">
@@ -1128,21 +1056,6 @@
       </div>
       <div class="nav-item" id="navTime" onclick="switchTab('time')">
         <i class="fas fa-clock-rotate-left"></i> 某年今日
-      </div>
-    </div>
-
-    <!-- 家族树模态框 -->
-    <div class="tree-modal-overlay" id="familyTreeModal">
-      <div class="tree-modal">
-        <div class="tree-modal-header">
-          <span class="tree-modal-title">🌳 家族树</span>
-          <button class="tree-modal-close" id="treeModalClose">✕</button>
-        </div>
-        <div class="tree-modal-body" id="treeModalBody"></div>
-        <div class="tree-legend">
-          <div class="tree-legend-item"><div class="tree-legend-line marriage"></div> 婚配</div>
-          <div class="tree-legend-item"><div class="tree-legend-line"></div> 亲子</div>
-        </div>
       </div>
     </div>
 
@@ -1607,14 +1520,16 @@
     return { relations, nodes };
   }
 
-  // 渲染家族树到模态框
+  // 渲染家族树到独立页面
   function openFamilyTree(rootPandaId) {
-    const modal = document.getElementById('familyTreeModal');
-    const body = document.getElementById('treeModalBody');
+    const body = document.getElementById('familyTreeBody');
+    const titleEl = document.getElementById('familyTreeTitle');
 
     const { relations, nodes } = buildAncestryData(rootPandaId);
     const rootPanda = getPandaById(rootPandaId);
     const rootName = rootPanda ? rootPanda.name : '熊猫';
+
+    titleEl.textContent = '🌳 ' + rootName + ' 的家族树';
 
     if (nodes.size <= 1) {
       body.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:40px 20px;">
@@ -1622,15 +1537,15 @@
         <div style="font-weight:600;margin-bottom:4px;">${rootName}的家族关系不多</div>
         <div style="font-size:0.85rem;">还没有录入父母信息，或父母来自野外</div>
       </div>`;
-      modal.classList.add('active');
+      showPage('pageFamilyTree');
       return;
     }
 
     // ===== 布局参数 =====
-    const SLOT_W = 110;
-    const NODE_W = 76;
+    const NODE_W = 92;
     const NODE_H = 34;
-    const V_GAP = 68;
+    const V_GAP = 66;
+    const COUPLE_GAP = 44;
 
     // ===== 计算深度 =====
     function getNodeDepth(key, visited) {
@@ -1645,50 +1560,54 @@
     }
     const maxDepth = getNodeDepth(rootPandaId, new Set());
 
-    // ===== 叶子槽位分配 =====
-    let leafCounter = 0;
-    const slots = {};
-    function assignSlots(key) {
-      if (slots[key] !== undefined) return slots[key];
+    // ===== 子树宽度：对称布局的基础，保证同层节点不重叠 =====
+    function measureWidth(key, seen) {
+      if (seen.has(key)) return NODE_W;
+      seen.add(key);
       const rel = relations[key];
-      if (!rel || (!rel.motherKey && !rel.fatherKey)) {
-        slots[key] = leafCounter++;
-        return slots[key];
+      if (!rel || (!rel.motherKey && !rel.fatherKey)) return NODE_W;
+      const mW = rel.motherKey ? measureWidth(rel.motherKey, new Set(seen)) : 0;
+      const fW = rel.fatherKey ? measureWidth(rel.fatherKey, new Set(seen)) : 0;
+      if (rel.motherKey && rel.fatherKey) {
+        const sideW = Math.max(mW, fW, NODE_W);
+        return Math.max(NODE_W, 2 * sideW + COUPLE_GAP);
       }
-      let mSlot = null, fSlot = null;
-      if (rel.motherKey) mSlot = assignSlots(rel.motherKey);
-      if (rel.fatherKey) fSlot = assignSlots(rel.fatherKey);
-      if (mSlot !== null && fSlot !== null) {
-        slots[key] = (mSlot + fSlot) / 2;
-      } else if (mSlot !== null) {
-        slots[key] = mSlot;
-      } else if (fSlot !== null) {
-        slots[key] = fSlot;
-      } else {
-        slots[key] = leafCounter++;
-      }
-      return slots[key];
+      return Math.max(NODE_W, mW, fW);
     }
-    assignSlots(rootPandaId);
 
-    // ===== 收集节点位置 =====
+    // ===== 对称布局：孩子居中，父母以等距分居两侧 =====
+    // 因为两侧对称，婚配中点恒等于孩子的 x，所有亲子连线保持垂直
     const positions = {};
-    function collect(key, level) {
-      if (positions[key] !== undefined) return;
-      if (!nodes.has(key)) return;
-      const slot = slots[key];
-      positions[key] = {
-        x: slot * SLOT_W + SLOT_W / 2,
-        y: level * (NODE_H + V_GAP),
-        level
-      };
+    const placed = new Set();
+    function place(key, centerX, level) {
+      if (placed.has(key) || !nodes.has(key)) return;
+      placed.add(key);
+      positions[key] = { x: centerX, y: level * (NODE_H + V_GAP), level };
       const rel = relations[key];
-      if (rel) {
-        if (rel.motherKey) collect(rel.motherKey, level - 1);
-        if (rel.fatherKey) collect(rel.fatherKey, level - 1);
+      if (!rel) return;
+      if (rel.motherKey && rel.fatherKey) {
+        const mW = measureWidth(rel.motherKey, new Set());
+        const fW = measureWidth(rel.fatherKey, new Set());
+        const sideW = Math.max(mW, fW, NODE_W);
+        const offset = (sideW + COUPLE_GAP) / 2;
+        place(rel.motherKey, centerX - offset, level - 1);
+        place(rel.fatherKey, centerX + offset, level - 1);
+      } else if (rel.motherKey) {
+        place(rel.motherKey, centerX, level - 1);
+      } else if (rel.fatherKey) {
+        place(rel.fatherKey, centerX, level - 1);
       }
     }
-    collect(rootPandaId, maxDepth);
+    place(rootPandaId, 0, maxDepth);
+
+    // ===== 归一化：整体平移到正坐标 =====
+    let minX = Infinity, maxX = -Infinity;
+    Object.values(positions).forEach(p => {
+      minX = Math.min(minX, p.x - NODE_W / 2);
+      maxX = Math.max(maxX, p.x + NODE_W / 2);
+    });
+    const PAD = 24;
+    Object.values(positions).forEach(p => { p.x = p.x - minX + PAD; });
 
     // ===== 生成连线 =====
     const lines = [];
@@ -1696,57 +1615,38 @@
       const child = positions[childKey];
       if (!child) return;
       const rel = relations[childKey];
-      if (rel.motherKey) {
-        const mPos = positions[rel.motherKey];
-        if (mPos) {
-          const marriageY = mPos.y + NODE_H / 2;
-          // 母亲到婚配中点（水平）
-          if (rel.fatherKey && positions[rel.fatherKey]) {
-            const fPos = positions[rel.fatherKey];
-            const fMarriageY = fPos.y + NODE_H / 2;
-            // 婚配虚线
-            if (Math.abs(marriageY - fMarriageY) < 2) {
-              lines.push({
-                x1: mPos.x + NODE_W / 2, y1: marriageY,
-                x2: fPos.x - NODE_W / 2, y2: marriageY,
-                type: 'marriage'
-              });
-            }
-            // 亲子垂线
-            const midX = (mPos.x + fPos.x) / 2;
-            lines.push({
-              x1: midX, y1: marriageY,
-              x2: child.x, y2: child.y,
-              type: 'parent-child'
-            });
-          } else {
-            // 只有母亲，直接竖线连下来
-            lines.push({
-              x1: mPos.x, y1: marriageY,
-              x2: child.x, y2: child.y,
-              type: 'parent-child'
-            });
-          }
-        }
-      } else if (rel.fatherKey) {
-        // 只有父亲
-        const fPos = positions[rel.fatherKey];
-        if (fPos) {
-          const fMarriageY = fPos.y + NODE_H / 2;
-          lines.push({
-            x1: fPos.x, y1: fMarriageY,
-            x2: child.x, y2: child.y,
-            type: 'parent-child'
-          });
-        }
+      const mPos = rel.motherKey ? positions[rel.motherKey] : null;
+      const fPos = rel.fatherKey ? positions[rel.fatherKey] : null;
+      if (mPos && fPos) {
+        const marriageY = mPos.y + NODE_H / 2;
+        // 婚配虚线
+        lines.push({
+          x1: mPos.x + NODE_W / 2, y1: marriageY,
+          x2: fPos.x - NODE_W / 2, y2: marriageY,
+          type: 'marriage'
+        });
+        // 亲子垂线：对称布局保证婚配中点 === 孩子 x
+        lines.push({
+          x1: child.x, y1: marriageY,
+          x2: child.x, y2: child.y,
+          type: 'parent-child'
+        });
+      } else if (mPos || fPos) {
+        // 单亲：直接垂直连下
+        const par = mPos || fPos;
+        lines.push({
+          x1: par.x, y1: par.y + NODE_H / 2,
+          x2: child.x, y2: child.y,
+          type: 'parent-child'
+        });
       }
     });
 
     // ===== 渲染 =====
-    const totalWidth = Math.max(leafCounter * SLOT_W, 300);
-    const totalHeight = (maxDepth + 1) * (NODE_H + V_GAP) + 20;
+    const totalWidth = (maxX - minX) + PAD * 2;
+    const totalHeight = (maxDepth + 1) * (NODE_H + V_GAP);
 
-    let html = `<div class="tree-canvas" id="familyTreeCanvas" style="width:${totalWidth}px;height:${totalHeight}px;">`;
+    let html = `<div class="tree-canvas" style="width:${totalWidth}px;height:${totalHeight}px;">`;
     html += `<svg class="tree-svg" width="${totalWidth}" height="${totalHeight}">`;
     lines.forEach(l => {
       html += `<line x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}" class="${l.type}"/>`;
@@ -1762,14 +1662,14 @@
       const cls = [
         'tree-node',
         key === rootPandaId ? 'current' : '',
-        node.pandastar ? 'pandastar' : '',
-        node.isVirtual ? 'virtual' : ''
+        node.pandastar ? 'pandastar' : ''
       ].filter(Boolean).join(' ');
 
       const clickAttr = node.panda ? `data-panda-id="${node.panda.id}"` : '';
-      const cursor = node.panda ? '' : 'style="cursor:default;"';
+      const cursor = node.panda ? '' : 'cursor:default;';
+      const safeName = String(node.name).replace(/"/g, '&quot;');
 
-      html += `<div class="${cls}" style="left:${pos.x}px;top:${pos.y}px;" ${clickAttr} ${cursor}>
+      html += `<div class="${cls}" style="left:${pos.x}px;top:${pos.y}px;${cursor}" ${clickAttr} title="${safeName}">
         ${seenIcon}${node.name}${genderIcon ? `<span class="gender">${genderIcon}</span>` : ''}
       </div>`;
     });
@@ -1777,32 +1677,30 @@
     html += `</div>`;
     body.innerHTML = html;
 
-    // ===== 节点点击事件 =====
+    // ===== 节点点击跳转 =====
     body.querySelectorAll('.tree-node[data-panda-id]').forEach(el => {
       el.addEventListener('click', function() {
-        const pid = this.dataset.pandaId;
-        closeFamilyTree();
-        openDetail(pid);
+        openDetail(this.dataset.pandaId);
       });
     });
 
-    modal.classList.add('active');
+    showPage('pageFamilyTree');
   }
 
   function closeFamilyTree() {
-    document.getElementById('familyTreeModal').classList.remove('active');
+    if (currentPandaId) {
+      const p = getPandaById(currentPandaId);
+      if (p) renderDetail(p);
+      showPage('pageDetail');
+    } else {
+      showPage('pageHome');
+    }
   }
 
-  // 家族树模态框事件绑定（脚本在 body 尾部，直接绑）
-  (function initFamilyTreeModal() {
-    const modal = document.getElementById('familyTreeModal');
-    if (modal) {
-      const closeBtn = document.getElementById('treeModalClose');
-      if (closeBtn) closeBtn.addEventListener('click', closeFamilyTree);
-      modal.addEventListener('click', function(e) {
-        if (e.target === modal) closeFamilyTree();
-      });
-    }
+  // 返回按钮绑定
+  (function initFamilyTreePage() {
+    const backBtn = document.getElementById('familyTreeBackBtn');
+    if (backBtn) backBtn.addEventListener('click', closeFamilyTree);
   })();
 
   function calcAge(birthdayStr) {
